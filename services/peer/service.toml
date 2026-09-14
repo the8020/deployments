@@ -1,0 +1,15 @@
+schema = 2
+description = "Connected-system comparison, deployment queue, and development Git transport"
+entrypoint = "service.ts"
+
+[lifecycle]
+default_enabled = true
+service_type = "stateless"
+
+[access]
+mode = "authenticated"
+
+[scaling]
+minimum_workers = 0
+maximum_workers = 4
+concurrency_per_worker = 16

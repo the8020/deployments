@@ -1,0 +1,4 @@
+schema = 1
+description = "Apply a deployment list and record actual package outcomes"
+entrypoint = "program.ts"
+discoverable = false

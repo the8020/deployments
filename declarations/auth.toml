@@ -1,0 +1,4 @@
+"deployments.view" = "View connected systems, deployment lists, comparisons, and run history; value is empty."
+"deployments.connections.edit" = "Connect or disconnect system URLs; value is empty."
+"deployments.lists.edit" = "Create, import, send, or delete deployment lists; value is empty."
+"deployments.apply" = "Apply a deployment, perform an ad hoc update, or roll back a run; value is empty."

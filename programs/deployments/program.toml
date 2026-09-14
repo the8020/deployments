@@ -1,0 +1,4 @@
+schema = 1
+description = "Compare systems, promote package versions, and review or roll back deployments"
+entrypoint = "program.ts"
+uui = true

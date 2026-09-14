@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
+    "lib": [
+      "deno.ns",
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ]
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1.0.14",
+    "/p/": "file:///workspace/packages/",
+    "@the8020/kernel": "file:///opt/runtime/kernel/mod.ts",
+    "@the8020/protocol": "file:///opt/runtime/protocol.ts",
+    "@the8020/context": "file:///opt/runtime/context/mod.ts"
+  },
+  "tasks": {
+    "check": "deno fmt --check . && deno lint . && deno check --import-map=deno.local.json types.ts src/*.ts tables/*.ts programs/*/*.ts services/*/*.ts",
+    "test": "deno test --import-map=deno.local.json --allow-read --allow-write --allow-net --allow-run=git .",
+    "test:browser": "deno run -A --import-map=deno.local.json ../uui/presentation_browser_e2e.ts --fixture=../deployments/src/screens_browser.ts"
+  }
+}
