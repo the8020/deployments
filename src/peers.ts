@@ -1,4 +1,4 @@
-import { kernel } from "@the8020/kernel";
+import { getSecret, setSecret } from "/p/the8020/secrets/mod.ts";
 import Secrets from "/p/the8020/secrets/tables/secrets.ts";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
 import { getSystemProfile, systemProfile } from "/p/the8020/system/profile.ts";
@@ -64,7 +64,7 @@ export async function credentials(peer: Connection) {
     url: peer.url,
     username: remoteUsername.min(3).parse(peer.username),
     password: remotePassword.min(1).parse(
-      (await kernel.secrets.get(passwordName(peer.id))).value,
+      (await getSecret(passwordName(peer.id))).value,
     ),
   };
 }
@@ -145,7 +145,7 @@ export async function saveConnection(
     await request({ url: normalized, username, password }, "/identity"),
   );
   const peer = connection.parse({ ...profile, url: normalized, username });
-  await kernel.secrets.set({ name: passwordName(peer.id), value: password });
+  await setSecret({ name: passwordName(peer.id), value: password });
   await Connections.insert(peer).onConflict((conflict) =>
     conflict.column("id").doUpdateSet(peer)
   ).execute();

@@ -1,12 +1,13 @@
 import { assertEquals, assertRejects, assertThrows } from "@std/assert";
 import { DatabaseFixture } from "./test_support.ts";
-import { kernel, type KernelInvoke, kernelInvokeSymbol } from "@the8020/kernel";
+import { getSecret, setSecret } from "/p/the8020/secrets/mod.ts";
+import { type KernelInvoke, kernelInvokeSymbol, newId } from "@the8020/kernel";
 import {
   getSystemProfile,
   requireDevelopment,
   setSystemProfile,
 } from "/p/the8020/system/profile.ts";
-import { type DeploymentList, parseList } from "../types.ts";
+import { type DeploymentList, parseList, systemUrl } from "../types.ts";
 import {
   changeKind,
   checkBaseline,
@@ -31,6 +32,26 @@ const {
 const { default: Lists } = await import("../tables/lists.ts");
 
 const first = "a".repeat(40), second = "b".repeat(40);
+Deno.test("system addresses accept HTTP and HTTPS without relaxing URL boundaries", () => {
+  for (const protocol of ["http", "https"]) {
+    for (const host of ["localhost", "192.168.1.20:8080", "dev.example.com"]) {
+      const url = `${protocol}://${host}`;
+      assertEquals(systemUrl.parse(url), url);
+      for (
+        const invalid of [
+          `${protocol}://user:password@${host}`,
+          `${url}/path`,
+          `${url}?query=value`,
+          `${url}#fragment`,
+        ]
+      ) assertEquals(systemUrl.safeParse(invalid).success, false);
+    }
+  }
+  for (const url of ["ftp://dev.example.com", "file:///", "dev.example.com"]) {
+    assertEquals(systemUrl.safeParse(url).success, false);
+  }
+});
+
 Deno.test("profiles, immutable queued inputs, apply, partial failure and rollback use shared database contracts", async () => {
   const fixture = new DatabaseFixture();
   const originalFetch = globalThis.fetch;
@@ -40,14 +61,14 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     await setSystemProfile({ name: "Acceptance", role: "test" });
     assertEquals((await getSystemProfile()).id, profile.id);
     await assertRejects(requireDevelopment, Error, "development");
-    const source = { ...profile, id: crypto.randomUUID(), name: "Development" };
+    const source = { ...profile, id: newId("sys"), name: "Development" };
     await Connections.insert({
       ...source,
-      url: "https://dev.example.invalid",
+      url: "http://dev.example.invalid",
       username: "deployer",
     })
       .execute();
-    await kernel.secrets.set({
+    await setSecret({
       name: `deployments.peer.${source.id}`,
       value: "páss:word",
     });
@@ -78,7 +99,7 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
       ));
     };
     const connected = await saveConnection(
-      "https://dev.example.invalid",
+      "http://dev.example.invalid",
       "deployer",
       "páss:word",
     );
@@ -264,9 +285,7 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
       await assertRejects(() => executeRun(list), Error, "UNIQUE");
       await removeConnection(source.id);
       assertEquals((await Connections.selectAll().execute()).length, 0);
-      await assertRejects(() =>
-        kernel.secrets.get(`deployments.peer.${source.id}`)
-      );
+      await assertRejects(() => getSecret(`deployments.peer.${source.id}`));
     } finally {
       finish.resolve();
     }

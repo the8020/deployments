@@ -12,11 +12,13 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 # Local Contracts
 
 - Peer requests authenticate with the configured remote account using standard
-  HTTP Basic over HTTPS. Resolve passwords only for outbound requests/native Git
-  synchronization, never into connection models, URLs, lists, or runs. Saving a
-  connection verifies the remote identity and credentials before storing them.
-  Systems shows a masked password entry, clears it after each save attempt, and
-  lets selection populate public connection fields for credential replacement.
+  HTTP Basic over the owner-selected HTTP or HTTPS connection. Resolve passwords
+  only for outbound requests/native Git synchronization, never into connection
+  models, URLs, lists, or runs. Saving a connection verifies the remote identity
+  and credentials before storing them. Systems shows a masked password entry,
+  clears it after each save attempt, and lets selection populate public
+  connection fields for credential replacement. Reads and writes use
+  `the8020/secrets/mod.ts`, which encrypts credentials in the database.
 
 - Validate peer data before use. Require local permissions for edits and apply.
   Read live target state before mutation; record partial failures honestly.

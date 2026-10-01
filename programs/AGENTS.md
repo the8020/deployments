@@ -15,6 +15,10 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 - Apply requests carry an immutable saved-list or original-run ID, or a single
   ad hoc package input. Resolve larger inputs in the Worker to respect the
   native command size limit; execution uses the native ten-minute maximum.
+- `connect` invokes the shared `saveConnection` implementation with URL and
+  username arguments and execution-scoped password input. Bootstrap and
+  interactive connections use the same identity verification and encrypted
+  store.
 
 # Work Guidance
 

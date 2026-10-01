@@ -23,13 +23,15 @@ export const name = field(z.string().trim().min(1).max(160), {
 });
 export const systemUrl = field(
   z.url().refine((value) => {
-    const url = new URL(value);
-    return url.protocol === "https:" && !url.username && !url.password &&
+    const url = URL.parse(value);
+    return url !== null &&
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      !url.username && !url.password &&
       !url.search && !url.hash && url.pathname === "/";
-  }, "Use an HTTPS system address without a path or credentials."),
+  }, "Use an HTTP or HTTPS system address without a path or credentials."),
   {
     label: "System URL",
-    description: "HTTPS address of the connected 80|20 system.",
+    description: "HTTP or HTTPS address of the connected 80|20 system.",
   },
 );
 export const remoteUsername = field(

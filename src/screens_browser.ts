@@ -1,6 +1,7 @@
-import { kernel } from "@the8020/kernel";
+import { newId } from "@the8020/kernel";
 import { assert, assertEquals } from "@std/assert";
 import { DatabaseFixture } from "./test_support.ts";
+import { setSecret } from "/p/the8020/secrets/mod.ts";
 import {
   getSystemProfile,
   setSystemProfile,
@@ -24,7 +25,7 @@ export default async function fixture() {
   const local = await getSystemProfile();
   await setSystemProfile({ name: "Acceptance", role: "test" });
   const source = {
-    id: crypto.randomUUID(),
+    id: newId("sys"),
     name: "Development",
     role: "development" as const,
   };
@@ -34,7 +35,7 @@ export default async function fixture() {
     url: "https://development.example.invalid",
     username: "deployer",
   }).execute();
-  await kernel.secrets.set({
+  await setSecret({
     name: `deployments.peer.${source.id}`,
     value: "browser-test-password",
   });

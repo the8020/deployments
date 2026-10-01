@@ -1,0 +1,13 @@
+version = 1
+command = "deployments.connect"
+program = "the8020/deployments/connect"
+summary = "Connect another system"
+description = "Verify the remote identity and save its connection credentials."
+usage = "<url> <username> --password-stdin"
+mutates_state = true
+restart_behavior = "none"
+[[secrets]]
+name = "password"
+required = true
+prompt = "Remote password: "
+stdin_option = "password-stdin"

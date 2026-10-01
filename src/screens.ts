@@ -142,7 +142,7 @@ export async function systems() {
     url: field(z.string(), {
       label: "System URL",
       description:
-        "Enter an HTTPS address to connect a system. Register this development system's own address to use it as a Git source.",
+        "Enter a system address to connect. Register this development system's own address to use it as a Git source.",
     }),
     username: remoteUsername,
     password: field(remotePassword, { control: "password" }),

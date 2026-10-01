@@ -106,6 +106,7 @@ relevant child AGENTS.md
 
 ## Child DOX Index
 
+- [cbus/AGENTS.md](cbus/AGENTS.md): Secure connected-system setup commands.
 - [tables/AGENTS.md](tables/AGENTS.md): Connected systems, deployment lists, and
   run history.
 - [src/AGENTS.md](src/AGENTS.md): Comparison, transport, execution, and UUI
@@ -134,17 +135,23 @@ relevant child AGENTS.md
 - Only development systems serve Git. The entire peer service is authenticated;
   ordinary HTTP Basic headers work with Git clients and peer requests. Each
   connection configures an enabled remote account's username and password over
-  HTTPS. Upstream repository credentials stay on their owning development
-  system. Incoming requests never execute or activate deployment instructions.
+  HTTP or HTTPS. The system owner chooses the transport and manages network
+  security; do not require HTTPS or add a separate opt-in for HTTP. Upstream
+  repository credentials stay on their owning development system. Incoming
+  requests never execute or activate deployment instructions.
 - Runs record version identifiers, not copies of the underlying content.
   Restoring a version requires it to remain available from its source; missing
   sources or versions fail normally.
-- Connections are operator-configured HTTPS URLs and usernames with pinned
-  system IDs. Passwords use the existing secret store under
-  `deployments.peer.<system ID>`; connection listings and run/list records never
-  contain passwords. Disconnect removes the connection and its saved secret.
-  Authenticated incoming lists remain queued proposals, bounded and immutable;
-  processing requires the local `deployments.apply` permission and live review.
+- Connections are operator-configured HTTP or HTTPS URLs and usernames with
+  pinned `sys-` system IDs. Passwords use the encrypted secrets-package store
+  under `deployments.peer.<system ID>`; connection listings and run/list records
+  never contain passwords. Disconnect removes the connection and its saved
+  secret. Authenticated incoming lists remain queued proposals, bounded and
+  immutable; processing requires the local `deployments.apply` permission and
+  live review.
+- `deployments.connect <url> <username> --password-stdin` invokes the ordinary
+  connection API with execution-scoped secure input. It supports unattended
+  deployment bootstrap without passwords in arguments, source, or image layers.
 - Lists carry full package IDs and exact commits or tags. Interactive selection
   pins a commit; imported tags resolve during ordinary Git synchronization and
   the run records that exact commit. Explicit null targets mean removal.
@@ -180,6 +187,8 @@ relevant child AGENTS.md
   sources, and creates freshly numbered independent test instances. It limits
   descendants to two CPUs, 3,584 MiB aggregate proportional memory, and 900
   seconds, and stops below 750 MiB available host memory. Empty sandboxes are
-  not retained. It verifies private-service rejection/challenges, configured
-  Basic credentials in both directions, real HTTPS Git activation, ad hoc
+  not retained; fixture service Workers retain only one second of idle time. It
+  verifies independent short IDs/master keys, private-service challenges, secure
+  connection commands in both directions over loopback, encrypted secret rows,
+  same-hostname login/logout isolation, real HTTP Git activation, ad hoc
   updates, removal, rollback, and roles.

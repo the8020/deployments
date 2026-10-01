@@ -1,0 +1,4 @@
+schema = 1
+description = "Verify and save a connected system"
+entrypoint = "program.ts"
+discoverable = false

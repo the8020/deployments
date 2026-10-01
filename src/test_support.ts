@@ -95,20 +95,47 @@ export class DatabaseFixture {
     if (operation !== "runtime.operation") {
       throw new Error(`Unexpected bridge ${operation}`);
     }
-    if (args.operation === "secret.get") {
-      const input = args.input as { name: string };
-      const secret = this.database.prepare(
-        "SELECT * FROM the8020__secrets__secrets WHERE name = ?",
-      ).get(input.name);
-      if (!secret) throw new Error("Secret not found");
-      return { success: true, result: { secret } };
-    }
-    if (args.operation === "secret.set") {
-      const input = args.input as { name: string; value: string };
-      this.database.prepare(
-        "INSERT INTO the8020__secrets__secrets (name,value,updatedAt) VALUES (?,?,?) ON CONFLICT(name) DO UPDATE SET value=excluded.value",
-      ).run(input.name, input.value, new Date().toISOString());
-      return { success: true, result: { secret: { name: input.name } } };
+    if (
+      args.operation === "crypto.encrypt" || args.operation === "crypto.decrypt"
+    ) {
+      const input = args.input as {
+        data: string;
+        encrypted: string;
+        associated_data: string;
+      };
+      const key = await crypto.subtle.importKey(
+        "raw",
+        new Uint8Array(32),
+        "AES-GCM",
+        false,
+        ["encrypt", "decrypt"],
+      );
+      const additionalData = Uint8Array.fromBase64(input.associated_data);
+      if (args.operation === "crypto.encrypt") {
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const encrypted = new Uint8Array(
+          await crypto.subtle.encrypt(
+            { name: "AES-GCM", iv, additionalData },
+            key,
+            Uint8Array.fromBase64(input.data),
+          ),
+        );
+        return {
+          success: true,
+          result: {
+            encrypted: "v1:" + new Uint8Array([...iv, ...encrypted]).toBase64(),
+          },
+        };
+      }
+      const bytes = Uint8Array.fromBase64(input.encrypted.slice(3));
+      const data = new Uint8Array(
+        await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: bytes.slice(0, 12), additionalData },
+          key,
+          bytes.slice(12),
+        ),
+      );
+      return { success: true, result: { data: data.toBase64() } };
     }
     return {
       success: true,
