@@ -28,6 +28,12 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 - Comparisons select any pipeline stage independently of the development Git
   source. Preserve selection through the differences/all toggle and detail
   editing. Ad hoc review/edit/rebase retains a null deployment-list reference.
+- Ad hoc single-package apply input may carry exact `forceColumns` and
+  `approvedPlan`. Preserve `deployments.apply`, target identity and observed
+  before/after evidence; removal and multi-package destructive consent reject.
+  Forward those options to native package synchronization, which shares DB
+  cleanup/repair/recovery with development. Run history retains force scope; a
+  failed run never replays itself automatically.
 - `runs.ts` retains a database lock when actual outcomes cannot be observed. The
   apply program exports `deployments.run.active` on its original Worker. Check
   execution releases an abandoned lock only after an explicit inactive answer or
