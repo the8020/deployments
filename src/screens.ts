@@ -56,11 +56,12 @@ function listLayout(
   bind: string,
   key: string,
   display: string[],
+  toolbar: LayoutDocument["root"]["toolbar"] = [],
 ): LayoutDocument {
   return {
     schema: 1,
     id: bind,
-    root: { id: bind, type: "list", bind, key, display },
+    root: { id: bind, type: "list", bind, key, display, toolbar },
   };
 }
 function error(error: unknown) {
@@ -97,15 +98,16 @@ export async function deployments(packageId = "") {
       title: `Deployments · ${local.name}`,
       schema: z.object({ rows: z.array(Row) }),
       model,
-      layout: listLayout("rows", "id", ["name", "target", "received"]),
+      layout: listLayout("rows", "id", ["name", "target", "received"], [
+        { id: "new", label: "Compare systems", kind: "primary" },
+        { id: "import", label: "Import JSON" },
+        { id: "refresh", label: "Refresh" },
+      ]),
       header: {
-        actions: [
-          { id: "new", label: "Compare systems", kind: "primary" },
-          { id: "import", label: "Import JSON" },
-          { id: "runs", label: "Run history" },
-          { id: "systems", label: "Systems" },
-          { id: "refresh", label: "Refresh" },
-        ],
+        actions: [{ id: "runs", label: "Run history" }, {
+          id: "systems",
+          label: "Systems",
+        }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -171,6 +173,7 @@ export async function systems() {
               controls: ["url", "username", "password"],
             },
             {
+              toolbar: [{ id: "disconnect", label: "Disconnect" }],
               type: "list",
               title: "Connected systems",
               bind: "rows",
@@ -185,7 +188,7 @@ export async function systems() {
           id: "connect",
           label: "Save connection",
           kind: "primary",
-        }, { id: "disconnect", label: "Disconnect" }],
+        }],
       },
     });
     if (event.action === BACK_EVENT) {
@@ -455,7 +458,7 @@ async function editPackage(
       schema,
       model,
       header: {
-        actions: [{ id: "choose", label: "Use version", kind: "primary" }, {
+        actions: [{
           id: "remove",
           label: "Remove package",
           kind: "danger",
@@ -469,6 +472,11 @@ async function editPackage(
           children: [
             { type: "detail", controls: ["packageId", "selection"] },
             {
+              toolbar: [{
+                id: "choose",
+                label: "Use version",
+                kind: "primary",
+              }],
               type: "list",
               bind: "versions",
               key: "commit",
@@ -534,23 +542,24 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
         "current",
         "target",
         "change",
+      ], [
+        ...(local.id === input.targetSystemId
+          ? [{
+            id: "apply",
+            label: "Apply deployment",
+            kind: "primary" as const,
+          }]
+          : [{
+            id: "send",
+            label: "Send to target",
+            kind: "primary" as const,
+          }]),
+        { id: "refresh", label: "Refresh comparison" },
+        { id: "json", label: "Export JSON" },
+        { id: "rebase", label: "Review current versions" },
       ]),
       header: {
         actions: [
-          ...(local.id === input.targetSystemId
-            ? [{
-              id: "apply",
-              label: "Apply deployment",
-              kind: "primary" as const,
-            }]
-            : [{
-              id: "send",
-              label: "Send to target",
-              kind: "primary" as const,
-            }]),
-          { id: "refresh", label: "Refresh comparison" },
-          { id: "json", label: "Export JSON" },
-          { id: "rebase", label: "Review current versions" },
           ...(listId
             ? [{ id: "delete", label: "Delete list", kind: "danger" as const }]
             : []),
@@ -683,16 +692,13 @@ async function runHistory() {
         "state",
         "createdAt",
         "rollbackOf",
+      ], [
+        { id: "refresh", label: "Refresh" },
+        ...(offset ? [{ id: "previous", label: "Previous" }] : []),
+        ...(model.data.rows.length === 100
+          ? [{ id: "next", label: "Next" }]
+          : []),
       ]),
-      header: {
-        actions: [
-          { id: "refresh", label: "Refresh" },
-          ...(offset ? [{ id: "previous", label: "Previous" }] : []),
-          ...(model.data.rows.length === 100
-            ? [{ id: "next", label: "Next" }]
-            : []),
-        ],
-      },
     });
     if (event.action === BACK_EVENT) return;
     if (event.action === "next") offset += 100;

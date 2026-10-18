@@ -11,6 +11,11 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 # Local Contracts
 
+- Collection creation/import, comparison/review operations, version selection,
+  disconnect, refresh, and backend paging belong in the relevant list toolbar.
+  System settings, form saves, related-page navigation, and run-level rollback
+  stay in screen headers.
+
 - Peer requests authenticate with the configured remote account using standard
   HTTP Basic over the owner-selected HTTP or HTTPS connection. Resolve passwords
   only for outbound requests/native Git synchronization, never into connection
