@@ -137,9 +137,11 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     );
     assertEquals((await Lists.selectAll().execute()).length, 1);
     const calls: string[] = [];
+    let schemaConsent: Record<string, unknown> | undefined;
     const heads = new Map<string, string | null>();
     let failAfterPublish = false;
     fixture.operation = async (name, input) => {
+      if (name === "activation.schema_evolution") return 2;
       if (name === "package.repository.inspect") {
         return { repository: { head: heads.get(String(input.package_id)) } };
       }
@@ -169,6 +171,7 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
         return { package: input };
       }
       if (name === "package.synchronize") {
+        if (input.force_columns) schemaConsent = input;
         assertEquals(input.git_username, "deployer");
         assertEquals(input.git_token, "páss:word");
         const packageId = String(input.packages);
@@ -213,6 +216,42 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     const stale = await executeRun(list);
     assertEquals((await inspectRun(stale)).state, "failed");
     assertEquals(calls, ["package.index.set", "package.synchronize"]);
+    const forceColumns = ["acme__app__orders.status"];
+    const approvedPlan = "c".repeat(64);
+    const forced = await inspectRun(
+      await executeRun(
+        {
+          ...list,
+          packages: [{
+            packageId: "acme/app",
+            before: first,
+            target: { commit: first, tag: null },
+          }],
+        },
+        null,
+        null,
+        forceColumns,
+        approvedPlan,
+      ),
+    );
+    assertEquals(forced.state, "succeeded");
+    assertEquals(forced.packages[0]?.forceColumns, forceColumns);
+    assertEquals(schemaConsent?.force_columns, forceColumns.join(","));
+    assertEquals(schemaConsent?.approved_plan, approvedPlan);
+    await assertRejects(
+      () =>
+        executeRun(
+          {
+            ...list,
+            packages: [{ packageId: "acme/app", before: first, target: null }],
+          },
+          null,
+          null,
+          forceColumns,
+        ),
+      Error,
+      "one explicit package version",
+    );
     const update = {
       ...list,
       id: crypto.randomUUID(),

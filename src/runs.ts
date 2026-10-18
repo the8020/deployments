@@ -49,9 +49,19 @@ export async function executeRun(
   value: unknown,
   listId: string | null = null,
   rollbackOf: string | null = null,
+  forceColumns: string[] = [],
+  approvedPlan?: string,
 ) {
   await requirePermission("deployments.apply", "");
   const input = parseList(value);
+  if (
+    (forceColumns.length || approvedPlan) &&
+    (input.packages.length !== 1 || input.packages[0]?.target === null)
+  ) {
+    throw new Error(
+      "Schema force requires one explicit package version; package removal is separate.",
+    );
+  }
   const local = await getSystemProfile();
   if (input.targetSystemId !== local.id) {
     throw new Error("This deployment targets another system.");
@@ -88,6 +98,7 @@ export async function executeRun(
     processed: false,
     state: "pending",
     error: "",
+    ...(forceColumns.length ? { forceColumns: [...forceColumns] } : {}),
   }));
   // A unique nullable key is shared by every node; interrupted runs keep it.
   await Runs.insert({
@@ -167,6 +178,7 @@ export async function executeRun(
               [item.packageId],
               access.password,
               access.username,
+              { force_columns: forceColumns, approved_plan: approvedPlan },
             );
             if (results[0]?.commit) {
               const resolved = commit.parse(results[0].commit);
@@ -285,7 +297,13 @@ export async function executeRequest(value: unknown) {
       run.id,
     );
   }
-  return await executeRun(request.input);
+  return await executeRun(
+    request.input,
+    null,
+    null,
+    request.forceColumns,
+    request.approvedPlan,
+  );
 }
 
 export async function applyList(

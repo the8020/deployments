@@ -99,6 +99,8 @@ export const deploymentRequest = z.union([
       (value) => value.packages.length === 1,
       "Ad hoc deployments contain one package.",
     ),
+    forceColumns: z.array(z.string().min(1).max(127)).max(256).optional(),
+    approvedPlan: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   }).strict(),
 ]);
 export type DeploymentItem = z.infer<typeof deploymentItem>;
@@ -151,6 +153,7 @@ export const runItem = z.object({
   processed: z.boolean(),
   state: z.enum(["pending", "succeeded", "failed"]),
   error: z.string(),
+  forceColumns: z.array(z.string()).optional(),
 }).strict();
 export type RunItem = z.infer<typeof runItem>;
 export const runState = field(
