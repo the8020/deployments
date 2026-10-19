@@ -1,0 +1,9 @@
+[administration]
+title = "Administration"
+icon = "admin_panel_settings"
+order = 10
+
+["administration/packages"]
+title = "Packages"
+icon = "deployed_code"
+order = 10

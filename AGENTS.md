@@ -122,6 +122,8 @@ relevant child AGENTS.md
 
 # Ownership
 
+- `widgets/` declares this package's Home tiles and categories through the
+  `the8020/packages/widgets.ts` format.
 - Own connected-system configuration, portable lists, queued reception, live
   comparison, selection, ad hoc updates, rollback, and immutable run records.
 - `the8020/system/profile.ts` owns system identity/name/role. The packages API

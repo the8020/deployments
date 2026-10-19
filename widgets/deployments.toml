@@ -1,0 +1,9 @@
+schema = 1
+title = "Deployments"
+description = "Compare systems, promote and roll back package versions"
+icon = "rocket_launch"
+category = "administration/packages"
+order = 30
+
+[open]
+program = "the8020/deployments/deployments"
