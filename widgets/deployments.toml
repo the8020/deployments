@@ -7,3 +7,6 @@ order = 30
 
 [open]
 program = "the8020/deployments/deployments"
+
+[visible]
+permission = "the8020.deployments.view"

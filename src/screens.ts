@@ -69,7 +69,7 @@ function error(error: unknown) {
 }
 
 export async function deployments(packageId = "") {
-  await requirePermission("deployments.view", "");
+  await requirePermission("the8020.deployments.view", "");
   if (packageId) return await newDeployment(packageId);
   const Row = z.object({
     id: z.string(),

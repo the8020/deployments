@@ -39,7 +39,7 @@ export const workerFunctions = {
 };
 
 export async function inspectRun(id: string) {
-  await requirePermission("deployments.view", "");
+  await requirePermission("the8020.deployments.view", "");
   return await Runs.selectAll().where(Runs.id, "=", id)
     .executeTakeFirstOrThrow();
 }
@@ -52,7 +52,7 @@ export async function executeRun(
   forceColumns: string[] = [],
   approvedPlan?: string,
 ) {
-  await requirePermission("deployments.apply", "");
+  await requirePermission("the8020.deployments.apply", "");
   const input = parseList(value);
   if (
     (forceColumns.length || approvedPlan) &&
@@ -240,7 +240,7 @@ export async function executeRun(
 
 /** Only explicit inspection of the original Worker can release an abandoned run. */
 export async function reconcileRun(id: string) {
-  await requirePermission("deployments.apply", "");
+  await requirePermission("the8020.deployments.apply", "");
   const run = await inspectRun(id);
   if (run.state !== "running") return run;
   try {
@@ -311,7 +311,7 @@ export async function applyList(
   listId: string | null = null,
   rollbackOf: string | null = null,
 ) {
-  await requirePermission("deployments.apply", "");
+  await requirePermission("the8020.deployments.apply", "");
   input = parseList(input);
   if (listId) {
     const saved = await Lists.selectAll().where(Lists.id, "=", listId)

@@ -139,7 +139,7 @@ export async function saveConnection(
   username: string,
   password: string,
 ) {
-  await requirePermission("deployments.connections.edit", "");
+  await requirePermission("the8020.deployments.connections.edit", "");
   const normalized = new URL(systemUrl.parse(url)).origin;
   const profile = systemProfile.parse(
     await request({ url: normalized, username, password }, "/identity"),
@@ -153,13 +153,13 @@ export async function saveConnection(
 }
 
 export async function removeConnection(id: string) {
-  await requirePermission("deployments.connections.edit", "");
+  await requirePermission("the8020.deployments.connections.edit", "");
   await Connections.delete().where(Connections.id, "=", id).execute();
   await Secrets.delete().where(Secrets.name, "=", passwordName(id)).execute();
 }
 
 export async function saveList(value: unknown) {
-  await requirePermission("deployments.lists.edit", "");
+  await requirePermission("the8020.deployments.lists.edit", "");
   const list = parseList(value);
   await storeList(list, false);
   return list;
@@ -214,7 +214,7 @@ async function storeList(list: DeploymentList, received: boolean) {
 }
 
 export async function sendList(value: unknown) {
-  await requirePermission("deployments.lists.edit", "");
+  await requirePermission("the8020.deployments.lists.edit", "");
   const list = parseList(value);
   const peer = await getConnection(list.targetSystemId);
   const target = await remoteSnapshot(peer.id);
@@ -225,6 +225,6 @@ export async function sendList(value: unknown) {
 }
 
 export async function deleteList(id: string) {
-  await requirePermission("deployments.lists.edit", "");
+  await requirePermission("the8020.deployments.lists.edit", "");
   await Lists.delete().where(Lists.id, "=", id).execute();
 }

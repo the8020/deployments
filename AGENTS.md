@@ -123,7 +123,8 @@ relevant child AGENTS.md
 # Ownership
 
 - `widgets/` declares this package's Home tiles and categories through the
-  `the8020/packages/widgets.ts` format.
+  `the8020/packages/widgets.ts` format; the tile is visible with
+  `the8020.deployments.view`.
 - Own connected-system configuration, portable lists, queued reception, live
   comparison, selection, ad hoc updates, rollback, and immutable run records.
 - `the8020/system/profile.ts` owns system identity/name/role. The packages API
@@ -149,8 +150,8 @@ relevant child AGENTS.md
   under `deployments.peer.<system ID>`; connection listings and run/list records
   never contain passwords. Disconnect removes the connection and its saved
   secret. Authenticated incoming lists remain queued proposals, bounded and
-  immutable; processing requires the local `deployments.apply` permission and
-  live review.
+  immutable; processing requires the local `the8020.deployments.apply`
+  permission and live review.
 - `deployments.connect <url> <username> --password-stdin` invokes the ordinary
   connection API with execution-scoped secure input. It supports unattended
   deployment bootstrap without passwords in arguments, source, or image layers.
