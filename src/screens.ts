@@ -9,6 +9,7 @@ import {
 import {
   BACK_EVENT,
   callScreen,
+  confirmAction,
   currentBrowser,
   field,
   invokeProgram,
@@ -225,7 +226,10 @@ export async function systems() {
       }
       if (event.action === "disconnect") {
         const peer = model.data.rows.find((row) => row.url === model.data.url);
-        if (peer && await confirm(`Disconnect ${peer.name}?`, "Disconnect")) {
+        if (
+          peer &&
+          await confirm(`Disconnect ${peer.name}?`, "Disconnect", "danger")
+        ) {
           await removeConnection(peer.id);
         }
       }
@@ -617,7 +621,7 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
       }
       if (
         event.action === "delete" && listId &&
-        await confirm("Delete this deployment list?", "Delete")
+        await confirm("Delete this deployment list?", "Delete", "danger")
       ) {
         await deleteList(listId);
         return;
@@ -776,20 +780,16 @@ export async function runDetail(id: string) {
   }
 }
 
-async function confirm(title: string, label: string) {
-  const event = await presentModal(() =>
-    callScreen({
-      id: "deployment-confirm",
-      title,
-      schema: z.object({}),
-      model: new Model({}),
-      header: {
-        actions: [{ id: "confirm", label, kind: "primary" }, {
-          id: "cancel",
-          label: "Cancel",
-        }],
-      },
-    })
-  );
-  return event.action === "confirm";
+function confirm(
+  title: string,
+  label: string,
+  kind: "danger" | "primary" = "primary",
+) {
+  return confirmAction({
+    id: "deployment-confirm",
+    title,
+    confirm: label,
+    kind,
+    cancel: "Cancel",
+  });
 }
