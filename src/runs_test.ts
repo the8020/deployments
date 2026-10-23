@@ -363,7 +363,18 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     await assertRejects(() => reconcileRun(completed.id), Error, "unavailable");
     assertEquals((await inspectRun(completed.id)).lockKey, "apply");
     observed = "missing";
-    assertEquals((await reconcileRun(completed.id)).state, "interrupted");
+    const indexedOperation = fixture.operation;
+    fixture.operation = async (operation, input) => {
+      if (operation === "package.repository.inspect") {
+        throw new Error(`package is not installed: ${input.package_id}`);
+      }
+      return await indexedOperation(operation, input);
+    };
+    const reconciled = await reconcileRun(completed.id);
+    fixture.operation = indexedOperation;
+    assertEquals(reconciled.state, "interrupted");
+    assertEquals(reconciled.lockKey, null);
+    assertEquals(reconciled.packages[0]?.after, null);
     assertEquals(calls.length, nativeCalls);
     const large = parseList({
       ...list,

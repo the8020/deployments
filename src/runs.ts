@@ -28,8 +28,14 @@ async function observedVersion(packageId: string) {
   if (!row) return { commit: null, state: "retired" };
   // Filesystem publication precedes catalog completion. Observe Git even when a
   // later schema hook fails, rather than reporting the previous catalog commit.
-  const repository = await kernel.packages.repository.inspect(packageId);
-  return { commit: commit.parse(repository.head), state: row.state };
+  // An interrupted first activation can index a package before publishing it.
+  try {
+    const repository = await kernel.packages.repository.inspect(packageId);
+    return { commit: commit.parse(repository.head), state: row.state };
+  } catch (error) {
+    if (!message(error).startsWith("package is not installed:")) throw error;
+    return { commit: null, state: row.state };
+  }
 }
 export const workerFunctions = {
   "deployments.run.active": (input: unknown) => {
