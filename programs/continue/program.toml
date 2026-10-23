@@ -1,2 +1,4 @@
 schema = 1
+description = "Execute the next queued deployment package"
 entrypoint = "program.ts"
+discoverable = false
