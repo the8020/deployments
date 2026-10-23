@@ -15,6 +15,7 @@ const Runs = table("the8020__deployments__runs", {
   workerId: t.text(),
   executionId: t.text(),
   lockKey: t.text().nullable(),
+  nextStep: t.integer().nullable(),
   createdAt: t.datetime().defaultNow(),
   finishedAt: t.datetime().nullable(),
 }, {

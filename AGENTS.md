@@ -111,8 +111,8 @@ relevant child AGENTS.md
   run history.
 - [src/AGENTS.md](src/AGENTS.md): Comparison, transport, execution, and UUI
   workflows.
-- [programs/AGENTS.md](programs/AGENTS.md): Deployments administration and apply
-  entrypoints.
+- [programs/AGENTS.md](programs/AGENTS.md): Administration, apply, and
+  continuation entrypoints.
 - [services/AGENTS.md](services/AGENTS.md): Authenticated peer communication and
   development Git transport.
 
@@ -127,6 +127,8 @@ relevant child AGENTS.md
   `the8020.deployments.view`.
 - Own connected-system configuration, portable lists, queued reception, live
   comparison, selection, ad hoc updates, rollback, and immutable run records.
+- `events/` dispatches one package per bounded continuation program and uses the
+  existing minute event to recover lost delivery of unstarted steps only.
 - `the8020/system/profile.ts` owns system identity/name/role. The packages API
   owns application package editing; native Git synchronization owns activation.
 
@@ -164,6 +166,10 @@ relevant child AGENTS.md
 - Serialize runs across nodes in the shared database, without holding a SQL
   transaction over network or activation. Unknown execution outcomes retain the
   lock until reconciled; never automatically replay a run after interruption.
+- Apply admits a run and returns its ID while detached package steps continue.
+  The reviewed input and schema consent are copied before dispatch. A single
+  nullable next-step checkpoint and conditional claim exclude duplicate events;
+  claimed steps never resume automatically, even after kernel restart.
 - Reuse ordinary Zod fields, UUI Model/list selection, toolbar buttons, detail
   pages, and modals. Lists default to differences and preserve selected targets.
 

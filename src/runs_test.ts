@@ -14,7 +14,13 @@ import {
   compareSystems,
   rollbackList,
 } from "./comparison.ts";
-const { applyList, executeRun, inspectRun, reconcileRun } = await import(
+const {
+  applyList,
+  executeRun: startRun,
+  continueRun,
+  inspectRun,
+  reconcileRun,
+} = await import(
   "./runs.ts"
 );
 const { default: Runs } = await import("../tables/runs.ts");
@@ -55,6 +61,12 @@ Deno.test("system addresses accept HTTP and HTTPS without relaxing URL boundarie
 Deno.test("profiles, immutable queued inputs, apply, partial failure and rollback use shared database contracts", async () => {
   const fixture = new DatabaseFixture();
   const originalFetch = globalThis.fetch;
+  const events: unknown[] = [];
+  const executeRun: typeof startRun = async (...args) => {
+    const id = await startRun(...args);
+    while (events.length) await continueRun(events.shift());
+    return id;
+  };
   try {
     const profile = await getSystemProfile();
     assertEquals(await getSystemProfile(), profile);
@@ -141,9 +153,23 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     const heads = new Map<string, string | null>();
     let failAfterPublish = false;
     fixture.operation = async (name, input) => {
+      if (name === "database.check") {
+        return {
+          pending_deployment: false,
+          status: "READY",
+          initialized: true,
+        };
+      }
+      if (name === "event.emit") {
+        events.push({ name: input.name, data: input.data });
+        return { id: "event", listeners: 1 };
+      }
       if (name === "activation.schema_evolution") return 2;
       if (name === "package.repository.inspect") {
-        return { repository: { head: heads.get(String(input.package_id)) } };
+        const head = heads.get(String(input.package_id));
+        return {
+          repository: head ? { status: "ready", head } : { status: "absent" },
+        };
       }
       calls.push(name);
       if (name === "package.index.set") {
@@ -195,6 +221,7 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
         };
       }
       if (name === "package.delete") {
+        heads.delete(String(input.package_id));
         await Packages.update({ state: "retired" }).where(
           Packages.packageId,
           "=",
@@ -267,7 +294,8 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     assertEquals(failed.packages[0]?.after, second);
     assertEquals(failed.packages[0]?.change, "upgraded");
     // The physical source changed even though the catalog hook did not finish.
-    assertEquals((await localSnapshot()).packages[0]?.commit, first);
+    assertEquals((await localSnapshot()).packages[0]?.commit, second);
+    assertEquals((await localSnapshot()).packages[0]?.state, "incomplete");
     await Packages.update({ activeCommit: second }).where(
       Packages.packageId,
       "=",
@@ -321,7 +349,7 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     const pending = executeRun(list);
     await entered.promise;
     try {
-      await assertRejects(() => executeRun(list), Error, "UNIQUE");
+      await assertRejects(() => executeRun(list), Error, "Check execution");
       await removeConnection(source.id);
       assertEquals((await Connections.selectAll().execute()).length, 0);
       await assertRejects(() => getSecret(`deployments.peer.${source.id}`));
@@ -366,7 +394,7 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     const indexedOperation = fixture.operation;
     fixture.operation = async (operation, input) => {
       if (operation === "package.repository.inspect") {
-        throw new Error(`package is not installed: ${input.package_id}`);
+        return { repository: { status: "absent" } };
       }
       return await indexedOperation(operation, input);
     };

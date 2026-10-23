@@ -33,7 +33,7 @@ import {
 import Connections from "../tables/connections.ts";
 import Lists from "../tables/lists.ts";
 import Runs from "../tables/runs.ts";
-import { changeKind, compareSystems } from "./comparison.ts";
+import { compareSystems, comparisonChange } from "./comparison.ts";
 import {
   deleteList,
   getConnection,
@@ -391,7 +391,10 @@ async function selectPackages(
           if (selected !== undefined) {
             row.after = selected;
             row.selected = true;
-            row.change = changeKind(row.before || null, selected || null);
+            row.change = comparisonChange(
+              target.packages.find((item) => item.packageId === row.packageId),
+              selected || null,
+            );
           }
         }
       }
@@ -525,13 +528,13 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
     model.data.rows = input.packages.map((item) => {
       const current = target.packages.find((row) =>
         row.packageId === item.packageId
-      )?.commit ?? null;
+      );
       return {
         packageId: item.packageId,
         reviewed: item.before ?? "",
-        current: current ?? "",
+        current: current?.commit ?? "",
         target: item.target?.commit ?? item.target?.tag ?? "Remove",
-        change: changeKind(current, item.target?.commit ?? null),
+        change: comparisonChange(current, item.target?.commit ?? null),
       };
     });
     const event = await callScreen({

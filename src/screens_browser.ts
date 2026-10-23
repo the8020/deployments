@@ -12,7 +12,7 @@ const { default: Packages } = await import(
 );
 const { default: Runs } = await import("../tables/runs.ts");
 const { deployments } = await import("./screens.ts");
-const { executeRequest } = await import("./runs.ts");
+const { executeRequest, continueRun } = await import("./runs.ts");
 
 interface Browser {
   evaluate<T>(expression: string): Promise<T>;
@@ -91,13 +91,20 @@ export default async function fixture() {
     return Promise.resolve(Response.json(source));
   };
   database.operation = async (operation, input) => {
+    if (operation === "database.check") {
+      return { pending_deployment: false, status: "READY", initialized: true };
+    }
+    if (operation === "event.emit") {
+      await continueRun({ name: input.name, data: input.data });
+      return { listeners: 1 };
+    }
     if (operation === "package.repository.inspect") {
       const row = await Packages.selectAll().where(
         Packages.packageId,
         "=",
         String(input.package_id),
       ).executeTakeFirstOrThrow();
-      return { repository: { head: row.activeCommit } };
+      return { repository: { status: "ready", head: row.activeCommit } };
     }
     if (operation === "program.run") {
       return {
@@ -162,7 +169,7 @@ export default async function fixture() {
         await wait(
           `Array.from(document.querySelectorAll(${
             JSON.stringify(selector)
-          })).some(e=>(${visible})(e)&&!e.disabled)`,
+          })).some(e=>(${visible})(e)&&!e.disabled) && !document.querySelector('[data-interaction-pending]')`,
           action,
         );
         await page.evaluate(
@@ -189,7 +196,7 @@ export default async function fixture() {
         await wait(
           `Array.from(document.querySelectorAll(${
             JSON.stringify(selector)
-          })).some(${visible}) && !document.querySelector('#screen-back')?.disabled`,
+          })).some(${visible}) && !document.querySelector('#screen-back')?.disabled && !document.querySelector('[data-interaction-pending]')`,
           id,
         );
       }
@@ -242,6 +249,10 @@ export default async function fixture() {
       await page.evaluate(
         `Array.from(document.querySelectorAll('tbody .data-list-selection input')).find(${visible}).click()`,
       );
+      await wait(
+        `Array.from(document.querySelectorAll('.data-list-page-summary')).some(e=>(${visible})(e)&&e.textContent.includes('1 of 1 selected'))`,
+        "selected package",
+      );
       await click("toggle");
       await screen("deployment-compare");
       assertEquals(await rowCount(), 2);
@@ -293,6 +304,8 @@ export default async function fixture() {
       }
       await click("compare");
       await screen("deployment-compare");
+      await click("review");
+      await screen("deployment-review");
       await page.evaluate(
         `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).find(${visible}).click()`,
       );
@@ -302,8 +315,6 @@ export default async function fixture() {
         `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).find(${visible}).click()`,
       );
       await click("choose");
-      await screen("deployment-compare");
-      await click("review");
       await screen("deployment-review");
       await click("apply");
       await screen("deployment-confirm");

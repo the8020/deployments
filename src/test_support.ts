@@ -16,6 +16,7 @@ const tableModules = await Promise.all([
   import("../tables/runs.ts"),
   import("/p/the8020/system/tables/settings.ts"),
   import("/p/the8020/packages/tables/packages.ts"),
+  import("/p/the8020/packages/tables/activations.ts"),
 ]);
 
 export class DatabaseFixture {

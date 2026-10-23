@@ -1,0 +1,1 @@
+"deployments.continue" = "Requests the next unstarted package of an admitted deployment. Data: {id: run UUID, step: package index}. Emitted after the immutable run/checkpoint is saved. Delivery is asynchronous and may be lost or duplicated; the conditional database claim and minute listener protect progress. A claimed step is never replayed."

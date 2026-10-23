@@ -27,9 +27,12 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 - Validate peer data before use. Require local permissions for edits and apply.
   Read live target state before mutation; record partial failures honestly.
-- Run outcomes inspect installed Git HEAD because source publication can precede
-  catalog completion. Failed observation retains the run lock for
-  reconciliation.
+- Snapshots, comparison baselines and run outcomes share `observation.ts`.
+  Native repository `absent` and `empty` statuses mean no installed commit;
+  uninitialized/corrupt source and inspection errors remain failures. Git HEAD
+  is installed-source evidence; ready catalog metadata must also match it.
+  Incomplete equal-version targets remain visible in differences. Failed
+  observation retains the run lock for reconciliation.
 - Comparisons select any pipeline stage independently of the development Git
   source. Preserve selection through the differences/all toggle and detail
   editing. Ad hoc review/edit/rebase retains a null deployment-list reference.
@@ -39,11 +42,23 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   reject. Forward those options to native package synchronization, which shares
   DB cleanup/repair/recovery with development. Run history retains force scope;
   a failed run never replays itself automatically.
-- `runs.ts` retains a database lock when actual outcomes cannot be observed. The
-  apply program exports `deployments.run.active` on its original Worker. Check
-  execution releases an abandoned lock only after an explicit inactive answer or
-  `target_not_found`; timeouts/unavailable targets keep it locked.
-  Reconciliation observes current versions and never replays work.
+- `runs.ts` admits with a unique-key conflict target, returning an actionable
+  existing-run reference while unrelated SQL failures propagate. Continuations
+  claim one queued index atomically, record their exact Worker identity before
+  mutation, and save the package outcome and next index together. Each event
+  gets the existing ten-minute limit; a stuck single activation stays subject to
+  that limit. Minute events query only the unique active run and resume only
+  unstarted steps. Authorization and immutable inputs are accepted at admission;
+  minute continuations execute that accepted work as system.
+- Apply and continuation programs export `deployments.run.active`. Check
+  execution redispatches queued work; an in-flight step requires explicit
+  inactive/`target_not_found` evidence, no unfinished native activation, settled
+  database status, and successful source inspection before marking the run
+  interrupted and releasing its lock. Timeouts, unavailable targets, pending
+  native recovery and corrupt source keep it locked. Reconciliation never
+  replays a claimed package or turns interruption into run success. Operators
+  inspect native activation/database state and finish supported native recovery
+  before retrying Check execution; a fresh reviewed deployment can then proceed.
 
 # Work Guidance
 

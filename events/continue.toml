@@ -1,0 +1,3 @@
+event = "deployments.continue"
+description = "Execute the next queued deployment package"
+program = "the8020/deployments/continue"

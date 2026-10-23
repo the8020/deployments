@@ -154,6 +154,7 @@ export const runItem = z.object({
   state: z.enum(["pending", "succeeded", "failed"]),
   error: z.string(),
   forceColumns: z.array(z.string()).optional(),
+  approvedPlan: z.string().regex(/^[a-f0-9]{64}$/).optional(),
 }).strict();
 export type RunItem = z.infer<typeof runItem>;
 export const runState = field(

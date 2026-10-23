@@ -243,6 +243,12 @@ def main():
                 'if(!saved.received) throw new Error("List was not queued");'
                 'const {applyList}=await import("/p/the8020/deployments/src/runs.ts"); return await applyList(saved.payload,saved.id);')
         def applied(run, expected):
+            def finished():
+                current = evaluate(roots[1], 'const {inspectRun}=await import("/p/the8020/deployments/src/runs.ts");'
+                                   f'return await inspectRun({json.dumps(run["id"])});')
+                assert current["state"] != "running", current
+                return current
+            run.update(bounded_wait(finished, seconds=180))
             assert run["state"] == "succeeded", run
             assert run["packages"][0]["after"] == expected, run
             if expected:

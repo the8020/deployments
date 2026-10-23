@@ -1,0 +1,3 @@
+event = "minute"
+description = "Resume an unstarted deployment step after a lost dispatch"
+program = "the8020/deployments/continue"

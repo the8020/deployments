@@ -5,6 +5,7 @@ import { getSystemProfile, systemProfile } from "/p/the8020/system/profile.ts";
 import Packages from "/p/the8020/packages/tables/packages.ts";
 import Connections from "../tables/connections.ts";
 import Lists from "../tables/lists.ts";
+import { observedVersion } from "./observation.ts";
 import {
   type Connection,
   connection,
@@ -103,13 +104,16 @@ export async function localSnapshot(packageIds?: string[]): Promise<Snapshot> {
     );
   if (packageIds) query = query.where(Packages.packageId, "in", packageIds);
   const packages = await query.execute();
+  const observed = [];
+  for (const row of packages) {
+    observed.push({
+      packageId: row.packageId,
+      ...await observedVersion(row.packageId),
+    });
+  }
   return snapshot.parse({
     system: await getSystemProfile(),
-    packages: packages.map((row) => ({
-      packageId: row.packageId,
-      commit: row.activeCommit,
-      state: row.state,
-    })),
+    packages: observed,
   });
 }
 

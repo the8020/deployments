@@ -20,16 +20,28 @@ export function compareSystems(
     .flatMap((packageId) => {
       const from = available.get(packageId), to = installed.get(packageId);
       const before = to?.commit ?? null, after = from?.commit ?? null;
-      if (!all && before === after) return [];
+      const change = comparisonChange(to, after);
+      if (!all && change === "unchanged") return [];
       return [{
         packageId,
         before,
         after,
         selected: false,
-        change: changeKind(before, after),
+        change,
         available: !from || from.state === "ready",
       }];
     });
+}
+
+export function comparisonChange(
+  installed: PackageState | undefined,
+  target: string | null,
+) {
+  const change = changeKind(installed?.commit ?? null, target);
+  return change === "unchanged" && installed && installed.state !== "ready" &&
+      installed.state !== "absent"
+    ? "changed"
+    : change;
 }
 
 export function changeKind(
@@ -72,7 +84,8 @@ export function checkBaseline(list: DeploymentList, current: PackageState[]) {
     const actual = installed.get(item.packageId);
     if (
       (actual?.commit ?? null) !== item.before ||
-      actual && actual.state !== "ready"
+      actual && actual.state !== "ready" &&
+        !(actual.state === "absent" && actual.commit === null)
     ) {
       throw new Error(
         `${item.packageId} changed since review. Compare and create a new deployment list.`,
