@@ -35,7 +35,7 @@ export const systemUrl = field(
   },
 );
 export const remoteUsername = field(
-  newUsername.regex(/^(?:[a-z0-9]{3,32})?$/),
+  newUsername.regex(/^(?:[a-z0-9][a-z0-9_-]{1,30}[a-z0-9])?$/),
   {
     label: "Remote username",
     description: "An enabled account on the remote system.",
