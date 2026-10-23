@@ -33,6 +33,9 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   is installed-source evidence; ready catalog metadata must also match it.
   Incomplete equal-version targets remain visible in differences. Failed
   observation retains the run lock for reconciliation.
+- Removal uses membership in the observed catalog snapshot, not a non-null HEAD.
+  Indexed packages with absent/empty source still require native deletion to
+  retire their catalog state; already-unregistered packages need no mutation.
 - Comparisons select any pipeline stage independently of the development Git
   source. Preserve selection through the differences/all toggle and detail
   editing. Ad hoc review/edit/rebase retains a null deployment-list reference.

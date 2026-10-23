@@ -212,7 +212,7 @@ export async function continueRun(value: unknown) {
       item.processed = true;
       await Runs.update({ packages: items }).where(Runs.id, "=", id).execute();
       if (item.requested === null && item.requestedTag === null) {
-        if (item.before !== null) {
+        if (before.some((row) => row.packageId === item.packageId)) {
           await kernel.packages.delete(item.packageId, true);
         }
       } else {

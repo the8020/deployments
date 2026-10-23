@@ -151,6 +151,7 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     const calls: string[] = [];
     let schemaConsent: Record<string, unknown> | undefined;
     const heads = new Map<string, string | null>();
+    let absentStatus = "absent";
     let failAfterPublish = false;
     fixture.operation = async (name, input) => {
       if (name === "database.check") {
@@ -168,7 +169,9 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
       if (name === "package.repository.inspect") {
         const head = heads.get(String(input.package_id));
         return {
-          repository: head ? { status: "ready", head } : { status: "absent" },
+          repository: head
+            ? { status: "ready", head }
+            : { status: absentStatus },
         };
       }
       calls.push(name);
@@ -312,6 +315,43 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     const remove = rollbackList(run.input, run.packages);
     const removed = await inspectRun(await executeRun(remove, null, run.id));
     assertEquals(removed.packages[0]?.after, null);
+    // No installed HEAD does not mean that the package is unregistered.
+    for (
+      const [state, status] of [
+        ["desired", "absent"],
+        ["failed", "absent"],
+        ["failed", "empty"],
+        ["ready", "absent"],
+      ] as const
+    ) {
+      absentStatus = status;
+      await Packages.update({
+        state,
+        activeCommit: state === "ready" ? first : null,
+        requestedCommit: first,
+      }).where(Packages.packageId, "=", "acme/app").execute();
+      const removal = {
+        ...list,
+        packages: [{ packageId: "acme/app", before: null, target: null }],
+      };
+      const callCount = calls.length;
+      const retired = await inspectRun(await executeRun(removal));
+      assertEquals(calls.slice(callCount), ["package.delete"]);
+      assertEquals(retired.state, "succeeded");
+      assertEquals(retired.lockKey, null);
+      assertEquals(retired.packages[0]?.after, null);
+      assertEquals(
+        (await Packages.selectAll().where(Packages.packageId, "=", "acme/app")
+          .executeTakeFirstOrThrow()).state,
+        "retired",
+      );
+      // Native deletion rejects unregistered IDs; repeated removal is a no-op.
+      const repeated = await inspectRun(await executeRun(removal));
+      assertEquals(repeated.state, "succeeded");
+      assertEquals(repeated.lockKey, null);
+      assertEquals(calls.length, callCount + 1);
+    }
+    absentStatus = "absent";
     const local = await localSnapshot();
     const available = {
       ...local,
