@@ -1,3 +1,5 @@
+import { text as localizedText } from "/p/the8020/i18n/mod.ts";
+import { msg } from "/p/the8020/deployments/i18n/messages.ts";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
 import { choiceHelp } from "/p/the8020/db/fields.ts";
 import { sourceInfo } from "/p/the8020/packages/types/source.ts";
@@ -48,10 +50,12 @@ import { remoteVersions } from "./versions.ts";
 
 const read = <T extends z.ZodType>(schema: T) =>
   field(schema, { readOnly: true });
-const versionText = field(sourceInfo.shape.commit, { label: "Version" });
+const versionText = field(sourceInfo.shape.commit, {
+  label: msg("screens.version"),
+});
 const change = field(z.string(), {
-  label: "Change",
-  description: "How the installed and requested package versions differ.",
+  label: msg("screens.change"),
+  description: msg("screens.how_the_installed_and_requested_package_versions"),
 });
 function listLayout(
   bind: string,
@@ -75,8 +79,8 @@ export async function deployments(packageId = "") {
   const Row = z.object({
     id: z.string(),
     name,
-    target: field(systemProfile.shape.name, { label: "Target" }),
-    received: field(z.boolean(), { label: "Received" }),
+    target: field(systemProfile.shape.name, { label: msg("screens.target") }),
+    received: field(z.boolean(), { label: msg("screens.received") }),
   });
   const model = new Model({ rows: [] as z.infer<typeof Row>[] });
   while (true) {
@@ -96,18 +100,18 @@ export async function deployments(packageId = "") {
     }));
     const event = await callScreen({
       id: "deployments",
-      title: `Deployments · ${local.name}`,
+      title: msg("screens.deployments_value1", { value1: local.name }),
       schema: z.object({ rows: z.array(Row) }),
       model,
       layout: listLayout("rows", "id", ["name", "target", "received"], [
-        { id: "new", label: "Compare systems", kind: "primary" },
-        { id: "import", label: "Import JSON" },
-        { id: "refresh", label: "Refresh" },
+        { id: "new", label: msg("screens.compare_systems"), kind: "primary" },
+        { id: "import", label: msg("screens.import_json") },
+        { id: "refresh", label: msg("screens.refresh") },
       ]),
       header: {
-        actions: [{ id: "runs", label: "Run history" }, {
+        actions: [{ id: "runs", label: msg("screens.run_history") }, {
           id: "systems",
-          label: "Systems",
+          label: msg("screens.systems"),
         }],
       },
     });
@@ -143,9 +147,8 @@ export async function systems() {
     name: systemProfile.shape.name,
     role: systemProfile.shape.role,
     url: field(z.string(), {
-      label: "System URL",
-      description:
-        "Enter a system address to connect. Register this development system's own address to use it as a Git source.",
+      label: msg("screens.system_url"),
+      description: msg("screens.enter_a_system_address_to_connect_register"),
     }),
     username: remoteUsername,
     password: field(remotePassword, { control: "password" }),
@@ -154,7 +157,7 @@ export async function systems() {
   while (true) {
     const event = await callScreen({
       id: "deployment-systems",
-      title: "Systems",
+      title: msg("screens.systems"),
       schema,
       model,
       layout: {
@@ -165,18 +168,18 @@ export async function systems() {
           children: [
             {
               type: "detail",
-              title: "This system",
+              title: msg("screens.this_system"),
               controls: ["name", "role"],
             },
             {
               type: "detail",
-              title: "Connect or update a system",
+              title: msg("screens.connect_or_update_a_system"),
               controls: ["url", "username", "password"],
             },
             {
-              toolbar: [{ id: "disconnect", label: "Disconnect" }],
+              toolbar: [{ id: "disconnect", label: msg("screens.disconnect") }],
               type: "list",
-              title: "Connected systems",
+              title: msg("screens.connected_systems"),
               bind: "rows",
               key: "id",
               display: ["name", "role", "url", "username"],
@@ -185,9 +188,9 @@ export async function systems() {
         },
       },
       header: {
-        actions: [{ id: "save", label: "Save system settings" }, {
+        actions: [{ id: "save", label: msg("screens.save_system_settings") }, {
           id: "connect",
-          label: "Save connection",
+          label: msg("screens.save_connection"),
           kind: "primary",
         }],
       },
@@ -202,7 +205,10 @@ export async function systems() {
           name: model.data.name,
           role: model.data.role,
         });
-        sendMessage("System settings saved", "success");
+        sendMessage(
+          localizedText(msg("screens.system_settings_saved")),
+          "success",
+        );
       }
       if (event.action === "connect") {
         try {
@@ -214,7 +220,7 @@ export async function systems() {
         } finally {
           model.data.password = "";
         }
-        sendMessage("System connected", "success");
+        sendMessage(localizedText(msg("screens.system_connected")), "success");
       }
       if (event.action === "select") {
         const peer = model.data.rows.find((row) => row.id === event.value);
@@ -228,7 +234,13 @@ export async function systems() {
         const peer = model.data.rows.find((row) => row.url === model.data.url);
         if (
           peer &&
-          await confirm(`Disconnect ${peer.name}?`, "Disconnect", "danger")
+          await confirm(
+            localizedText(
+              msg("screens.disconnect_value1", { value1: peer.name }),
+            ),
+            localizedText(msg("ui.disconnect")),
+            "danger",
+          )
         ) {
           await removeConnection(peer.id);
         }
@@ -245,9 +257,15 @@ async function newDeployment(packageId = "") {
   const peers = await Connections.selectAll().limit(1000).execute();
   const choices = [local, ...peers.filter((peer) => peer.id !== local.id)].map((
     peer,
-  ) => ({ value: peer.id, label: `${peer.name} (${peer.role})` }));
+  ) => ({
+    value: peer.id,
+    label: msg("screens.value1_value2", {
+      value1: peer.name,
+      value2: peer.role,
+    }),
+  }));
   const system = field(z.string(), {
-    label: "System",
+    label: msg("screens.system"),
     valueHelp: choiceHelp(z.string(), choices),
   });
   const model = new Model({
@@ -256,24 +274,32 @@ async function newDeployment(packageId = "") {
     target: !packageId && local.role === "development"
       ? peers.find((peer) => peer.role !== "development")?.id ?? local.id
       : local.id,
-    name: packageId ? `Update ${packageId}` : "Deployment",
+    name: packageId
+      ? `Update ${packageId}`
+      : localizedText(msg("screens.deployment")),
   });
   while (true) {
     const event = await callScreen({
       id: "deployment-new",
-      title: packageId ? `Deploy ${packageId}` : "Compare systems",
+      title: packageId
+        ? localizedText(msg("ui.deploy_package", { package: packageId }))
+        : localizedText(msg("screens.compare_systems")),
       schema: z.object({
         name,
-        source: field(system, { label: "Development source" }),
-        from: field(system, { label: "Compare versions from" }),
+        source: field(system, { label: msg("screens.development_source") }),
+        from: field(system, { label: msg("screens.compare_versions_from") }),
         target: field(system, {
-          label: "Target system",
+          label: msg("screens.target_system"),
           readOnly: Boolean(packageId),
         }),
       }),
       model,
       header: {
-        actions: [{ id: "compare", label: "Compare", kind: "primary" }],
+        actions: [{
+          id: "compare",
+          label: msg("screens.compare"),
+          kind: "primary",
+        }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -315,8 +341,11 @@ async function selectPackages(
     target = await remoteSnapshot(draft.targetSystemId);
   const Row = z.object({
     packageId: read(deploymentPackageId),
-    before: field(versionText, { label: "Installed", readOnly: true }),
-    after: field(versionText, { label: "Target", readOnly: true }),
+    before: field(versionText, {
+      label: msg("screens.installed"),
+      readOnly: true,
+    }),
+    after: field(versionText, { label: msg("screens.target"), readOnly: true }),
     change: read(change),
     selected: z.boolean(),
   });
@@ -346,7 +375,10 @@ async function selectPackages(
   while (true) {
     const event = await callScreen({
       id: "deployment-compare",
-      title: `${source.system.name} → ${target.system.name}`,
+      title: msg("screens.value1_value2_2", {
+        value1: source.system.name,
+        value2: target.system.name,
+      }),
       schema: z.object({ rows: z.array(Row) }),
       model,
       layout: {
@@ -361,13 +393,17 @@ async function selectPackages(
           toolbar: [
             {
               id: "review",
-              label: single ? "Review update" : "Create deployment list",
+              label: single
+                ? localizedText(msg("screens.review_update"))
+                : localizedText(msg("screens.create_deployment_list")),
               kind: "primary",
             },
             { type: "separator" },
             {
               id: "toggle",
-              label: all ? "Show differences" : "Show all packages",
+              label: all
+                ? localizedText(msg("screens.show_differences"))
+                : localizedText(msg("screens.show_all_packages")),
             },
           ],
         },
@@ -429,9 +465,8 @@ async function editPackage(
   const schema = z.object({
     packageId: read(deploymentPackageId),
     selection: field(sourceInfo.shape.commit, {
-      label: "Target version",
-      description:
-        "Choose an exact development commit from the version list or value help.",
+      label: msg("screens.target_version"),
+      description: msg("screens.choose_an_exact_development_commit_from_the"),
       valueHelp: choiceHelp(
         sourceInfo.shape.commit,
         versions.versions.map((row) => ({
@@ -467,9 +502,9 @@ async function editPackage(
       header: {
         actions: [{
           id: "remove",
-          label: "Remove package",
+          label: msg("screens.remove_package"),
           kind: "danger",
-        }, { id: "package", label: "Package details" }],
+        }, { id: "package", label: msg("screens.package_details") }],
       },
       layout: {
         schema: 1,
@@ -481,7 +516,7 @@ async function editPackage(
             {
               toolbar: [{
                 id: "choose",
-                label: "Use version",
+                label: msg("screens.use_version"),
                 kind: "primary",
               }],
               type: "list",
@@ -516,9 +551,9 @@ async function editPackage(
 export async function reviewList(input: DeploymentList, listId: string | null) {
   const Row = z.object({
     packageId: deploymentPackageId,
-    reviewed: field(versionText, { label: "Reviewed version" }),
-    current: field(versionText, { label: "Installed now" }),
-    target: field(versionText, { label: "Target version" }),
+    reviewed: field(versionText, { label: msg("screens.reviewed_version") }),
+    current: field(versionText, { label: msg("screens.installed_now") }),
+    target: field(versionText, { label: msg("screens.target_version") }),
     change,
   });
   const model = new Model({ rows: [] as z.infer<typeof Row>[] });
@@ -533,14 +568,15 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
         packageId: item.packageId,
         reviewed: item.before ?? "",
         current: current?.commit ?? "",
-        target: item.target?.commit ?? item.target?.tag ?? "Remove",
+        target: item.target?.commit ?? item.target?.tag ??
+          localizedText(msg("screens.remove")),
         change: comparisonChange(current, item.target?.commit ?? null),
       };
     });
     const event = await callScreen({
       id: "deployment-review",
       title: input.name,
-      description: `Target: ${target.system.name}`,
+      description: msg("screens.target_value1", { value1: target.system.name }),
       schema: z.object({ rows: z.array(Row) }),
       model,
       layout: listLayout("rows", "packageId", [
@@ -553,22 +589,26 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
         ...(local.id === input.targetSystemId
           ? [{
             id: "apply",
-            label: "Apply deployment",
+            label: msg("screens.apply_deployment"),
             kind: "primary" as const,
           }]
           : [{
             id: "send",
-            label: "Send to target",
+            label: msg("screens.send_to_target"),
             kind: "primary" as const,
           }]),
-        { id: "refresh", label: "Refresh comparison" },
-        { id: "json", label: "Export JSON" },
-        { id: "rebase", label: "Review current versions" },
+        { id: "refresh", label: msg("screens.refresh_comparison") },
+        { id: "json", label: msg("screens.export_json") },
+        { id: "rebase", label: msg("screens.review_current_versions") },
       ]),
       header: {
         actions: [
           ...(listId
-            ? [{ id: "delete", label: "Delete list", kind: "danger" as const }]
+            ? [{
+              id: "delete",
+              label: msg("screens.delete_list"),
+              kind: "danger" as const,
+            }]
             : []),
         ],
       },
@@ -578,11 +618,22 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
       if (event.action === "json") await presentModal(() => jsonEditor(input));
       if (event.action === "send") {
         await sendList(input);
-        sendMessage("Deployment queued on target", "success");
+        sendMessage(
+          localizedText(msg("screens.deployment_queued_on_target")),
+          "success",
+        );
       }
       if (
         event.action === "apply" &&
-        await confirm(`Apply ${input.name} to ${target.system.name}?`, "Apply")
+        await confirm(
+          localizedText(
+            msg("screens.apply_value1_to_value2", {
+              value1: input.name,
+              value2: target.system.name,
+            }),
+          ),
+          localizedText(msg("ui.apply")),
+        )
       ) {
         const run = await applyList(input, listId);
         await presentPage(() => runDetail(run.id));
@@ -624,7 +675,11 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
       }
       if (
         event.action === "delete" && listId &&
-        await confirm("Delete this deployment list?", "Delete", "danger")
+        await confirm(
+          localizedText(msg("screens.delete_this_deployment_list")),
+          "Delete",
+          "danger",
+        )
       ) {
         await deleteList(listId);
         return;
@@ -642,10 +697,12 @@ async function jsonEditor(input?: DeploymentList) {
   while (true) {
     const event = await callScreen({
       id: "deployment-json",
-      title: input ? "Deployment JSON" : "Import deployment JSON",
+      title: input
+        ? localizedText(msg("ui.deployment_json"))
+        : localizedText(msg("screens.import_deployment_json")),
       schema: z.object({
         json: field(z.string(), {
-          label: "JSON",
+          label: msg("screens.json"),
           control: "textarea",
           rowSpan: 8,
           readOnly: Boolean(input),
@@ -655,7 +712,7 @@ async function jsonEditor(input?: DeploymentList) {
       header: {
         actions: input
           ? []
-          : [{ id: "import", label: "Import", kind: "primary" }],
+          : [{ id: "import", label: msg("screens.import"), kind: "primary" }],
       },
     });
     if (event.action === BACK_EVENT) return;
@@ -691,7 +748,7 @@ async function runHistory() {
     ]).orderBy(Runs.createdAt, "desc").limit(100).offset(offset).execute();
     const event = await callScreen({
       id: "deployment-runs",
-      title: "Deployment runs",
+      title: msg("screens.deployment_runs"),
       schema: z.object({ rows: z.array(Row) }),
       model,
       layout: listLayout("rows", "id", [
@@ -700,10 +757,10 @@ async function runHistory() {
         "createdAt",
         "rollbackOf",
       ], [
-        { id: "refresh", label: "Refresh" },
-        ...(offset ? [{ id: "previous", label: "Previous" }] : []),
+        { id: "refresh", label: msg("screens.refresh") },
+        ...(offset ? [{ id: "previous", label: msg("screens.previous") }] : []),
         ...(model.data.rows.length === 100
-          ? [{ id: "next", label: "Next" }]
+          ? [{ id: "next", label: msg("screens.next") }]
           : []),
       ]),
     });
@@ -723,8 +780,8 @@ export async function runDetail(id: string) {
     rows: z.array(
       z.object({
         packageId: deploymentPackageId,
-        before: field(versionText, { label: "Before" }),
-        after: field(versionText, { label: "After" }),
+        before: field(versionText, { label: msg("screens.before") }),
+        after: field(versionText, { label: msg("screens.after") }),
         change,
         state: runState.or(z.literal("pending")),
         error: z.string(),
@@ -755,10 +812,14 @@ export async function runDetail(id: string) {
       model,
       header: {
         actions: [
-          { id: "refresh", label: "Refresh" },
+          { id: "refresh", label: msg("screens.refresh") },
           ...(run.state !== "running"
-            ? [{ id: "rollback", label: "Roll back", kind: "danger" as const }]
-            : [{ id: "reconcile", label: "Check execution" }]),
+            ? [{
+              id: "rollback",
+              label: msg("screens.roll_back"),
+              kind: "danger" as const,
+            }]
+            : [{ id: "reconcile", label: msg("screens.check_execution") }]),
         ],
       },
     });
@@ -772,7 +833,14 @@ export async function runDetail(id: string) {
     }
     if (event.action === "rollback") {
       try {
-        if (await confirm(`Roll back ${run.name}?`, "Roll back")) {
+        if (
+          await confirm(
+            localizedText(
+              msg("screens.roll_back_value1", { value1: run.name }),
+            ),
+            localizedText(msg("ui.roll_back")),
+          )
+        ) {
           const reverted = await rollbackRun(id);
           await presentPage(() => runDetail(reverted.id));
         }
@@ -793,6 +861,6 @@ function confirm(
     title,
     confirm: label,
     kind,
-    cancel: "Cancel",
+    cancel: msg("screens.cancel"),
   });
 }

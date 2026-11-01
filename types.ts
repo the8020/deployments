@@ -1,3 +1,5 @@
+import { text as localizedText } from "/p/the8020/i18n/mod.ts";
+import { msg } from "/p/the8020/deployments/i18n/messages.ts";
 import { field, fieldMetadata, z } from "/p/the8020/db/fields.ts";
 import { packageId } from "/p/the8020/packages/types/package.ts";
 import { sourceInfo } from "/p/the8020/packages/types/source.ts";
@@ -13,13 +15,13 @@ export const deploymentPackageId = field(
 export const commit = field(
   sourceInfo.shape.commit.regex(/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/),
   {
-    label: "Commit",
-    description: "Exact full Git commit ID. Blank targets remove a package.",
+    label: msg("types.commit"),
+    description: msg("types.exact_full_git_commit_id_blank_targets"),
   },
 );
 export const name = field(z.string().trim().min(1).max(160), {
-  label: "Name",
-  description: "A short name describing the deployment.",
+  label: msg("types.name"),
+  description: msg("types.a_short_name_describing_the_deployment"),
 });
 export const systemUrl = field(
   z.url().refine((value) => {
@@ -28,24 +30,27 @@ export const systemUrl = field(
       (url.protocol === "http:" || url.protocol === "https:") &&
       !url.username && !url.password &&
       !url.search && !url.hash && url.pathname === "/";
-  }, "Use an HTTP or HTTPS system address without a path or credentials."),
+  }, {
+    error: () =>
+      localizedText(msg("types.use_an_http_or_https_system_address")),
+  }),
   {
-    label: "System URL",
-    description: "HTTP or HTTPS address of the connected 80|20 system.",
+    label: msg("screens.system_url"),
+    description: msg("types.http_or_https_address_of_the_connected"),
   },
 );
 export const remoteUsername = field(
   newUsername.regex(/^(?:[a-z0-9][a-z0-9_-]{1,30}[a-z0-9])?$/),
   {
-    label: "Remote username",
-    description: "An enabled account on the remote system.",
+    label: msg("types.remote_username"),
+    description: msg("types.an_enabled_account_on_the_remote_system"),
   },
 );
 export const remotePassword = field(
   accountInfo.shape.password.max(1024),
   {
-    label: "Remote password",
-    description: "The password for this account on the remote system.",
+    label: msg("types.remote_password"),
+    description: msg("types.the_password_for_this_account_on_the"),
   },
 );
 export const connection = systemProfile.extend({
@@ -58,14 +63,13 @@ export const targetVersion = z.object({
   tag: field(
     sourceInfo.shape.tag.max(200).regex(/^[A-Za-z0-9][A-Za-z0-9._/-]*$/),
     {
-      label: "Tag",
-      description:
-        "A development Git tag, resolved to an exact commit when applied.",
+      label: msg("types.tag"),
+      description: msg("types.a_development_git_tag_resolved_to_an"),
     },
   ).nullable(),
 }).strict().refine(
   (value) => !(value.commit && value.tag),
-  "Choose a commit or a tag.",
+  { error: () => localizedText(msg("types.choose_a_commit_or_a_tag")) },
 );
 export const deploymentItem = z.object({
   packageId: deploymentPackageId,
@@ -75,7 +79,9 @@ export const deploymentItem = z.object({
   (value) =>
     value.target === null ||
     Boolean(value.target.commit || value.target.tag),
-  "Choose a target version or removal.",
+  {
+    error: () => localizedText(msg("types.choose_a_target_version_or_removal")),
+  },
 );
 export const deploymentList = z.object({
   schema: z.literal(1),
@@ -97,7 +103,10 @@ export const deploymentRequest = z.union([
   z.object({
     input: deploymentList.refine(
       (value) => value.packages.length === 1,
-      "Ad hoc deployments contain one package.",
+      {
+        error: () =>
+          localizedText(msg("types.ad_hoc_deployments_contain_one_package")),
+      },
     ),
     forceColumns: z.array(z.string().min(1).max(127)).max(256).optional(),
     approvedPlan: z.string().regex(/^[a-f0-9]{64}$/).optional(),
@@ -117,7 +126,10 @@ export const snapshot = z.object({
   (value) =>
     new Set(value.packages.map((row) => row.packageId)).size ===
       value.packages.length,
-  "Duplicate package IDs in system snapshot.",
+  {
+    error: () =>
+      localizedText(msg("types.duplicate_package_ids_in_system_snapshot")),
+  },
 );
 export type Snapshot = z.infer<typeof snapshot>;
 export const packageVersions = z.object({
@@ -160,8 +172,8 @@ export type RunItem = z.infer<typeof runItem>;
 export const runState = field(
   z.enum(["running", "succeeded", "failed", "interrupted"]),
   {
-    label: "Status",
-    description: "Outcome of the recorded deployment attempt.",
+    label: msg("types.status"),
+    description: msg("types.outcome_of_the_recorded_deployment_attempt"),
   },
 );
 

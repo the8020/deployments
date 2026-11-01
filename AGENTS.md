@@ -106,6 +106,8 @@ relevant child AGENTS.md
 
 ## Child DOX Index
 
+- [i18n/AGENTS.md](i18n/AGENTS.md): English and Czech presentation catalogs.
+
 - [cbus/AGENTS.md](cbus/AGENTS.md): Secure connected-system setup commands.
 - [tables/AGENTS.md](tables/AGENTS.md): Connected systems, deployment lists, and
   run history.
