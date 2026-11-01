@@ -18,6 +18,6 @@
     "check": "deno fmt --check . && deno lint . && deno check types.ts src/*.ts tables/*.ts programs/*/*.ts services/*/*.ts && deno task check:i18n",
     "test": "deno test --allow-read --allow-write --allow-net --allow-run=git .",
     "test:browser": "deno run -A ../uui/presentation_browser_e2e.ts --fixture=../deployments/src/screens_browser.ts",
-    "check:i18n": "deno run --allow-read ../i18n/check.ts --complete=cs ."
+    "check:i18n": "deno run --allow-read ../i18n/check.ts --complete=builtin ."
   }
 }

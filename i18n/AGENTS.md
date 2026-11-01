@@ -2,7 +2,7 @@ Parent DOX: [deployments](../AGENTS.md).
 
 # Purpose
 
-- Own this package's English and Czech presentation catalogs.
+- Own this package's presentation catalogs for all 43 built-in languages.
 
 # Ownership
 
@@ -11,7 +11,8 @@ Parent DOX: [deployments](../AGENTS.md).
 
 # Local Contracts
 
-- English and Czech cover the same keys. Other languages may use fallback.
+- All languages in `the8020/i18n/languages.ts` cover every English key.
+  Customer-added languages may use fallback.
 - Use flat keys and named variables; preserve variables and icon markup in
   translations.
 - Keep identifiers, user-entered data, and technical source/log output
@@ -23,7 +24,9 @@ Parent DOX: [deployments](../AGENTS.md).
 
 # Work Guidance
 
-- Add or change both English and Czech when changing presentation text.
+- Update every built-in language when changing presentation text.
+- Use concise native wording appropriate to each field, action, or message.
+  Preserve Portuguese and Chinese variants and Serbian Latin script.
 
 # Verification
 
