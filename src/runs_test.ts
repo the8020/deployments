@@ -38,6 +38,46 @@ const {
 const { default: Lists } = await import("../tables/lists.ts");
 
 const first = "a".repeat(40), second = "b".repeat(40);
+Deno.test("unsupported deployment sets are rejected before admission", async () => {
+  const fixture = new DatabaseFixture();
+  try {
+    const profile = await getSystemProfile();
+    const input: DeploymentList = {
+      schema: 1,
+      id: crypto.randomUUID(),
+      name: "Unsupported set",
+      sourceSystemId: newId("sys"),
+      targetSystemId: profile.id,
+      packages: Array.from({ length: 257 }, (_, index) => ({
+        packageId: `acme/p${index}`,
+        before: null,
+        target: { commit: first, tag: null },
+      })),
+    };
+    await assertRejects(() => startRun(input), Error, "at most 256");
+    await assertRejects(
+      () =>
+        startRun({
+          ...input,
+          packages: [input.packages[0]!, {
+            ...input.packages[1]!,
+            target: null,
+          }],
+        }),
+      Error,
+      "removal must be deployed separately",
+    );
+    await assertRejects(
+      () => startRun({ ...input, packages: input.packages.slice(0, 2) }),
+      Error,
+      "requires native staged-set support",
+    );
+    assertEquals(await Runs.selectAll().execute(), []);
+  } finally {
+    fixture.close();
+  }
+});
+
 Deno.test("system addresses accept HTTP and HTTPS without relaxing URL boundaries", () => {
   for (const protocol of ["http", "https"]) {
     for (const host of ["localhost", "192.168.1.20:8080", "dev.example.com"]) {
@@ -58,12 +98,14 @@ Deno.test("system addresses accept HTTP and HTTPS without relaxing URL boundarie
   }
 });
 
-Deno.test("profiles, immutable queued inputs, apply, partial failure and rollback use shared database contracts", async () => {
+Deno.test("profiles and legacy run continuation preserve history, source protection and rollback", async () => {
   const fixture = new DatabaseFixture();
   const originalFetch = globalThis.fetch;
   const events: unknown[] = [];
   const executeRun: typeof startRun = async (...args) => {
     const id = await startRun(...args);
+    // Existing admitted rows have no native set ID and must keep their protocol.
+    await Runs.update({ activationId: null }).where(Runs.id, "=", id).execute();
     while (events.length) await continueRun(events.shift());
     return id;
   };
@@ -152,8 +194,10 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
     let schemaConsent: Record<string, unknown> | undefined;
     const heads = new Map<string, string | null>();
     let absentStatus = "absent";
+    let repositoryDirty = false;
     let failAfterPublish = false;
     fixture.operation = async (name, input) => {
+      if (name === "admin.execute") return { protocol: 1, maximum: 256 };
       if (name === "database.check") {
         return {
           pending_deployment: false,
@@ -170,7 +214,10 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
         const head = heads.get(String(input.package_id));
         return {
           repository: head
-            ? { status: "ready", head }
+            ? {
+              status: repositoryDirty ? "shared-worktree-modified" : "ready",
+              head,
+            }
             : { status: absentStatus },
         };
       }
@@ -234,6 +281,31 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
       }
       throw new Error(`Unexpected ${name}`);
     };
+    // An unindexed checkout must not be replaced or given deployment intent.
+    heads.set("acme/unindexed", first);
+    const unindexed = await inspectRun(
+      await executeRun({
+        ...list,
+        packages: [{
+          packageId: "acme/unindexed",
+          before: null,
+          target: { commit: second, tag: null },
+        }],
+      }),
+    );
+    assertEquals(unindexed.state, "failed");
+    assertEquals(unindexed.packages[0]?.error.includes("source"), true);
+    assertEquals(heads.get("acme/unindexed"), first);
+    assertEquals(
+      await Packages.selectAll().where(
+        Packages.packageId,
+        "=",
+        "acme/unindexed",
+      ).executeTakeFirst(),
+      undefined,
+    );
+    assertEquals(calls, []);
+    heads.delete("acme/unindexed");
     const id = await executeRun(list, list.id);
     const run = await inspectRun(id);
     assertEquals(run.state, "succeeded");
@@ -241,6 +313,76 @@ Deno.test("profiles, immutable queued inputs, apply, partial failure and rollbac
       null,
       first,
     ]]);
+    const original = await Packages.selectAll().where(
+      Packages.packageId,
+      "=",
+      "acme/app",
+    ).executeTakeFirstOrThrow();
+    repositoryDirty = true;
+    const dirtyRun = await inspectRun(
+      await executeRun({
+        ...list,
+        packages: [{ ...list.packages[0]!, before: first }],
+      }),
+    );
+    assertEquals(dirtyRun.state, "failed");
+    assertEquals(
+      dirtyRun.packages[0]?.error.includes("changed since review"),
+      true,
+    );
+    assertEquals(
+      await Packages.selectAll().where(
+        Packages.packageId,
+        "=",
+        "acme/app",
+      ).executeTakeFirstOrThrow(),
+      original,
+    );
+    assertEquals(calls, ["package.index.set", "package.synchronize"]);
+    repositoryDirty = false;
+    for (
+      const protectedSource of [
+        { local: true },
+        { source: "http://custom.invalid/acme/app" },
+        { secretName: "custom.secret" },
+      ]
+    ) {
+      await Packages.update(protectedSource).where(
+        Packages.packageId,
+        "=",
+        "acme/app",
+      ).execute();
+      const before = await Packages.selectAll().where(
+        Packages.packageId,
+        "=",
+        "acme/app",
+      ).executeTakeFirstOrThrow();
+      const protectedRun = await inspectRun(
+        await executeRun({
+          ...list,
+          packages: [{ ...list.packages[0]!, before: first }],
+        }),
+      );
+      assertEquals(protectedRun.state, "failed");
+      assertEquals(
+        protectedRun.packages[0]?.error.includes("custom source"),
+        true,
+      );
+      assertEquals(
+        await Packages.selectAll().where(
+          Packages.packageId,
+          "=",
+          "acme/app",
+        ).executeTakeFirstOrThrow(),
+        before,
+      );
+      assertEquals(calls, ["package.index.set", "package.synchronize"]);
+      await Packages.update({
+        local: original.local,
+        source: original.source,
+        secretName: original.secretName,
+      }).where(Packages.packageId, "=", "acme/app").execute();
+    }
     await Lists.delete().where(Lists.id, "=", list.id).execute();
     assertEquals((await inspectRun(id)).input, list);
     const stale = await executeRun(list);

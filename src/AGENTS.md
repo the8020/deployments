@@ -36,6 +36,20 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 - Removal uses membership in the observed catalog snapshot, not a non-null HEAD.
   Indexed packages with absent/empty source still require native deletion to
   retire their catalog state; already-unregistered packages need no mutation.
+- Admission rejects more than 256 packages or a multi-package list containing a
+  removal before creating a run. Single-package removal remains supported.
+- New version selections require native `kernel.packages.synchronize.set`
+  protocol 1 and the packages synchronization schema before run admission. Bound
+  the native JSON input to 256 KiB before admission and dispatch. Persist one
+  fresh activation ID, claim one continuation, and submit every selected exact
+  source/version/baseline together. Never fall back to sequential calls. Native
+  source locks protect local/custom/named-secret, dirty and unindexed sources.
+  Retained peers remain untouched; handler/schema diagnostics do not establish
+  complete import discovery or version compatibility.
+- Runs with no activation ID retain their prior continuation, including its
+  pre-write local/custom/unindexed-source guards. Single removal keeps its
+  existing path. Imported tags resolve in the native set and history records
+  exact resolved commits; input remains immutable.
 - Comparisons select any pipeline stage independently of the development Git
   source. Preserve selection through the differences/all toggle and detail
   editing. Ad hoc review/edit/rebase retains a null deployment-list reference.
@@ -48,9 +62,9 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 - `runs.ts` admits with a unique-key conflict target, returning an actionable
   existing-run reference while unrelated SQL failures propagate. Continuations
   claim one queued index atomically, record their exact Worker identity before
-  mutation, and save the package outcome and next index together. Each event
-  gets the existing ten-minute limit; a stuck single activation stays subject to
-  that limit. Minute events query only the unique active run and resume only
+  mutation, and save package outcomes together. Each event gets the existing
+  ten-minute limit, including the whole staged set. Oversized/slow work is never
+  silently split. Minute events query only the unique active run and resume only
   unstarted steps. Authorization and immutable inputs are accepted at admission;
   minute continuations execute that accepted work as system.
 - Apply and continuation programs export `deployments.run.active`. Check
@@ -59,9 +73,19 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   database status, and successful source inspection before marking the run
   interrupted and releasing its lock. Timeouts, unavailable targets, pending
   native recovery and corrupt source keep it locked. Reconciliation never
-  replays a claimed package or turns interruption into run success. Operators
-  inspect native activation/database state and finish supported native recovery
-  before retrying Check execution; a fresh reviewed deployment can then proceed.
+  replays a claimed package or turns interruption into run success. An
+  unfinished native activation is reported with its ID and phase without
+  claiming it belongs to the deployment. Operators inspect native
+  activation/database state (using exact native activation inspection when
+  available) and finish supported native recovery before retrying Check
+  execution; a fresh reviewed deployment can then proceed.
+- Unsettled new sets report their recorded activation ID and direct the operator
+  to `kernel.packages.activation.inspect` and explicit
+  `kernel.packages.activation.resume` after the original Worker ends. Resume
+  accepts only this native owner, preserves its exact membership and
+  checkpoints, and cannot append a missing dependency. Committed-schema
+  dependency repair requires a schema-aware operator plan; clearing locks is
+  never recovery.
 
 # Work Guidance
 

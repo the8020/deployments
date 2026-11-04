@@ -15,11 +15,15 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 - Run inputs and before/after copies do not depend on later list edits. A unique
   active-run key serializes mutations across nodes.
-- Nullable `nextStep` is the unstarted package index. Claiming clears it and
-  records execution identity atomically; completion saves outcomes and the next
-  index atomically. Null on a running row means in-flight or uncertain,
-  including runs created before this column existed, and never authorizes
-  replay.
+- Nullable `activationId` identifies the one native staged set for newly
+  admitted version selections; null retains the legacy protocol and single
+  removal. It is assigned before dispatch and never changed or reused for a
+  retry.
+- Nullable `nextStep` is the unstarted operation index (zero for a staged set,
+  the package index for legacy runs). Claiming clears it and records execution
+  identity atomically; completion saves outcomes and the next index atomically.
+  Null on a running row means in-flight or uncertain, including runs created
+  before this column existed, and never authorizes replay.
 - Run package copies retain exact force columns and approved schema plan across
   detached execution. Admission, claims and checkpoints are short statements; no
   transaction spans activation or network work.

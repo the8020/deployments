@@ -112,33 +112,21 @@ export default async function fixture() {
         result: await executeRequest((input.arguments as unknown[])[0]),
       };
     }
-    if (operation === "package.index.set") {
-      await Packages.update({ requestedCommit: String(input.commit) }).where(
-        Packages.packageId,
-        "=",
-        `${input.author}/${input.repository}`,
-      ).execute();
-      return { package: input };
-    }
-    if (operation === "package.synchronize") {
-      const packageId = String(input.packages);
-      const row = await Packages.selectAll().where(
-        Packages.packageId,
-        "=",
-        packageId,
-      ).executeTakeFirstOrThrow();
-      await Packages.update({ activeCommit: row.requestedCommit }).where(
-        Packages.packageId,
-        "=",
-        packageId,
-      ).execute();
-      return {
-        packages: [{
-          package_id: packageId,
-          commit: row.requestedCommit,
-          success: true,
-        }],
-      };
+    if (operation === "admin.execute") {
+      assertEquals(input.command_id, "kernel.packages.synchronize.set");
+      const args = input.arguments as Record<string, unknown>;
+      if (!args.input) return { protocol: 1, maximum: 256 };
+      const selected = JSON.parse(String(args.input)).packages as Array<{
+        package_id: string;
+        commit: string;
+      }>;
+      for (const item of selected) {
+        await Packages.update({
+          requestedCommit: item.commit,
+          activeCommit: item.commit,
+        }).where(Packages.packageId, "=", item.package_id).execute();
+      }
+      return { packages: selected.map((item) => ({ ...item, success: true })) };
     }
     throw new Error(`Unexpected ${operation}`);
   };
@@ -163,20 +151,24 @@ export default async function fixture() {
           await new Promise((resolve) => setTimeout(resolve, 50));
         }
       }
-      async function click(action: string) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        const selector = `[data-element-id="${action}"]`;
+      async function clickElement(selector: string) {
         await wait(
-          `Array.from(document.querySelectorAll(${
+          `(() => {
+            if (document.querySelector('[data-interaction-pending]')) return false;
+            const element = Array.from(document.querySelectorAll(${
             JSON.stringify(selector)
-          })).some(e=>(${visible})(e)&&!e.disabled) && !document.querySelector('[data-interaction-pending]')`,
-          action,
+          })).find(${visible});
+            if (!element) return false;
+            const target = element.matches('button, tr') ? element : element.querySelector('button') ?? element;
+            if (target.disabled || target.closest('[inert]')) return false;
+            target.click();
+            return true;
+          })()`,
+          selector,
         );
-        await page.evaluate(
-          `{ const e=Array.from(document.querySelectorAll(${
-            JSON.stringify(selector)
-          })).find(e=>(${visible})(e)&&!e.disabled); (e.matches('button')?e:e.querySelector('button')??e).click(); }`,
-        );
+      }
+      async function click(action: string) {
+        await clickElement(`[data-element-id="${action}"]`);
       }
       async function screen(id: string) {
         const selector = id === "deployment-json"
@@ -209,9 +201,7 @@ export default async function fixture() {
         ),
         "password",
       );
-      await page.evaluate(
-        `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).find(${visible}).click()`,
-      );
+      await clickElement("tbody tr[data-row-index]");
       await wait(
         `Array.from(document.querySelectorAll('input[data-bind="username"]')).some(e=>(${visible})(e)&&e.value==="deployer")`,
         "selected connection",
@@ -230,7 +220,7 @@ export default async function fixture() {
         `Array.from(document.querySelectorAll('input[data-bind="password"]')).some(e=>(${visible})(e)&&e.value==="")`,
         "password cleared after save",
       );
-      await page.evaluate(`document.querySelector('#screen-back').click()`);
+      await clickElement("#screen-back");
       await screen("deployments");
       await click("new");
       await screen("deployment-new");
@@ -246,9 +236,7 @@ export default async function fixture() {
           `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).filter(${visible}).length`,
         );
       assertEquals(await rowCount(), 1);
-      await page.evaluate(
-        `Array.from(document.querySelectorAll('tbody .data-list-selection input')).find(${visible}).click()`,
-      );
+      await clickElement("tbody .data-list-selection input");
       await wait(
         `Array.from(document.querySelectorAll('.data-list-page-summary')).some(e=>(${visible})(e)&&e.textContent.includes('1 of 1 selected'))`,
         "selected package",
@@ -268,7 +256,7 @@ export default async function fixture() {
         `Array.from(document.querySelectorAll('textarea')).find(${visible}).value`,
       );
       assertEquals(JSON.parse(json).targetSystemId, local.id);
-      await page.evaluate(`document.querySelector('#screen-back').click()`);
+      await clickElement("#screen-back");
       await screen("deployment-review");
       await click("apply");
       await screen("deployment-confirm");
@@ -299,21 +287,21 @@ export default async function fixture() {
         ]
       ) {
         await new Promise((resolve) => setTimeout(resolve, 100));
-        await page.evaluate(`document.querySelector('#screen-back').click()`);
+        await clickElement("#screen-back");
         await screen(parent);
       }
       await click("compare");
       await screen("deployment-compare");
       await click("review");
       await screen("deployment-review");
-      await page.evaluate(
-        `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).find(${visible}).click()`,
-      );
+      await clickElement("tbody tr[data-row-index]");
       await screen("deployment-package");
-      assertEquals(await rowCount(), 2);
-      await page.evaluate(
-        `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).find(${visible}).click()`,
+      await wait(
+        `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).filter(${visible}).length === 2`,
+        "both version rows",
       );
+      assertEquals(await rowCount(), 2);
+      await clickElement("tbody tr[data-row-index]");
       await click("choose");
       await screen("deployment-review");
       await click("apply");

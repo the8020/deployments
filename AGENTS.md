@@ -130,8 +130,9 @@ relevant child AGENTS.md
   `the8020.deployments.view`.
 - Own connected-system configuration, portable lists, queued reception, live
   comparison, selection, ad hoc updates, rollback, and immutable run records.
-- `events/` dispatches one package per bounded continuation program and uses the
-  existing minute event to recover lost delivery of unstarted steps only.
+- `events/` dispatches one staged set per bounded continuation program (one
+  package for legacy runs) and uses the existing minute event to recover lost
+  delivery of unstarted steps only.
 - `the8020/system/profile.ts` owns system identity/name/role. The packages API
   owns application package editing; native Git synchronization owns activation.
 
@@ -169,10 +170,11 @@ relevant child AGENTS.md
 - Serialize runs across nodes in the shared database, without holding a SQL
   transaction over network or activation. Unknown execution outcomes retain the
   lock until reconciled; never automatically replay a run after interruption.
-- Apply admits a run and returns its ID while detached package steps continue.
+- Apply admits a run and returns its ID while a detached staged set continues.
   The reviewed input and schema consent are copied before dispatch. A single
   nullable next-step checkpoint and conditional claim exclude duplicate events;
-  claimed steps never resume automatically, even after kernel restart.
+  claimed work never resumes automatically, even after kernel restart. Runs
+  admitted before staged-set support retain their original per-package protocol.
 - Reuse ordinary Zod fields, UUI Model/list selection, toolbar buttons, detail
   pages, and modals. Lists default to differences and preserve selected targets.
 
@@ -211,8 +213,11 @@ relevant child AGENTS.md
   sources, and creates freshly numbered independent test instances. It limits
   descendants to two CPUs, 3,584 MiB aggregate proportional memory, and 900
   seconds, and stops below 750 MiB available host memory. Empty sandboxes are
-  not retained; fixture service Workers retain only one second of idle time. It
-  verifies independent short IDs/master keys, private-service challenges, secure
-  connection commands in both directions over loopback, encrypted secret rows,
-  same-hostname login/logout isolation, real HTTP Git activation, ad hoc
-  updates, removal, rollback, and roles.
+  not retained; fixture job and service Workers retain only one second of idle
+  time, with one-second sandbox stop grace. It verifies independent short
+  IDs/master keys, private-service challenges, secure connection commands in
+  both directions over loopback, encrypted secret rows, same-hostname
+  login/logout isolation, real HTTP Git activation, two cyclic packages in both
+  selected orders through staged pre-hooks and switched post-hooks, ad hoc
+  updates, removal, rollback, and roles. Setup waits for full application
+  readiness before changing fixture services.

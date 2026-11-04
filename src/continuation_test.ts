@@ -35,6 +35,7 @@ Deno.test("bounded package steps survive lost dispatch, exclude concurrent admis
     globalThis.fetch = () =>
       Promise.resolve(Response.json({ system: source, packages: [] }));
     fixture.operation = async (name, input) => {
+      if (name === "admin.execute") return { protocol: 1, maximum: 256 };
       if (name === "event.emit") {
         events.push({ name: input.name, data: input.data });
         return { listeners: 1 };
@@ -115,9 +116,10 @@ Deno.test("bounded package steps survive lost dispatch, exclude concurrent admis
         target: { commit: head, tag: null },
       })),
     };
+    const singleInput = { ...input, packages: input.packages.slice(0, 1) };
     const attempts = await Promise.allSettled([
-      executeRun(input),
-      executeRun(input),
+      executeRun(singleInput),
+      executeRun(singleInput),
     ]);
     const admitted = attempts.find((result) => result.status === "fulfilled")!;
     if (admitted.status !== "fulfilled") throw new Error("No run admitted");
@@ -128,6 +130,16 @@ Deno.test("bounded package steps survive lost dispatch, exclude concurrent admis
     }
     assertStringIncludes(String(rejected.reason), id);
     assertStringIncludes(String(rejected.reason), "Check execution");
+    // Model an already admitted run from the older per-package protocol.
+    const admittedRun = await inspectRun(id);
+    await Runs.update({
+      activationId: null,
+      input,
+      packages: [...admittedRun.packages, {
+        ...admittedRun.packages[0]!,
+        packageId: "acme/two",
+      }],
+    }).where(Runs.id, "=", id).execute();
     input.name = "Later edit";
     assertEquals((await inspectRun(id)).input.name, "Two bounded windows");
     const first = events.shift();
@@ -195,7 +207,21 @@ Deno.test("bounded package steps survive lost dispatch, exclude concurrent admis
         updatedAt: new Date(),
         completedAt: null,
       }).execute();
-      await assertRejects(() => reconcileRun(stopped), Error, "act-0123456789");
+      const pendingError = await assertRejects(
+        () => reconcileRun(stopped),
+        Error,
+        "act-0123456789",
+      );
+      assertStringIncludes(pendingError.message, "pre_activated");
+      assertStringIncludes(
+        pendingError.message,
+        "ownership is not established",
+      );
+      assertStringIncludes(
+        pendingError.message,
+        "kernel.packages.activation.inspect act-0123456789",
+      );
+      assertEquals((await inspectRun(stopped)).lockKey, "apply");
       await Activations.delete().execute();
       for (const error of ["permission denied", "transport failed"]) {
         failObservation = error;
@@ -224,7 +250,7 @@ Deno.test("bounded package steps survive lost dispatch, exclude concurrent admis
         return originalInvoke(operation, args);
       }) satisfies KernelInvoke;
     await assertRejects(
-      () => executeRun(input),
+      () => executeRun(singleInput),
       Error,
       "database is read only",
     );

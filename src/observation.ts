@@ -26,12 +26,15 @@ export async function observedVersion(packageId: string) {
 }
 
 export async function requireSettledActivation() {
-  const pending = await Activations.select([Activations.activationId])
+  const pending = await Activations.select([
+    Activations.activationId,
+    Activations.stage,
+  ])
     .where(Activations.stage, "not in", ["complete", "failed"])
     .limit(1).executeTakeFirst();
   if (pending) {
     throw new Error(
-      `Native activation ${pending.activationId} is unfinished. Inspect and recover that activation before checking this deployment again.`,
+      `An unfinished native activation ${pending.activationId} (phase: ${pending.stage}) blocks this check. Its ownership is not established here; a system operator must inspect its recovery before retrying. If available, kernel.packages.activation.inspect ${pending.activationId} shows its recorded candidates and hooks.`,
     );
   }
   const database = await kernel.database.check();

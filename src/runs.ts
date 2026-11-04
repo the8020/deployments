@@ -1,9 +1,10 @@
 import { context } from "@the8020/context";
-import { kernel, WorkerInvokeError } from "@the8020/kernel";
+import { kernel, newId, WorkerInvokeError } from "@the8020/kernel";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
 import { getSystemProfile } from "/p/the8020/system/profile.ts";
 import Runs from "../tables/runs.ts";
 import Lists from "../tables/lists.ts";
+import Packages from "/p/the8020/packages/tables/packages.ts";
 import { z } from "/p/the8020/db/fields.ts";
 import { observedVersion, requireSettledActivation } from "./observation.ts";
 import {
@@ -32,7 +33,7 @@ export async function inspectRun(id: string) {
     .executeTakeFirstOrThrow();
 }
 
-/** Admit immutable work; each package runs in its own ordinary event Worker. */
+/** Admit immutable work; version selections run as one staged native set. */
 export async function executeRun(
   value: unknown,
   listId: string | null = null,
@@ -42,6 +43,15 @@ export async function executeRun(
 ) {
   await requirePermission("the8020.deployments.apply", "");
   const input = parseList(value);
+  if (input.packages.length > 256) {
+    throw new Error("A deployment may contain at most 256 packages.");
+  }
+  if (
+    input.packages.length > 1 &&
+    input.packages.some((item) => item.target === null)
+  ) {
+    throw new Error("Package removal must be deployed separately.");
+  }
   if (
     (forceColumns.length || approvedPlan) &&
     (input.packages.length !== 1 || input.packages[0]?.target === null)
@@ -53,6 +63,12 @@ export async function executeRun(
   const local = await getSystemProfile();
   if (input.targetSystemId !== local.id) {
     throw new Error("This deployment targets another system.");
+  }
+  const activationId = input.packages[0]!.target === null ? null : newId("act");
+  if (activationId) {
+    await requireSetProtocol();
+    const source = await developmentSource(input.sourceSystemId);
+    setInput(activationId, input, source.url);
   }
   if (listId) {
     const list = await Lists.selectAll().where(Lists.id, "=", listId)
@@ -101,6 +117,7 @@ export async function executeRun(
     error: "",
     lockKey: "apply",
     nextStep: 0,
+    activationId,
     username: context.username,
     nodeId: context.nodeId,
     sandboxId: context.sandboxId,
@@ -179,6 +196,10 @@ export async function continueRun(value: unknown) {
     }).where(Runs.id, "=", id).where(Runs.state, "=", "running")
       .where(Runs.nextStep, "=", step).returningAll().executeTakeFirst();
     if (!run) return;
+    if (run.activationId) {
+      await continueSet(run);
+      return;
+    }
     const input = parseList(run.input),
       items = run.packages,
       item = items[step];
@@ -204,7 +225,32 @@ export async function continueRun(value: unknown) {
         step === 0 ? input : { ...input, packages: [input.packages[step]!] },
         before,
       );
+      if (
+        (item.requested !== null || item.requestedTag !== null) &&
+        !before.some((row) => row.packageId === item.packageId) &&
+        (await observedVersion(item.packageId)).state !== "absent"
+      ) {
+        throw new Error(
+          `${item.packageId} has an unindexed source. Inspect it before deploying this package.`,
+        );
+      }
       const source = await developmentSource(input.sourceSystemId);
+      if (item.requested !== null || item.requestedTag !== null) {
+        const configured = await Packages.select([
+          Packages.source,
+          Packages.local,
+          Packages.secretName,
+        ]).where(Packages.packageId, "=", item.packageId).executeTakeFirst();
+        if (
+          configured && (configured.local || configured.secretName ||
+            configured.source &&
+              configured.source !== gitURL(source.url, item.packageId))
+        ) {
+          throw new Error(
+            `${item.packageId} has a local or custom source configuration. Review it before deploying this package.`,
+          );
+        }
+      }
       if (item.before && (item.requested || item.requestedTag)) {
         history =
           (await remoteVersions(input.sourceSystemId, item.packageId)).versions;
@@ -292,6 +338,141 @@ export async function continueRun(value: unknown) {
     if (active) activeRuns.set(id, active);
     else activeRuns.delete(id);
   }
+}
+
+const setCommand = "kernel.packages.synchronize.set";
+
+async function requireSetProtocol() {
+  try {
+    const capability = await kernel.admin.execute(setCommand);
+    if (capability.protocol !== 1 || capability.maximum !== 256) {
+      throw new Error("Unsupported staged-set protocol.");
+    }
+  } catch (error) {
+    throw new Error(
+      `Deployment requires native staged-set support and the updated packages schema: ${
+        message(error)
+      }`,
+    );
+  }
+}
+
+function setInput(id: string, input: DeploymentList, url: string) {
+  const encoded = JSON.stringify({
+    activation_id: id,
+    packages: input.packages.map((item) => ({
+      package_id: item.packageId,
+      source: gitURL(url, item.packageId),
+      commit: item.target?.commit ?? "",
+      tag: item.target?.tag ?? "",
+      before: item.before ?? "",
+    })),
+  });
+  if (new TextEncoder().encode(encoded).byteLength > 256 * 1024) {
+    throw new Error("Native staged-set input exceeds 256 KiB.");
+  }
+  return encoded;
+}
+
+async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
+  const input = parseList(run.input), items = run.packages;
+  const histories = new Map<
+    string,
+    Awaited<ReturnType<typeof remoteVersions>>["versions"]
+  >();
+  let failure = "", uncertain = false;
+  try {
+    if (!run.activationId || items.some((item) => item.processed)) {
+      throw new Error("Deployment set has already been claimed.");
+    }
+    await requireSetProtocol();
+    await requireSettledActivation();
+    const before = (await localSnapshot(items.map((item) => item.packageId)))
+      .packages;
+    for (const item of items) {
+      item.before = before.find((row) => row.packageId === item.packageId)
+        ?.commit ?? null;
+      item.after = item.before;
+    }
+    await Runs.update({ packages: items }).where(Runs.id, "=", run.id)
+      .execute();
+    checkBaseline(input, before);
+    const source = await developmentSource(input.sourceSystemId);
+    for (const item of items) {
+      if (item.before) {
+        histories.set(
+          item.packageId,
+          (await remoteVersions(input.sourceSystemId, item.packageId)).versions,
+        );
+      }
+    }
+    const payload = setInput(run.activationId, input, source.url);
+    const access = await credentials(source);
+    for (const item of items) item.processed = true;
+    await Runs.update({ packages: items }).where(Runs.id, "=", run.id)
+      .execute();
+    const response = await kernel.admin.execute(setCommand, {
+      input: payload,
+      git_token: access.password,
+      git_username: access.username,
+      force_columns: items[0]?.forceColumns?.join(",") ?? "",
+      approved_plan: items[0]?.approvedPlan ?? "",
+    });
+    const results = z.array(z.object({
+      package_id: z.string(),
+      commit,
+      success: z.literal(true),
+    })).length(items.length).parse(response.packages);
+    if (
+      new Set(results.map((result) => result.package_id)).size !== items.length
+    ) {
+      throw new Error("Native activation returned duplicate packages.");
+    }
+    for (const item of items) {
+      const result = results.find((row) => row.package_id === item.packageId);
+      if (!result || item.requested && result.commit !== item.requested) {
+        throw new Error("Native activation did not match the selected set.");
+      }
+      item.requested = result.commit;
+      const actual = await observedVersion(item.packageId);
+      item.after = actual.commit;
+      if (actual.commit !== result.commit || actual.state !== "ready") {
+        throw new Error(
+          `${item.packageId} does not match its activated version.`,
+        );
+      }
+    }
+    for (const item of items) item.state = "succeeded";
+  } catch (error) {
+    failure = message(error);
+    for (const item of items) {
+      item.state = "failed";
+      item.error = failure;
+    }
+  }
+  try {
+    for (const item of items) {
+      item.after = (await observedVersion(item.packageId)).commit;
+      item.change = changeKind(
+        item.before,
+        item.after,
+        histories.get(item.packageId),
+      );
+    }
+    await requireSettledActivation();
+  } catch (error) {
+    uncertain = true;
+    failure = `Activation ${run.activationId}: ${
+      message(error)
+    } Inspect it with kernel.packages.activation.inspect; after the original Worker ends, use kernel.packages.activation.resume for this staged set, then Check execution.`;
+  }
+  await Runs.update({
+    packages: items,
+    error: failure,
+    state: uncertain ? "running" : failure ? "failed" : "succeeded",
+    lockKey: uncertain ? "apply" : null,
+    finishedAt: uncertain ? null : new Date(),
+  }).where(Runs.id, "=", run.id).execute();
 }
 
 /** Only explicit inspection of the original Worker can release an abandoned run. */

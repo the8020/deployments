@@ -105,7 +105,7 @@ def monitor(start, memory_mib, seconds):
 def prepare(root, runtime):
     command([KERNEL, "--root", root, "--init-defaults", "--init-only"])
     shutil.copytree(SOURCE / "kernel/defaults/config/runtime", root / "node/kernel/runtime/definitions", dirs_exist_ok=True)
-    shutil.copytree(SOURCE / "kernel/defaults/scripts", root / "scripts", dirs_exist_ok=True)
+    command(["bash", SOURCE / "kernel/install-development-assets.sh", root])
     shutil.copytree(runtime / "node/kernel/bin", root / "node/kernel/bin", copy_function=os.link, symlinks=True, dirs_exist_ok=True)
     for kind in ["rootless", "development"]:
         image = root / f"node/kernel/runtime/images/{kind}"
@@ -145,6 +145,33 @@ def seed_release(root):
     return versions
 
 
+def seed_cycle(root):
+    versions = {name: [] for name in ["alpha", "beta"]}
+    for version in [1, 2]:
+        for name, peer in [("alpha", "beta"), ("beta", "alpha")]:
+            package = root / f"packages/acme/{name}"
+            package.mkdir(parents=True, exist_ok=True)
+            (package / "package.toml").write_text('schema = 1\ndescription = "Cyclic deployment fixture"\n')
+            if version == 1:
+                git(package, "init", "-q", "-b", "main")
+            (package / "mod.ts").write_text(
+                f'import {{value as peer}} from "/p/acme/{peer}/mod.ts"; '
+                f'export function value() {{return {version};}} '
+                f'export function check() {{if(peer()!=={version}) throw Error("peer source not staged");}}\n')
+            for phase in ["pre", "post"]:
+                program = package / f"programs/{phase}"
+                program.mkdir(parents=True, exist_ok=True)
+                (program / "program.toml").write_text('entrypoint = "program.ts"\n')
+                (program / "program.ts").write_text('import {check} from "../../mod.ts"; export default check;\n')
+                (package / "hooks").mkdir(exist_ok=True)
+                (package / f"hooks/{phase}.toml").write_text(
+                    f'hook = "{phase}-activate"\ndescription = "Validate cycle"\nprogram = "acme/{name}/{phase}"\n')
+            git(package, "add", "--all")
+            git(package, "commit", "-qm", f"Cycle {version}")
+            versions[name].append(git(package, "rev-parse", "HEAD"))
+    return versions
+
+
 def main():
     global peer_host
     args = argparse.ArgumentParser(description=__doc__)
@@ -153,7 +180,7 @@ def main():
     args.add_argument("--max-seconds", type=int, default=900)
     options = args.parse_args()
     os.sched_setaffinity(0, sorted(os.sched_getaffinity(0))[:2])
-    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(RuntimeError("Native smoke stopped")))
+    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(SystemExit("Native smoke stopped")))
     threading.Thread(target=monitor, args=(time.monotonic(), options.max_memory_mib, options.max_seconds), daemon=True).start()
     base = Path("/root/8020")
     number = max([int(p.name[4:]) for p in base.glob("test[0-9]*") if p.name[4:].isdigit()] + [0]) + 1
@@ -168,16 +195,22 @@ def main():
             prepare(root, options.runtime_root)
             if root == roots[0]:
                 versions = seed_release(root)
+                cycle_versions = seed_cycle(root)
             backend = port()
             urls.append(f"http://{host}:{backend}")
             log = open(root / "native-smoke.log", "w")
             child = subprocess.Popen([str(KERNEL), "--root", str(root), "--set", f"network.main_port={backend}",
-                "--set", f"network.ssh_port={port()}", "--set", f"database.location={root}/database/system.db",
+                "--set", f"network.ssh_port={port()}", "--set", f"network.https_port={port()}",
+                "--set", f"database.location={root}/database/system.db",
                 "--set", "sandbox.runtime.mode=rootless", "--set", "sandbox.warm_pool.size=0",
-                "--set", "runtime.sandbox.keep_alive=0"],
+                "--set", "runtime.sandbox.keep_alive=0", "--set", "runtime.sandbox.stop_grace_period=1000",
+                "--set", "job.default.idle_runtime_timeout=1000"],
                 env={**os.environ, "GOMAXPROCS": "2"}, stdout=log, stderr=log)
             processes.append((root, child, log))
-            bounded_wait(lambda: admin(root, "kernel.status"))
+            def ready():
+                state = admin(root, "kernel.status")
+                assert state.get("runtime_ready") and state.get("database_initialized") and not state.get("runtime_application_failure"), state
+            bounded_wait(ready)
             print("Kernel ready:", root, flush=True)
         profiles = []
         for root, role in zip(roots, ["development", "production"]):
@@ -195,8 +228,7 @@ def main():
                 'for (const id of ["the8020/uui/login","the8020/uui/shell","the8020/deployments/peer"]) '
                 'await updateDesired(id,{overrides:{workerKeepAliveMs:1000}});'
                 'const {kernel}=await import("@the8020/kernel"); await kernel.admin.execute("kernel.reindex",{packages:"the8020/uui,the8020/deployments"}); return true;')
-            evaluate(root, 'const {add}=await import("/p/the8020/users/src/admin.ts");'
-                f'return await add("deployer",{json.dumps(password)});')
+            admin(root, "users.add", "deployer", "--password-stdin", input=password + "\n")
         for url in urls:
             for path in ["/identity", "/snapshot", "/git/acme/release.git/info/refs"]:
                 for header in [None, "Basic " + base64.b64encode(b"deployer:wrong").decode()]:
@@ -233,6 +265,28 @@ def main():
         with client.open(urls[1] + "/the8020/deployments/peer/identity", timeout=90) as response:
             assert response.status == 200
         print("Same-hostname login and logout cookies stay isolated across ports", flush=True)
+        for version, order in [(0, ["alpha", "beta"]), (1, ["beta", "alpha"])]:
+            payload = dict(schema=1, id=str(uuid.uuid4()), name="Cyclic selected set", sourceSystemId=profiles[0]["id"],
+                           targetSystemId=profiles[1]["id"], packages=[dict(packageId=f"acme/{name}",
+                           before=None if version == 0 else cycle_versions[name][0],
+                           target=dict(commit=cycle_versions[name][version], tag=None)) for name in order])
+            cycle_run = evaluate(roots[1], 'const {saveList}=await import("/p/the8020/deployments/src/peers.ts");'
+                'const {applyList}=await import("/p/the8020/deployments/src/runs.ts");'
+                f'const input={json.dumps(payload)}; await saveList(input); return await applyList(input,input.id);')
+            def cycle_finished():
+                current = evaluate(roots[1], 'const {inspectRun}=await import("/p/the8020/deployments/src/runs.ts");'
+                    f'return await inspectRun({json.dumps(cycle_run["id"])});')
+                assert current["state"] != "running", current
+                return current
+            completed = bounded_wait(cycle_finished, seconds=180)
+            assert completed["state"] == "succeeded" and completed["lockKey"] is None, completed
+            assert [item["packageId"] for item in completed["packages"]] == [f"acme/{name}" for name in order]
+            activation = admin(roots[1], "kernel.packages.activation.inspect", completed["activationId"])["activation"]
+            assert activation["stage"] == "complete" and len(activation["candidates"]) == 2, activation
+            assert all(hook["state"] == "succeeded" and hook["attempts"] == 1
+                       for item in activation["candidates"] for hook in item["hooks"]), activation
+            assert [item["after"] for item in completed["packages"]] == [cycle_versions[name][version] for name in order]
+        print("Real cyclic imports passed in both selected orders through one deployment activation, staged pre-hooks and switched post-hooks", flush=True)
         def deploy(before, target):
             payload = dict(schema=1, id=str(uuid.uuid4()), name="Native promotion", sourceSystemId=profiles[0]["id"],
                            targetSystemId=profiles[1]["id"], packages=[dict(packageId="acme/release", before=before, target=target)])

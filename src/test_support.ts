@@ -56,6 +56,9 @@ export class DatabaseFixture {
     delete globals[kernelInvokeSymbol];
   }
   readonly invoke: KernelInvoke = async (operation, args) => {
+    if (operation === "admin.execute") {
+      return { success: true, result: await this.operation(operation, args) };
+    }
     if (operation.startsWith("database.transaction.")) {
       this.database.exec(
         operation.endsWith("begin")
