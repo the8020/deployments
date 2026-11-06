@@ -102,6 +102,8 @@
     "ui.apply": "Εφαρμογή",
     "ui.roll_back": "Επαναφορά",
     "ui.deploy_package": "Διανομή του {package}",
-    "ui.deployment_json": "JSON διανομής"
+    "ui.deployment_json": "JSON διανομής",
+    "secret_usages.connected_system_name": "Συνδεδεμένο σύστημα {name}",
+    "programs.secret-usages.description": "Λίστα συνδεδεμένων συστημάτων των οποίων οι κωδικοί χρησιμοποιούν τα δεδομένα απόρρητα"
   }
 }

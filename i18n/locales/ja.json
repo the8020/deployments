@@ -102,6 +102,8 @@
     "ui.apply": "適用",
     "ui.roll_back": "ロールバック",
     "ui.deploy_package": "{package} をデプロイ",
-    "ui.deployment_json": "デプロイ JSON"
+    "ui.deployment_json": "デプロイ JSON",
+    "secret_usages.connected_system_name": "接続済みシステム {name}",
+    "programs.secret-usages.description": "指定したシークレットをパスワードに使用している接続済みシステムを一覧表示"
   }
 }

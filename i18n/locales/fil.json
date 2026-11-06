@@ -102,6 +102,8 @@
     "ui.apply": "Ilapat",
     "ui.roll_back": "Ibalik",
     "ui.deploy_package": "I-deploy ang {package}",
-    "ui.deployment_json": "Deployment JSON"
+    "ui.deployment_json": "Deployment JSON",
+    "secret_usages.connected_system_name": "Nakakonektang system {name}",
+    "programs.secret-usages.description": "Ilista ang mga nakakonektang system na gumagamit ng mga ibinigay na sikreto sa kanilang password"
   }
 }

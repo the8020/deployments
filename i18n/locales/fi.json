@@ -102,6 +102,8 @@
     "ui.apply": "Ota käyttöön",
     "ui.roll_back": "Palauta",
     "ui.deploy_package": "Ota {package} käyttöön",
-    "ui.deployment_json": "Käyttöönoton JSON"
+    "ui.deployment_json": "Käyttöönoton JSON",
+    "secret_usages.connected_system_name": "Yhdistetty järjestelmä {name}",
+    "programs.secret-usages.description": "Luettele yhdistetyt järjestelmät, joiden salasanat käyttävät annettuja salaisuuksia"
   }
 }

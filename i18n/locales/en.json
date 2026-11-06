@@ -102,6 +102,8 @@
     "ui.apply": "Apply",
     "ui.roll_back": "Roll back",
     "ui.deploy_package": "Deploy {package}",
-    "ui.deployment_json": "Deployment JSON"
+    "ui.deployment_json": "Deployment JSON",
+    "secret_usages.connected_system_name": "Connected system {name}",
+    "programs.secret-usages.description": "Report connected systems whose passwords use given secrets"
   }
 }

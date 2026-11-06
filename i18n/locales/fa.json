@@ -102,6 +102,8 @@
     "ui.apply": "اعمال",
     "ui.roll_back": "بازگردانی",
     "ui.deploy_package": "استقرار {package}",
-    "ui.deployment_json": "JSON استقرار"
+    "ui.deployment_json": "JSON استقرار",
+    "secret_usages.connected_system_name": "سیستم متصل {name}",
+    "programs.secret-usages.description": "فهرست سیستم‌های متصلی که گذرواژه‌هایشان از رازهای داده‌شده استفاده می‌کند"
   }
 }

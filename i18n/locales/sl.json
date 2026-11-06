@@ -102,6 +102,8 @@
     "ui.apply": "Uveljavi",
     "ui.roll_back": "Povrni",
     "ui.deploy_package": "Uvedi {package}",
-    "ui.deployment_json": "JSON uvedbe"
+    "ui.deployment_json": "JSON uvedbe",
+    "secret_usages.connected_system_name": "Povezani sistem {name}",
+    "programs.secret-usages.description": "Prikaže povezane sisteme, katerih gesla uporabljajo podane skrivnosti"
   }
 }

@@ -102,6 +102,8 @@
     "ui.apply": "Piemērot",
     "ui.roll_back": "Atgriezt iepriekšējo",
     "ui.deploy_package": "Izvietot {package}",
-    "ui.deployment_json": "Izvietojuma JSON"
+    "ui.deployment_json": "Izvietojuma JSON",
+    "secret_usages.connected_system_name": "Savienotā sistēma {name}",
+    "programs.secret-usages.description": "Uzskaitīt savienotās sistēmas, kuru paroles izmanto norādītos noslēpumus"
   }
 }

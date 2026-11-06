@@ -102,6 +102,8 @@
     "ui.apply": "应用",
     "ui.roll_back": "回滚",
     "ui.deploy_package": "部署 {package}",
-    "ui.deployment_json": "部署 JSON"
+    "ui.deployment_json": "部署 JSON",
+    "secret_usages.connected_system_name": "已连接的系统 {name}",
+    "programs.secret-usages.description": "列出密码使用指定机密的已连接系统"
   }
 }

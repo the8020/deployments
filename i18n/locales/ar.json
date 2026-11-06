@@ -102,6 +102,8 @@
     "ui.apply": "تطبيق",
     "ui.roll_back": "تراجع",
     "ui.deploy_package": "نشر {package}",
-    "ui.deployment_json": "JSON للنشر"
+    "ui.deployment_json": "JSON للنشر",
+    "secret_usages.connected_system_name": "النظام المتصل {name}",
+    "programs.secret-usages.description": "عرض الأنظمة المتصلة التي تستخدم كلمات مرورها الأسرار المحددة"
   }
 }

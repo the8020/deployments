@@ -10,5 +10,11 @@ Deno.test("every program manifest passes the platform manifest contract", async 
     await readProgramManifest(new URL(`${entry.name}/program.toml`, root));
     names.push(entry.name);
   }
-  assertEquals(names.sort(), ["apply", "connect", "continue", "deployments"]);
+  assertEquals(names.sort(), [
+    "apply",
+    "connect",
+    "continue",
+    "deployments",
+    "secret-usages",
+  ]);
 });

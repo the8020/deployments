@@ -102,6 +102,8 @@
     "ui.apply": "Приложи",
     "ui.roll_back": "Върни назад",
     "ui.deploy_package": "Внедри {package}",
-    "ui.deployment_json": "JSON за внедряване"
+    "ui.deployment_json": "JSON за внедряване",
+    "secret_usages.connected_system_name": "Свързана система {name}",
+    "programs.secret-usages.description": "Показва свързаните системи, чиито пароли използват дадените тайни"
   }
 }

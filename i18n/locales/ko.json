@@ -102,6 +102,8 @@
     "ui.apply": "적용",
     "ui.roll_back": "롤백",
     "ui.deploy_package": "{package} 배포",
-    "ui.deployment_json": "배포 JSON"
+    "ui.deployment_json": "배포 JSON",
+    "secret_usages.connected_system_name": "연결된 시스템 {name}",
+    "programs.secret-usages.description": "지정한 시크릿을 비밀번호에 사용하는 연결된 시스템 목록 조회"
   }
 }

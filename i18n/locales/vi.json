@@ -102,6 +102,8 @@
     "ui.apply": "Áp dụng",
     "ui.roll_back": "Hoàn tác",
     "ui.deploy_package": "Triển khai {package}",
-    "ui.deployment_json": "JSON triển khai"
+    "ui.deployment_json": "JSON triển khai",
+    "secret_usages.connected_system_name": "Hệ thống đã kết nối {name}",
+    "programs.secret-usages.description": "Liệt kê các hệ thống đã kết nối có mật khẩu dùng các bí mật đã cho"
   }
 }

@@ -102,6 +102,8 @@
     "ui.apply": "Gunakan",
     "ui.roll_back": "Undur",
     "ui.deploy_package": "Kerahkan {package}",
-    "ui.deployment_json": "JSON pengerahan"
+    "ui.deployment_json": "JSON pengerahan",
+    "secret_usages.connected_system_name": "Sistem disambungkan {name}",
+    "programs.secret-usages.description": "Senaraikan sistem disambungkan yang kata laluannya menggunakan rahsia yang diberikan"
   }
 }

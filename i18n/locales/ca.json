@@ -102,6 +102,8 @@
     "ui.apply": "Aplica",
     "ui.roll_back": "Reverteix",
     "ui.deploy_package": "Desplega {package}",
-    "ui.deployment_json": "JSON de desplegament"
+    "ui.deployment_json": "JSON de desplegament",
+    "secret_usages.connected_system_name": "Sistema connectat {name}",
+    "programs.secret-usages.description": "Llista els sistemes connectats les contrasenyes dels quals utilitzen els secrets indicats"
   }
 }

@@ -102,6 +102,8 @@
     "ui.apply": "套用",
     "ui.roll_back": "回復",
     "ui.deploy_package": "部署 {package}",
-    "ui.deployment_json": "部署 JSON"
+    "ui.deployment_json": "部署 JSON",
+    "secret_usages.connected_system_name": "已連線的系統 {name}",
+    "programs.secret-usages.description": "列出密碼使用指定機密的已連線系統"
   }
 }

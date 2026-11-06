@@ -102,6 +102,8 @@
     "ui.apply": "Anvend",
     "ui.roll_back": "Rul tilbage",
     "ui.deploy_package": "Udrul {package}",
-    "ui.deployment_json": "Udrulnings-JSON"
+    "ui.deployment_json": "Udrulnings-JSON",
+    "secret_usages.connected_system_name": "Forbundet system {name}",
+    "programs.secret-usages.description": "Vis forbundne systemer, hvis adgangskoder bruger de angivne hemmeligheder"
   }
 }

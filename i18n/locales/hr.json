@@ -102,6 +102,8 @@
     "ui.apply": "Primijeni",
     "ui.roll_back": "Vrati prethodno stanje",
     "ui.deploy_package": "Implementiraj {package}",
-    "ui.deployment_json": "JSON implementacije"
+    "ui.deployment_json": "JSON implementacije",
+    "secret_usages.connected_system_name": "Povezani sustav {name}",
+    "programs.secret-usages.description": "Prikazuje povezane sustave čije lozinke koriste zadane tajne"
   }
 }

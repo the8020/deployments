@@ -102,6 +102,8 @@
     "ui.apply": "Pritaikyti",
     "ui.roll_back": "Atkurti ankstesnę būseną",
     "ui.deploy_package": "Įdiegti {package}",
-    "ui.deployment_json": "Diegimo JSON"
+    "ui.deployment_json": "Diegimo JSON",
+    "secret_usages.connected_system_name": "Prijungta sistema {name}",
+    "programs.secret-usages.description": "Rodyti prijungtas sistemas, kurių slaptažodžiai naudoja nurodytas paslaptis"
   }
 }

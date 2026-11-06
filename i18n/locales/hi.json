@@ -102,6 +102,8 @@
     "ui.apply": "लागू करें",
     "ui.roll_back": "वापस करें",
     "ui.deploy_package": "{package} तैनात करें",
-    "ui.deployment_json": "तैनाती JSON"
+    "ui.deployment_json": "तैनाती JSON",
+    "secret_usages.connected_system_name": "जुड़ा सिस्टम {name}",
+    "programs.secret-usages.description": "उन जुड़े सिस्टम की सूची दिखाएँ जिनके पासवर्ड दिए गए सीक्रेट का उपयोग करते हैं"
   }
 }

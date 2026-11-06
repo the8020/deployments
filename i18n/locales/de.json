@@ -102,6 +102,8 @@
     "ui.apply": "Anwenden",
     "ui.roll_back": "Zurückrollen",
     "ui.deploy_package": "{package} bereitstellen",
-    "ui.deployment_json": "Bereitstellungs-JSON"
+    "ui.deployment_json": "Bereitstellungs-JSON",
+    "secret_usages.connected_system_name": "Verbundenes System {name}",
+    "programs.secret-usages.description": "Verbundene Systeme auflisten, deren Passwörter die angegebenen Geheimnisse verwenden"
   }
 }

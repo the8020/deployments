@@ -102,6 +102,8 @@
     "ui.apply": "החלה",
     "ui.roll_back": "חזרה לגרסה קודמת",
     "ui.deploy_package": "פריסת {package}",
-    "ui.deployment_json": "JSON של פריסה"
+    "ui.deployment_json": "JSON של פריסה",
+    "secret_usages.connected_system_name": "מערכת מחוברת {name}",
+    "programs.secret-usages.description": "הצגת מערכות מחוברות שהסיסמאות שלהן משתמשות בסודות שצוינו"
   }
 }

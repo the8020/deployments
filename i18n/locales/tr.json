@@ -102,6 +102,8 @@
     "ui.apply": "Uygula",
     "ui.roll_back": "Geri al",
     "ui.deploy_package": "{package} dağıt",
-    "ui.deployment_json": "Dağıtım JSON'u"
+    "ui.deployment_json": "Dağıtım JSON'u",
+    "secret_usages.connected_system_name": "Bağlı sistem {name}",
+    "programs.secret-usages.description": "Parolaları verilen gizli bilgileri kullanan bağlı sistemleri listele"
   }
 }

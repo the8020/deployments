@@ -102,6 +102,8 @@
     "ui.apply": "Použiť",
     "ui.roll_back": "Vrátiť verziu",
     "ui.deploy_package": "Nasadiť {package}",
-    "ui.deployment_json": "JSON nasadenia"
+    "ui.deployment_json": "JSON nasadenia",
+    "secret_usages.connected_system_name": "Pripojený systém {name}",
+    "programs.secret-usages.description": "Výpis pripojených systémov, ktorých heslá používajú zadané tajné údaje"
   }
 }

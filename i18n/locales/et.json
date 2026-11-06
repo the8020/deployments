@@ -102,6 +102,8 @@
     "ui.apply": "Rakenda",
     "ui.roll_back": "Pööra tagasi",
     "ui.deploy_package": "Juuruta {package}",
-    "ui.deployment_json": "Juurutuse JSON"
+    "ui.deployment_json": "Juurutuse JSON",
+    "secret_usages.connected_system_name": "Ühendatud süsteem {name}",
+    "programs.secret-usages.description": "Loetle ühendatud süsteemid, mille paroolid kasutavad antud saladusi"
   }
 }

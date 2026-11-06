@@ -102,6 +102,8 @@
     "ui.apply": "Bruk",
     "ui.roll_back": "Rull tilbake",
     "ui.deploy_package": "Rull ut {package}",
-    "ui.deployment_json": "Utrullings-JSON"
+    "ui.deployment_json": "Utrullings-JSON",
+    "secret_usages.connected_system_name": "Tilkoblet system {name}",
+    "programs.secret-usages.description": "Vis tilkoblede systemer der passordene bruker de angitte hemmelighetene"
   }
 }

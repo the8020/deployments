@@ -102,6 +102,8 @@
     "ui.apply": "Aplică",
     "ui.roll_back": "Restaurează",
     "ui.deploy_package": "Implementează {package}",
-    "ui.deployment_json": "JSON de implementare"
+    "ui.deployment_json": "JSON de implementare",
+    "secret_usages.connected_system_name": "Sistem conectat {name}",
+    "programs.secret-usages.description": "Listează sistemele conectate ale căror parole folosesc secretele indicate"
   }
 }

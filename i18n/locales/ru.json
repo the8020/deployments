@@ -102,6 +102,8 @@
     "ui.apply": "Применить",
     "ui.roll_back": "Откатить",
     "ui.deploy_package": "Развернуть {package}",
-    "ui.deployment_json": "JSON развёртывания"
+    "ui.deployment_json": "JSON развёртывания",
+    "secret_usages.connected_system_name": "Подключённая система {name}",
+    "programs.secret-usages.description": "Показывает подключённые системы, пароли которых используют указанные секреты"
   }
 }

@@ -102,6 +102,8 @@
     "ui.apply": "Застосувати",
     "ui.roll_back": "Відкотити",
     "ui.deploy_package": "Розгорнути {package}",
-    "ui.deployment_json": "JSON розгортання"
+    "ui.deployment_json": "JSON розгортання",
+    "secret_usages.connected_system_name": "Підключена система {name}",
+    "programs.secret-usages.description": "Показує підключені системи, паролі яких використовують задані секрети"
   }
 }

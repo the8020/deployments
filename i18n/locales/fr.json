@@ -102,6 +102,8 @@
     "ui.apply": "Appliquer",
     "ui.roll_back": "Revenir en arrière",
     "ui.deploy_package": "Déployer {package}",
-    "ui.deployment_json": "JSON du déploiement"
+    "ui.deployment_json": "JSON du déploiement",
+    "secret_usages.connected_system_name": "Système connecté {name}",
+    "programs.secret-usages.description": "Lister les systèmes connectés dont les mots de passe utilisent les secrets indiqués"
   }
 }

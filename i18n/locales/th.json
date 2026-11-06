@@ -102,6 +102,8 @@
     "ui.apply": "นำไปใช้",
     "ui.roll_back": "ย้อนกลับ",
     "ui.deploy_package": "ปรับใช้ {package}",
-    "ui.deployment_json": "JSON การปรับใช้"
+    "ui.deployment_json": "JSON การปรับใช้",
+    "secret_usages.connected_system_name": "ระบบที่เชื่อมต่อ {name}",
+    "programs.secret-usages.description": "แสดงระบบที่เชื่อมต่อซึ่งรหัสผ่านใช้ข้อมูลลับที่ระบุ"
   }
 }

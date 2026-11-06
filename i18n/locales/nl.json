@@ -102,6 +102,8 @@
     "ui.apply": "Toepassen",
     "ui.roll_back": "Terugdraaien",
     "ui.deploy_package": "{package} uitrollen",
-    "ui.deployment_json": "Uitrol-JSON"
+    "ui.deployment_json": "Uitrol-JSON",
+    "secret_usages.connected_system_name": "Verbonden systeem {name}",
+    "programs.secret-usages.description": "Verbonden systemen weergeven waarvan de wachtwoorden de opgegeven geheimen gebruiken"
   }
 }

@@ -102,6 +102,8 @@
     "ui.apply": "Beita",
     "ui.roll_back": "Afturkalla",
     "ui.deploy_package": "Dreifa {package}",
-    "ui.deployment_json": "Dreifingar-JSON"
+    "ui.deployment_json": "Dreifingar-JSON",
+    "secret_usages.connected_system_name": "Tengt kerfi {name}",
+    "programs.secret-usages.description": "Birta tengd kerfi þar sem lykilorð nota tilgreind leyndarmál"
   }
 }

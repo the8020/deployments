@@ -102,6 +102,8 @@
     "ui.apply": "Tillämpa",
     "ui.roll_back": "Återställ",
     "ui.deploy_package": "Driftsätt {package}",
-    "ui.deployment_json": "Driftsättnings-JSON"
+    "ui.deployment_json": "Driftsättnings-JSON",
+    "secret_usages.connected_system_name": "Anslutet system {name}",
+    "programs.secret-usages.description": "Lista anslutna system vars lösenord använder angivna hemligheter"
   }
 }

@@ -102,6 +102,8 @@
     "ui.apply": "Alkalmazás",
     "ui.roll_back": "Visszaállítás",
     "ui.deploy_package": "Telepítés: {package}",
-    "ui.deployment_json": "Telepítési JSON"
+    "ui.deployment_json": "Telepítési JSON",
+    "secret_usages.connected_system_name": "Csatlakoztatott rendszer: {name}",
+    "programs.secret-usages.description": "Azon csatlakoztatott rendszerek listázása, amelyek jelszavai a megadott titkokat használják"
   }
 }

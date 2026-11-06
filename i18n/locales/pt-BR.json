@@ -102,6 +102,8 @@
     "ui.apply": "Aplicar",
     "ui.roll_back": "Reverter",
     "ui.deploy_package": "Implantar {package}",
-    "ui.deployment_json": "JSON de implantação"
+    "ui.deployment_json": "JSON de implantação",
+    "secret_usages.connected_system_name": "Sistema conectado {name}",
+    "programs.secret-usages.description": "Listar sistemas conectados cujas senhas usam os segredos informados"
   }
 }

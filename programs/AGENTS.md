@@ -23,6 +23,8 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   username arguments and execution-scoped password input. Bootstrap and
   interactive connections use the same identity verification and encrypted
   store.
+- `secret-usages` implements the `the8020/secrets` usage contract: a
+  `deployments.peer.<system ID>` secret is used while that connection exists.
 
 # Work Guidance
 
