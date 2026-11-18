@@ -1,3 +1,8 @@
+import {
+  localizedText as resolveMessage,
+  text as formatMessage,
+} from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { context } from "@the8020/context";
 import { kernel, newId, WorkerInvokeError } from "@the8020/kernel";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
@@ -22,7 +27,11 @@ const activeRuns = new Map<string, number>();
 
 export const workerFunctions = {
   "deployments.run.active": (input: unknown) => {
-    if (typeof input !== "string") throw new Error("Run ID is required.");
+    if (typeof input !== "string") {
+      throw new Error(
+        formatMessage(messageSymbol("errors.run_id_is_required")),
+      );
+    }
     return activeRuns.has(input);
   },
 };
@@ -44,25 +53,41 @@ export async function executeRun(
   await requirePermission("the8020.deployments.apply", "");
   const input = parseList(value);
   if (input.packages.length > 256) {
-    throw new Error("A deployment may contain at most 256 packages.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.a_deployment_may_contain_at_most_256_packages"),
+      ),
+    );
   }
   if (
     input.packages.length > 1 &&
     input.packages.some((item) => item.target === null)
   ) {
-    throw new Error("Package removal must be deployed separately.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.package_removal_must_be_deployed_separately"),
+      ),
+    );
   }
   if (
     (forceColumns.length || approvedPlan) &&
     (input.packages.length !== 1 || input.packages[0]?.target === null)
   ) {
     throw new Error(
-      "Schema force requires one explicit package version; package removal is separate.",
+      await resolveMessage(
+        messageSymbol(
+          "errors.schema_force_requires_one_explicit_package_version_package_removal_is",
+        ),
+      ),
     );
   }
   const local = await getSystemProfile();
   if (input.targetSystemId !== local.id) {
-    throw new Error("This deployment targets another system.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.this_deployment_targets_another_system"),
+      ),
+    );
   }
   const activationId = input.packages[0]!.target === null ? null : newId("act");
   if (activationId) {
@@ -74,13 +99,23 @@ export async function executeRun(
     const list = await Lists.selectAll().where(Lists.id, "=", listId)
       .executeTakeFirstOrThrow();
     if (JSON.stringify(parseList(list.payload)) !== JSON.stringify(input)) {
-      throw new Error("Deployment list does not match its saved input.");
+      throw new Error(
+        await resolveMessage(
+          messageSymbol(
+            "errors.deployment_list_does_not_match_its_saved_input",
+          ),
+        ),
+      );
     }
   }
   if (rollbackOf) {
     const original = await inspectRun(rollbackOf);
     if (original.state === "running") {
-      throw new Error("A running deployment cannot be rolled back.");
+      throw new Error(
+        await resolveMessage(
+          messageSymbol("errors.a_running_deployment_cannot_be_rolled_back"),
+        ),
+      );
     }
     const expected = rollbackList(original.input, original.packages);
     if (
@@ -88,7 +123,13 @@ export async function executeRun(
       expected.sourceSystemId !== input.sourceSystemId ||
       expected.targetSystemId !== input.targetSystemId
     ) {
-      throw new Error("Rollback input does not match the recorded run.");
+      throw new Error(
+        await resolveMessage(
+          messageSymbol(
+            "errors.rollback_input_does_not_match_the_recorded_run",
+          ),
+        ),
+      );
     }
   }
   const id = crypto.randomUUID();
@@ -136,8 +177,17 @@ export async function executeRun(
       .executeTakeFirst();
     throw new Error(
       existing
-        ? `Deployment ${existing.id} already holds the apply lock. Open Runs, inspect that run and use Check execution before retrying.`
-        : "Another deployment was admitted concurrently. Open Runs and inspect its outcome before retrying.",
+        ? await resolveMessage(
+          messageSymbol(
+            "errors.deployment_already_holds_the_apply_lock_open_runs_inspect_that",
+            { value1: String(existing.id) },
+          ),
+        )
+        : await resolveMessage(
+          messageSymbol(
+            "errors.another_deployment_was_admitted_concurrently_open_runs_and_inspect_its",
+          ),
+        ),
     );
   }
   await dispatchStep(id, 0);
@@ -151,7 +201,13 @@ async function dispatchStep(id: string, step: number) {
       step,
     });
     if (!receipt.listeners) {
-      throw new Error("Deployment continuation listener is unavailable.");
+      throw new Error(
+        await resolveMessage(
+          messageSymbol(
+            "errors.deployment_continuation_listener_is_unavailable",
+          ),
+        ),
+      );
     }
   } catch (error) {
     // The minute listener or Check execution can dispatch this unclaimed step.
@@ -231,7 +287,12 @@ export async function continueRun(value: unknown) {
         (await observedVersion(item.packageId)).state !== "absent"
       ) {
         throw new Error(
-          `${item.packageId} has an unindexed source. Inspect it before deploying this package.`,
+          await resolveMessage(
+            messageSymbol(
+              "errors.has_an_unindexed_source_inspect_it_before_deploying_this_package",
+              { value1: String(item.packageId) },
+            ),
+          ),
         );
       }
       const source = await developmentSource(input.sourceSystemId);
@@ -247,7 +308,12 @@ export async function continueRun(value: unknown) {
               configured.source !== gitURL(source.url, item.packageId))
         ) {
           throw new Error(
-            `${item.packageId} has a local or custom source configuration. Review it before deploying this package.`,
+            await resolveMessage(
+              messageSymbol(
+                "errors.has_a_local_or_custom_source_configuration_review_it_before",
+                { value1: String(item.packageId) },
+              ),
+            ),
           );
         }
       }
@@ -288,12 +354,21 @@ export async function continueRun(value: unknown) {
         if (results[0]?.commit) {
           const resolved = commit.parse(results[0].commit);
           if (item.requested && item.requested !== resolved) {
-            throw new Error("Activation resolved a different commit.");
+            throw new Error(
+              await resolveMessage(
+                messageSymbol("errors.activation_resolved_a_different_commit"),
+              ),
+            );
           }
           item.requested = resolved;
         }
         if (results.length !== 1 || !results[0]!.success) {
-          throw new Error(results[0]?.error || "Package activation failed.");
+          throw new Error(
+            results[0]?.error ||
+              await resolveMessage(
+                messageSymbol("errors.package_activation_failed"),
+              ),
+          );
         }
       }
       const actual = await observedVersion(item.packageId);
@@ -303,7 +378,11 @@ export async function continueRun(value: unknown) {
         actual.commit && actual.state !== "ready"
       ) {
         throw new Error(
-          "Activated package does not match the requested version.",
+          await resolveMessage(
+            messageSymbol(
+              "errors.activated_package_does_not_match_the_requested_version",
+            ),
+          ),
         );
       }
       item.state = "succeeded";
@@ -350,9 +429,12 @@ async function requireSetProtocol() {
     }
   } catch (error) {
     throw new Error(
-      `Deployment requires native staged-set support and the updated packages schema: ${
-        message(error)
-      }`,
+      await resolveMessage(
+        messageSymbol(
+          "errors.deployment_requires_native_staged_set_support_and_the_updated_packages",
+          { value1: String(message(error)) },
+        ),
+      ),
     );
   }
 }
@@ -369,7 +451,11 @@ function setInput(id: string, input: DeploymentList, url: string) {
     })),
   });
   if (new TextEncoder().encode(encoded).byteLength > 256 * 1024) {
-    throw new Error("Native staged-set input exceeds 256 KiB.");
+    throw new Error(
+      formatMessage(
+        messageSymbol("errors.native_staged_set_input_exceeds_256_kib"),
+      ),
+    );
   }
   return encoded;
 }
@@ -383,7 +469,11 @@ async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
   let failure = "", uncertain = false;
   try {
     if (!run.activationId || items.some((item) => item.processed)) {
-      throw new Error("Deployment set has already been claimed.");
+      throw new Error(
+        await resolveMessage(
+          messageSymbol("errors.deployment_set_has_already_been_claimed"),
+        ),
+      );
     }
     await requireSetProtocol();
     await requireSettledActivation();
@@ -426,19 +516,33 @@ async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
     if (
       new Set(results.map((result) => result.package_id)).size !== items.length
     ) {
-      throw new Error("Native activation returned duplicate packages.");
+      throw new Error(
+        await resolveMessage(
+          messageSymbol("errors.native_activation_returned_duplicate_packages"),
+        ),
+      );
     }
     for (const item of items) {
       const result = results.find((row) => row.package_id === item.packageId);
       if (!result || item.requested && result.commit !== item.requested) {
-        throw new Error("Native activation did not match the selected set.");
+        throw new Error(
+          await resolveMessage(
+            messageSymbol(
+              "errors.native_activation_did_not_match_the_selected_set",
+            ),
+          ),
+        );
       }
       item.requested = result.commit;
       const actual = await observedVersion(item.packageId);
       item.after = actual.commit;
       if (actual.commit !== result.commit || actual.state !== "ready") {
         throw new Error(
-          `${item.packageId} does not match its activated version.`,
+          await resolveMessage(
+            messageSymbol("errors.does_not_match_its_activated_version", {
+              value1: String(item.packageId),
+            }),
+          ),
         );
       }
     }
@@ -462,9 +566,12 @@ async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
     await requireSettledActivation();
   } catch (error) {
     uncertain = true;
-    failure = `Activation ${run.activationId}: ${
-      message(error)
-    } Inspect it with kernel.packages.activation.inspect; after the original Worker ends, use kernel.packages.activation.resume for this staged set, then Check execution.`;
+    failure = await resolveMessage(
+      messageSymbol(
+        "errors.activation_inspect_it_with_kernel_packages_activation_inspect_after_the",
+        { value1: String(run.activationId), value2: String(message(error)) },
+      ),
+    );
   }
   await Runs.update({
     packages: items,
@@ -492,7 +599,13 @@ export async function reconcileRun(id: string) {
       function: "deployments.run.active",
       input: id,
     });
-    if (active !== false) throw new Error("This deployment is still running.");
+    if (active !== false) {
+      throw new Error(
+        await resolveMessage(
+          messageSymbol("errors.this_deployment_is_still_running"),
+        ),
+      );
+    }
   } catch (error) {
     if (
       !(error instanceof WorkerInvokeError) || error.code !== "target_not_found"
@@ -524,7 +637,11 @@ export async function reconcileRun(id: string) {
     lockKey: null,
     finishedAt: new Date(),
     error: run.error ||
-      "The original execution ended without recording a complete result. Current package versions were inspected; no work was replayed.",
+      await resolveMessage(
+        messageSymbol(
+          "errors.the_original_execution_ended_without_recording_a_complete_result_current",
+        ),
+      ),
   }).where(Runs.id, "=", id).where(Runs.state, "=", "running")
     .where(Runs.nextStep, "is", null).where(
       Runs.executionId,
@@ -569,7 +686,13 @@ export async function applyList(
     const saved = await Lists.selectAll().where(Lists.id, "=", listId)
       .executeTakeFirstOrThrow();
     if (JSON.stringify(parseList(saved.payload)) !== JSON.stringify(input)) {
-      throw new Error("Deployment list does not match its saved input.");
+      throw new Error(
+        await resolveMessage(
+          messageSymbol(
+            "errors.deployment_list_does_not_match_its_saved_input",
+          ),
+        ),
+      );
     }
   }
   // Large saved lists and rollbacks cross the bounded program bus by immutable ID.
@@ -584,11 +707,19 @@ export async function applyList(
   if (result.state !== "succeeded") {
     throw new Error(
       result.failure ||
-        "Deployment execution failed. Inspect Runs before retrying.",
+        await resolveMessage(
+          messageSymbol(
+            "errors.deployment_execution_failed_inspect_runs_before_retrying",
+          ),
+        ),
     );
   }
   if (typeof result.result !== "string") {
-    throw new Error("Deployment returned no run ID.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.deployment_returned_no_run_id"),
+      ),
+    );
   }
   return await inspectRun(result.result);
 }
@@ -596,7 +727,11 @@ export async function applyList(
 export async function rollbackRun(id: string) {
   const run = await inspectRun(id);
   if (run.state === "running") {
-    throw new Error("A running deployment cannot be rolled back.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.a_running_deployment_cannot_be_rolled_back"),
+      ),
+    );
   }
   return await applyList(rollbackList(run.input, run.packages), null, id);
 }

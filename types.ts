@@ -1,3 +1,5 @@
+import { text as formatMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { text as localizedText } from "/p/the8020/i18n/mod.ts";
 import { msg } from "/p/the8020/deployments/i18n/messages.ts";
 import { field, fieldMetadata, z } from "/p/the8020/db/fields.ts";
@@ -179,7 +181,11 @@ export const runState = field(
 
 export function parseList(value: unknown): DeploymentList {
   if (new TextEncoder().encode(JSON.stringify(value)).byteLength > 512 * 1024) {
-    throw new Error("Deployment lists must be no larger than 512 KiB.");
+    throw new Error(
+      formatMessage(
+        messageSymbol("errors.deployment_lists_must_be_no_larger_than_512_kib"),
+      ),
+    );
   }
   return deploymentList.parse(value);
 }

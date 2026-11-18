@@ -18,9 +18,16 @@ Parent DOX: [deployments](../AGENTS.md).
 - Keep identifiers, user-entered data, and technical source/log output
   unchanged.
 - Shared fields hold message references; resolve text inside the invocation.
+- User-visible policy errors use package text symbols. Prepare their catalogs
+  before throwing so errors before the first screen use the invocation language.
 - Displayed metadata uses `package.description`, `programs.<name>.description`,
   `services.<name>.description`, `widgets.<name>.title`/`.description`,
   `categories.<path>.title`, and `declarations.<file-stem>.<key>`.
+
+- Authored UI errors and validation use this package's text symbols. Shared
+  asynchronous APIs prepare their catalog in the current language scope;
+  unscoped command-line calls keep English source fallbacks. Native/bootstrap
+  diagnostics, protocol identifiers, and raw source/log text remain unchanged.
 
 # Work Guidance
 

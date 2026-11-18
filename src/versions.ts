@@ -1,5 +1,9 @@
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { kernel } from "@the8020/kernel";
 import { requireDevelopment } from "/p/the8020/system/profile.ts";
+import { prepareTexts, text } from "/p/the8020/i18n/mod.ts";
+import { msg } from "../i18n/messages.ts";
 import { deploymentPackageId, packageVersions } from "../types.ts";
 import {
   credentials,
@@ -11,7 +15,9 @@ import {
 export async function developmentSource(id: string) {
   const peer = await getConnection(id);
   if ((await remoteSnapshot(id)).system.role !== "development") {
-    throw new Error("Package sources must be development systems.");
+    const message = msg("versions.development_source_required");
+    await prepareTexts(message);
+    throw new Error(text(message));
   }
   return peer;
 }
@@ -40,7 +46,13 @@ export async function remoteVersions(source: string, packageId: string) {
     ),
   );
   if (result.package_id !== packageId) {
-    throw new Error("Connected system returned versions for another package.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol(
+          "errors.connected_system_returned_versions_for_another_package",
+        ),
+      ),
+    );
   }
   return result;
 }

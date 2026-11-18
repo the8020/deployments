@@ -1,3 +1,5 @@
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { text as localizedText } from "/p/the8020/i18n/mod.ts";
 import { msg } from "/p/the8020/deployments/i18n/messages.ts";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
@@ -308,7 +310,9 @@ async function newDeployment(packageId = "") {
         const source = await remoteSnapshot(model.data.source),
           target = await remoteSnapshot(model.data.target);
         if (source.system.role !== "development") {
-          throw new Error("Choose a development source.");
+          throw new Error(
+            localizedText(msg("screens.choose_development_source")),
+          );
         }
         await getConnection(source.system.id);
         await presentPage(() =>
@@ -540,7 +544,13 @@ async function editPackage(
       const selection = model.data.selection;
       const version = versions.versions.find((row) => row.commit === selection);
       if (!version) {
-        error(new Error("Select an available version."));
+        error(
+          new Error(
+            await resolveMessage(
+              messageSymbol("errors.select_an_available_version"),
+            ),
+          ),
+        );
         continue;
       }
       return version.commit;
