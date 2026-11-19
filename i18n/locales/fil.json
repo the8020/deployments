@@ -104,6 +104,9 @@
     "ui.deploy_package": "I-deploy ang {package}",
     "ui.deployment_json": "Deployment JSON",
     "secret_usages.connected_system_name": "Nakakonektang system {name}",
-    "programs.secret-usages.description": "Ilista ang mga nakakonektang system na gumagamit ng mga ibinigay na sikreto sa kanilang password"
+    "programs.secret-usages.description": "Ilista ang mga nakakonektang system na gumagamit ng mga ibinigay na sikreto sa kanilang password",
+    "versions.development_source_required": "Dapat development system ang mga pinagmumulan ng package.",
+    "screens.choose_development_source": "Pumili ng development source.",
+    "programs.recommended-sources.description": "Piliin ang mga pinagmulan ng mga inirerekomendang pakete"
   }
 }

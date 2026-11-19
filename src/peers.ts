@@ -1,3 +1,5 @@
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { getSecret, setSecret } from "/p/the8020/secrets/mod.ts";
 import Secrets from "/p/the8020/secrets/tables/secrets.ts";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
@@ -26,10 +28,20 @@ export async function readJSON(
 ): Promise<unknown> {
   if (!response.ok) {
     await response.body?.cancel();
-    throw new Error(`Connected system returned HTTP ${response.status}.`);
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.connected_system_returned_http", {
+          value1: String(response.status),
+        }),
+      ),
+    );
   }
   if (!response.body) {
-    throw new Error("Connected system returned an empty response.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.connected_system_returned_an_empty_response"),
+      ),
+    );
   }
   const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
@@ -40,7 +52,11 @@ export async function readJSON(
       if (done) break;
       size += value.byteLength;
       if (size > limit) {
-        throw new Error("Connected-system response is too large.");
+        throw new Error(
+          await resolveMessage(
+            messageSymbol("errors.connected_system_response_is_too_large"),
+          ),
+        );
       }
       chunks.push(value);
     }
@@ -57,7 +73,7 @@ export async function readJSON(
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 
-const passwordName = (id: string) =>
+export const passwordName = (id: string) =>
   `deployments.peer.${systemProfile.shape.id.parse(id)}`;
 
 export async function credentials(peer: Connection) {
@@ -132,7 +148,11 @@ export async function remoteSnapshot(id: string): Promise<Snapshot> {
   );
   if (result.system.id !== id) {
     throw new Error(
-      "The connected system identity changed. Reconnect it before continuing.",
+      await resolveMessage(
+        messageSymbol(
+          "errors.the_connected_system_identity_changed_reconnect_it_before_continuing",
+        ),
+      ),
     );
   }
   return result;
@@ -174,7 +194,11 @@ export async function receiveList(value: unknown) {
   const list = parseList(value);
   const local = await getSystemProfile();
   if (list.targetSystemId !== local.id) {
-    throw new Error("This list targets another system.");
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.this_list_targets_another_system"),
+      ),
+    );
   }
   await getConnection(list.sourceSystemId);
   await storeList(list, true);
@@ -188,7 +212,11 @@ async function storeList(list: DeploymentList, received: boolean) {
   if (saved) {
     if (JSON.stringify(parseList(saved.payload)) !== JSON.stringify(list)) {
       throw new Error(
-        "A different deployment list already has this ID. Create a new list.",
+        await resolveMessage(
+          messageSymbol(
+            "errors.a_different_deployment_list_already_has_this_id_create_a",
+          ),
+        ),
       );
     }
     return;
@@ -202,7 +230,11 @@ async function storeList(list: DeploymentList, received: boolean) {
   while (used.has(slot)) slot++;
   if (slot >= 1000) {
     throw new Error(
-      "The deployment queue is full. Delete reviewed lists first.",
+      await resolveMessage(
+        messageSymbol(
+          "errors.the_deployment_queue_is_full_delete_reviewed_lists_first",
+        ),
+      ),
     );
   }
   // The unique slot also bounds simultaneous reception on different nodes.
@@ -223,7 +255,9 @@ export async function sendList(value: unknown) {
   const peer = await getConnection(list.targetSystemId);
   const target = await remoteSnapshot(peer.id);
   if (target.system.id !== list.targetSystemId) {
-    throw new Error("Incorrect target system.");
+    throw new Error(
+      await resolveMessage(messageSymbol("errors.incorrect_target_system")),
+    );
   }
   await request(await credentials(peer), "/lists", list);
 }

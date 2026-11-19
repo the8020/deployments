@@ -104,6 +104,9 @@
     "ui.deploy_package": "{package} bereitstellen",
     "ui.deployment_json": "Bereitstellungs-JSON",
     "secret_usages.connected_system_name": "Verbundenes System {name}",
-    "programs.secret-usages.description": "Verbundene Systeme auflisten, deren Passwörter die angegebenen Geheimnisse verwenden"
+    "programs.secret-usages.description": "Verbundene Systeme auflisten, deren Passwörter die angegebenen Geheimnisse verwenden",
+    "versions.development_source_required": "Paketquellen müssen Entwicklungssysteme sein.",
+    "screens.choose_development_source": "Wählen Sie eine Entwicklungsquelle.",
+    "programs.recommended-sources.description": "Quellen für empfohlene Pakete auswählen"
   }
 }

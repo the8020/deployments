@@ -104,6 +104,9 @@
     "ui.deploy_package": "部署 {package}",
     "ui.deployment_json": "部署 JSON",
     "secret_usages.connected_system_name": "已連線的系統 {name}",
-    "programs.secret-usages.description": "列出密碼使用指定機密的已連線系統"
+    "programs.secret-usages.description": "列出密碼使用指定機密的已連線系統",
+    "versions.development_source_required": "套件來源必須是開發系統。",
+    "screens.choose_development_source": "請選擇開發來源。",
+    "programs.recommended-sources.description": "選擇建議套件的來源"
   }
 }

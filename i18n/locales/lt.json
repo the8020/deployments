@@ -104,6 +104,9 @@
     "ui.deploy_package": "Įdiegti {package}",
     "ui.deployment_json": "Diegimo JSON",
     "secret_usages.connected_system_name": "Prijungta sistema {name}",
-    "programs.secret-usages.description": "Rodyti prijungtas sistemas, kurių slaptažodžiai naudoja nurodytas paslaptis"
+    "programs.secret-usages.description": "Rodyti prijungtas sistemas, kurių slaptažodžiai naudoja nurodytas paslaptis",
+    "versions.development_source_required": "Paketų šaltiniai turi būti kūrimo sistemos.",
+    "screens.choose_development_source": "Pasirinkite kūrimo šaltinį.",
+    "programs.recommended-sources.description": "Pasirinkti rekomenduojamų paketų šaltinius"
   }
 }

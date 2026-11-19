@@ -104,6 +104,9 @@
     "ui.deploy_package": "Ota {package} käyttöön",
     "ui.deployment_json": "Käyttöönoton JSON",
     "secret_usages.connected_system_name": "Yhdistetty järjestelmä {name}",
-    "programs.secret-usages.description": "Luettele yhdistetyt järjestelmät, joiden salasanat käyttävät annettuja salaisuuksia"
+    "programs.secret-usages.description": "Luettele yhdistetyt järjestelmät, joiden salasanat käyttävät annettuja salaisuuksia",
+    "versions.development_source_required": "Pakettilähteiden on oltava kehitysjärjestelmiä.",
+    "screens.choose_development_source": "Valitse kehityslähde.",
+    "programs.recommended-sources.description": "Valitse suositeltujen pakettien lähteet"
   }
 }

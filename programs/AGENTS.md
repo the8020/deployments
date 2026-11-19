@@ -10,6 +10,9 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 # Local Contracts
 
+- `recommended-sources` is the ordinary internal program used by kernel
+  recommendations. It delegates transport selection to `src/recommendations.ts`
+  and returns no credential values or package mutations.
 - Use full program IDs. Interactive navigation uses existing UUI programs;
   background apply uses the generic program runtime.
 - Apply requests carry an immutable saved-list or original-run ID, or a single

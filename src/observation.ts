@@ -1,3 +1,5 @@
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { kernel } from "@the8020/kernel";
 import Packages from "/p/the8020/packages/tables/packages.ts";
 import Activations from "/p/the8020/packages/tables/activations.ts";
@@ -10,7 +12,12 @@ export async function observedVersion(packageId: string) {
   }
   if (!repository.head) {
     throw new Error(
-      `${packageId}: repository ${repository.status}. Inspect and repair its source before retrying.`,
+      await resolveMessage(
+        messageSymbol(
+          "errors.repository_inspect_and_repair_its_source_before_retrying",
+          { packageId: String(packageId), value2: String(repository.status) },
+        ),
+      ),
     );
   }
   const head = commit.parse(repository.head);
@@ -34,7 +41,16 @@ export async function requireSettledActivation() {
     .limit(1).executeTakeFirst();
   if (pending) {
     throw new Error(
-      `An unfinished native activation ${pending.activationId} (phase: ${pending.stage}) blocks this check. Its ownership is not established here; a system operator must inspect its recovery before retrying. If available, kernel.packages.activation.inspect ${pending.activationId} shows its recorded candidates and hooks.`,
+      await resolveMessage(
+        messageSymbol(
+          "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership",
+          {
+            value1: String(pending.activationId),
+            value2: String(pending.stage),
+            value3: String(pending.activationId),
+          },
+        ),
+      ),
     );
   }
   const database = await kernel.database.check();
@@ -43,7 +59,11 @@ export async function requireSettledActivation() {
     database.initialized !== true
   ) {
     throw new Error(
-      "Native schema activation is pending or unknown. Inspect native database/activation recovery before checking this deployment again.",
+      await resolveMessage(
+        messageSymbol(
+          "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database",
+        ),
+      ),
     );
   }
 }

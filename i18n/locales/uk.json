@@ -104,6 +104,9 @@
     "ui.deploy_package": "Розгорнути {package}",
     "ui.deployment_json": "JSON розгортання",
     "secret_usages.connected_system_name": "Підключена система {name}",
-    "programs.secret-usages.description": "Показує підключені системи, паролі яких використовують задані секрети"
+    "programs.secret-usages.description": "Показує підключені системи, паролі яких використовують задані секрети",
+    "versions.development_source_required": "Джерелами пакетів мають бути системи розробки.",
+    "screens.choose_development_source": "Виберіть джерело розробки.",
+    "programs.recommended-sources.description": "Вибрати джерела рекомендованих пакетів"
   }
 }

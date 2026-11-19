@@ -104,6 +104,9 @@
     "ui.deploy_package": "Implementează {package}",
     "ui.deployment_json": "JSON de implementare",
     "secret_usages.connected_system_name": "Sistem conectat {name}",
-    "programs.secret-usages.description": "Listează sistemele conectate ale căror parole folosesc secretele indicate"
+    "programs.secret-usages.description": "Listează sistemele conectate ale căror parole folosesc secretele indicate",
+    "versions.development_source_required": "Sursele pachetelor trebuie să fie sisteme de dezvoltare.",
+    "screens.choose_development_source": "Alegeți o sursă de dezvoltare.",
+    "programs.recommended-sources.description": "Selectați sursele pachetelor recomandate"
   }
 }

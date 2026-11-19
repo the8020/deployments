@@ -104,6 +104,9 @@
     "ui.deploy_package": "Triển khai {package}",
     "ui.deployment_json": "JSON triển khai",
     "secret_usages.connected_system_name": "Hệ thống đã kết nối {name}",
-    "programs.secret-usages.description": "Liệt kê các hệ thống đã kết nối có mật khẩu dùng các bí mật đã cho"
+    "programs.secret-usages.description": "Liệt kê các hệ thống đã kết nối có mật khẩu dùng các bí mật đã cho",
+    "versions.development_source_required": "Nguồn gói phải là hệ thống phát triển.",
+    "screens.choose_development_source": "Chọn nguồn phát triển.",
+    "programs.recommended-sources.description": "Chọn nguồn cho các gói được đề xuất"
   }
 }

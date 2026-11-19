@@ -104,6 +104,9 @@
     "ui.deploy_package": "Uvedi {package}",
     "ui.deployment_json": "JSON uvedbe",
     "secret_usages.connected_system_name": "Povezani sistem {name}",
-    "programs.secret-usages.description": "Prikaže povezane sisteme, katerih gesla uporabljajo podane skrivnosti"
+    "programs.secret-usages.description": "Prikaže povezane sisteme, katerih gesla uporabljajo podane skrivnosti",
+    "versions.development_source_required": "Viri paketov morajo biti razvojni sistemi.",
+    "screens.choose_development_source": "Izberite razvojni vir.",
+    "programs.recommended-sources.description": "Izberite vire priporočenih paketov"
   }
 }

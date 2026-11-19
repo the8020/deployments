@@ -104,6 +104,9 @@
     "ui.deploy_package": "Isporuči {package}",
     "ui.deployment_json": "JSON isporuke",
     "secret_usages.connected_system_name": "Povezani sistem {name}",
-    "programs.secret-usages.description": "Prikazuje povezane sisteme čije lozinke koriste zadate tajne"
+    "programs.secret-usages.description": "Prikazuje povezane sisteme čije lozinke koriste zadate tajne",
+    "versions.development_source_required": "Izvori paketa moraju biti razvojni sistemi.",
+    "screens.choose_development_source": "Izaberite razvojni izvor.",
+    "programs.recommended-sources.description": "Izaberite izvore preporučenih paketa"
   }
 }

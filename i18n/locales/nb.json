@@ -104,6 +104,9 @@
     "ui.deploy_package": "Rull ut {package}",
     "ui.deployment_json": "Utrullings-JSON",
     "secret_usages.connected_system_name": "Tilkoblet system {name}",
-    "programs.secret-usages.description": "Vis tilkoblede systemer der passordene bruker de angitte hemmelighetene"
+    "programs.secret-usages.description": "Vis tilkoblede systemer der passordene bruker de angitte hemmelighetene",
+    "versions.development_source_required": "Pakkekilder må være utviklingssystemer.",
+    "screens.choose_development_source": "Velg en utviklingskilde.",
+    "programs.recommended-sources.description": "Velg kilder for anbefalte pakker"
   }
 }

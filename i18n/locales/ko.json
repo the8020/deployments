@@ -104,6 +104,9 @@
     "ui.deploy_package": "{package} 배포",
     "ui.deployment_json": "배포 JSON",
     "secret_usages.connected_system_name": "연결된 시스템 {name}",
-    "programs.secret-usages.description": "지정한 시크릿을 비밀번호에 사용하는 연결된 시스템 목록 조회"
+    "programs.secret-usages.description": "지정한 시크릿을 비밀번호에 사용하는 연결된 시스템 목록 조회",
+    "versions.development_source_required": "패키지 소스는 개발 시스템이어야 합니다.",
+    "screens.choose_development_source": "개발 소스를 선택하세요.",
+    "programs.recommended-sources.description": "권장 패키지 소스 선택"
   }
 }

@@ -104,6 +104,9 @@
     "ui.deploy_package": "استقرار {package}",
     "ui.deployment_json": "JSON استقرار",
     "secret_usages.connected_system_name": "سیستم متصل {name}",
-    "programs.secret-usages.description": "فهرست سیستم‌های متصلی که گذرواژه‌هایشان از رازهای داده‌شده استفاده می‌کند"
+    "programs.secret-usages.description": "فهرست سیستم‌های متصلی که گذرواژه‌هایشان از رازهای داده‌شده استفاده می‌کند",
+    "versions.development_source_required": "منابع بسته‌ها باید سیستم‌های توسعه باشند.",
+    "screens.choose_development_source": "یک منبع توسعه انتخاب کنید.",
+    "programs.recommended-sources.description": "انتخاب منابع بسته‌های پیشنهادی"
   }
 }

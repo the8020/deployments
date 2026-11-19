@@ -104,6 +104,9 @@
     "ui.deploy_package": "ปรับใช้ {package}",
     "ui.deployment_json": "JSON การปรับใช้",
     "secret_usages.connected_system_name": "ระบบที่เชื่อมต่อ {name}",
-    "programs.secret-usages.description": "แสดงระบบที่เชื่อมต่อซึ่งรหัสผ่านใช้ข้อมูลลับที่ระบุ"
+    "programs.secret-usages.description": "แสดงระบบที่เชื่อมต่อซึ่งรหัสผ่านใช้ข้อมูลลับที่ระบุ",
+    "versions.development_source_required": "แหล่งที่มาของแพ็กเกจต้องเป็นระบบพัฒนา",
+    "screens.choose_development_source": "เลือกแหล่งที่มาจากระบบพัฒนา",
+    "programs.recommended-sources.description": "เลือกแหล่งที่มาของแพ็กเกจที่แนะนำ"
   }
 }

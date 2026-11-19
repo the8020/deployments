@@ -104,6 +104,9 @@
     "ui.deploy_package": "Kerahkan {package}",
     "ui.deployment_json": "JSON pengerahan",
     "secret_usages.connected_system_name": "Sistem disambungkan {name}",
-    "programs.secret-usages.description": "Senaraikan sistem disambungkan yang kata laluannya menggunakan rahsia yang diberikan"
+    "programs.secret-usages.description": "Senaraikan sistem disambungkan yang kata laluannya menggunakan rahsia yang diberikan",
+    "versions.development_source_required": "Sumber pakej mestilah sistem pembangunan.",
+    "screens.choose_development_source": "Pilih sumber pembangunan.",
+    "programs.recommended-sources.description": "Pilih sumber pakej yang disyorkan"
   }
 }

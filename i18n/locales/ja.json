@@ -104,6 +104,9 @@
     "ui.deploy_package": "{package} をデプロイ",
     "ui.deployment_json": "デプロイ JSON",
     "secret_usages.connected_system_name": "接続済みシステム {name}",
-    "programs.secret-usages.description": "指定したシークレットをパスワードに使用している接続済みシステムを一覧表示"
+    "programs.secret-usages.description": "指定したシークレットをパスワードに使用している接続済みシステムを一覧表示",
+    "versions.development_source_required": "パッケージの取得元は開発システムである必要があります。",
+    "screens.choose_development_source": "開発システムの取得元を選択してください。",
+    "programs.recommended-sources.description": "推奨パッケージの取得元を選択"
   }
 }

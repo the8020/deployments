@@ -104,6 +104,9 @@
     "ui.deploy_package": "Telepítés: {package}",
     "ui.deployment_json": "Telepítési JSON",
     "secret_usages.connected_system_name": "Csatlakoztatott rendszer: {name}",
-    "programs.secret-usages.description": "Azon csatlakoztatott rendszerek listázása, amelyek jelszavai a megadott titkokat használják"
+    "programs.secret-usages.description": "Azon csatlakoztatott rendszerek listázása, amelyek jelszavai a megadott titkokat használják",
+    "versions.development_source_required": "A csomagforrásoknak fejlesztői rendszereknek kell lenniük.",
+    "screens.choose_development_source": "Válasszon fejlesztői forrást.",
+    "programs.recommended-sources.description": "Ajánlott csomagok forrásainak kiválasztása"
   }
 }

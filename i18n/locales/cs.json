@@ -104,6 +104,9 @@
     "ui.deploy_package": "Nasadit {package}",
     "ui.deployment_json": "JSON nasazení",
     "secret_usages.connected_system_name": "Připojený systém {name}",
-    "programs.secret-usages.description": "Výpis připojených systémů, jejichž hesla používají zadané tajné údaje"
+    "programs.secret-usages.description": "Výpis připojených systémů, jejichž hesla používají zadané tajné údaje",
+    "versions.development_source_required": "Zdrojem balíčků musí být vývojový systém.",
+    "screens.choose_development_source": "Vyberte vývojový zdroj.",
+    "programs.recommended-sources.description": "Vybrat zdroje doporučených balíčků"
   }
 }

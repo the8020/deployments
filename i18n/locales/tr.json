@@ -104,6 +104,9 @@
     "ui.deploy_package": "{package} dağıt",
     "ui.deployment_json": "Dağıtım JSON'u",
     "secret_usages.connected_system_name": "Bağlı sistem {name}",
-    "programs.secret-usages.description": "Parolaları verilen gizli bilgileri kullanan bağlı sistemleri listele"
+    "programs.secret-usages.description": "Parolaları verilen gizli bilgileri kullanan bağlı sistemleri listele",
+    "versions.development_source_required": "Paket kaynakları geliştirme sistemleri olmalıdır.",
+    "screens.choose_development_source": "Bir geliştirme kaynağı seçin.",
+    "programs.recommended-sources.description": "Önerilen paket kaynaklarını seçin"
   }
 }

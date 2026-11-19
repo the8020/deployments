@@ -104,6 +104,9 @@
     "ui.deploy_package": "部署 {package}",
     "ui.deployment_json": "部署 JSON",
     "secret_usages.connected_system_name": "已连接的系统 {name}",
-    "programs.secret-usages.description": "列出密码使用指定机密的已连接系统"
+    "programs.secret-usages.description": "列出密码使用指定机密的已连接系统",
+    "versions.development_source_required": "软件包来源必须是开发系统。",
+    "screens.choose_development_source": "请选择开发来源。",
+    "programs.recommended-sources.description": "选择推荐软件包的来源"
   }
 }

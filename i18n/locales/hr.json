@@ -104,6 +104,9 @@
     "ui.deploy_package": "Implementiraj {package}",
     "ui.deployment_json": "JSON implementacije",
     "secret_usages.connected_system_name": "Povezani sustav {name}",
-    "programs.secret-usages.description": "Prikazuje povezane sustave čije lozinke koriste zadane tajne"
+    "programs.secret-usages.description": "Prikazuje povezane sustave čije lozinke koriste zadane tajne",
+    "versions.development_source_required": "Izvori paketa moraju biti razvojni sustavi.",
+    "screens.choose_development_source": "Odaberite razvojni izvor.",
+    "programs.recommended-sources.description": "Odaberite izvore preporučenih paketa"
   }
 }

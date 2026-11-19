@@ -104,6 +104,9 @@
     "ui.deploy_package": "Implantar {package}",
     "ui.deployment_json": "JSON de implantação",
     "secret_usages.connected_system_name": "Sistema conectado {name}",
-    "programs.secret-usages.description": "Listar sistemas conectados cujas senhas usam os segredos informados"
+    "programs.secret-usages.description": "Listar sistemas conectados cujas senhas usam os segredos informados",
+    "versions.development_source_required": "As origens dos pacotes devem ser sistemas de desenvolvimento.",
+    "screens.choose_development_source": "Escolha uma origem de desenvolvimento.",
+    "programs.recommended-sources.description": "Selecionar as fontes dos pacotes recomendados"
   }
 }

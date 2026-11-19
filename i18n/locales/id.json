@@ -104,6 +104,9 @@
     "ui.deploy_package": "Deploy {package}",
     "ui.deployment_json": "JSON deployment",
     "secret_usages.connected_system_name": "Sistem terhubung {name}",
-    "programs.secret-usages.description": "Daftar sistem terhubung yang kata sandinya menggunakan rahasia tertentu"
+    "programs.secret-usages.description": "Daftar sistem terhubung yang kata sandinya menggunakan rahasia tertentu",
+    "versions.development_source_required": "Sumber paket harus berupa sistem pengembangan.",
+    "screens.choose_development_source": "Pilih sumber pengembangan.",
+    "programs.recommended-sources.description": "Pilih sumber paket yang direkomendasikan"
   }
 }

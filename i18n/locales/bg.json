@@ -104,6 +104,9 @@
     "ui.deploy_package": "Внедри {package}",
     "ui.deployment_json": "JSON за внедряване",
     "secret_usages.connected_system_name": "Свързана система {name}",
-    "programs.secret-usages.description": "Показва свързаните системи, чиито пароли използват дадените тайни"
+    "programs.secret-usages.description": "Показва свързаните системи, чиито пароли използват дадените тайни",
+    "versions.development_source_required": "Източниците на пакети трябва да са системи за разработка.",
+    "screens.choose_development_source": "Изберете източник за разработка.",
+    "programs.recommended-sources.description": "Избор на източници за препоръчаните пакети"
   }
 }

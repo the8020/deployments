@@ -104,6 +104,9 @@
     "ui.deploy_package": "Nasadiť {package}",
     "ui.deployment_json": "JSON nasadenia",
     "secret_usages.connected_system_name": "Pripojený systém {name}",
-    "programs.secret-usages.description": "Výpis pripojených systémov, ktorých heslá používajú zadané tajné údaje"
+    "programs.secret-usages.description": "Výpis pripojených systémov, ktorých heslá používajú zadané tajné údaje",
+    "versions.development_source_required": "Zdrojom balíkov musí byť vývojový systém.",
+    "screens.choose_development_source": "Vyberte vývojový zdroj.",
+    "programs.recommended-sources.description": "Vybrať zdroje odporúčaných balíkov"
   }
 }

@@ -104,6 +104,9 @@
     "ui.deploy_package": "Развернуть {package}",
     "ui.deployment_json": "JSON развёртывания",
     "secret_usages.connected_system_name": "Подключённая система {name}",
-    "programs.secret-usages.description": "Показывает подключённые системы, пароли которых используют указанные секреты"
+    "programs.secret-usages.description": "Показывает подключённые системы, пароли которых используют указанные секреты",
+    "versions.development_source_required": "Источниками пакетов должны быть системы разработки.",
+    "screens.choose_development_source": "Выберите источник разработки.",
+    "programs.recommended-sources.description": "Выбрать источники рекомендуемых пакетов"
   }
 }

@@ -1,0 +1,4 @@
+schema = 1
+description = "Select recommended package sources"
+entrypoint = "program.ts"
+discoverable = false

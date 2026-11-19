@@ -104,6 +104,9 @@
     "ui.deploy_package": "Udrul {package}",
     "ui.deployment_json": "Udrulnings-JSON",
     "secret_usages.connected_system_name": "Forbundet system {name}",
-    "programs.secret-usages.description": "Vis forbundne systemer, hvis adgangskoder bruger de angivne hemmeligheder"
+    "programs.secret-usages.description": "Vis forbundne systemer, hvis adgangskoder bruger de angivne hemmeligheder",
+    "versions.development_source_required": "Pakkekilder skal være udviklingssystemer.",
+    "screens.choose_development_source": "Vælg en udviklingskilde.",
+    "programs.recommended-sources.description": "Vælg kilder til anbefalede pakker"
   }
 }

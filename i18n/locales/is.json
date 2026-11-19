@@ -104,6 +104,9 @@
     "ui.deploy_package": "Dreifa {package}",
     "ui.deployment_json": "Dreifingar-JSON",
     "secret_usages.connected_system_name": "Tengt kerfi {name}",
-    "programs.secret-usages.description": "Birta tengd kerfi þar sem lykilorð nota tilgreind leyndarmál"
+    "programs.secret-usages.description": "Birta tengd kerfi þar sem lykilorð nota tilgreind leyndarmál",
+    "versions.development_source_required": "Upprunakerfi pakka verða að vera þróunarkerfi.",
+    "screens.choose_development_source": "Veldu þróunaruppruna.",
+    "programs.recommended-sources.description": "Velja uppruna ráðlagðra pakka"
   }
 }

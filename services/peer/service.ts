@@ -1,3 +1,5 @@
+import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { defineService, HTTPError, z } from "/p/the8020/services/http.ts";
 import {
   getSystemProfile,
@@ -33,7 +35,9 @@ service.post("/lists", {}, async ({ request }) => {
   } catch (error) {
     throw new HTTPError(
       400,
-      error instanceof Error ? error.message : "Invalid list",
+      error instanceof Error
+        ? error.message
+        : await resolveMessage(messageSymbol("errors.invalid_list")),
     );
   }
 });
@@ -44,9 +48,14 @@ service.get(
     try {
       await requireDevelopment();
     } catch {
-      return new Response("Git is available only on development systems.", {
-        status: 403,
-      });
+      return new Response(
+        await resolveMessage(
+          messageSymbol("errors.git_is_available_only_on_development_systems"),
+        ),
+        {
+          status: 403,
+        },
+      );
     }
     const repository = String(params.repository);
     if (!repository.endsWith(".git")) {

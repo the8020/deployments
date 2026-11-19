@@ -104,6 +104,9 @@
     "ui.deploy_package": "{package} तैनात करें",
     "ui.deployment_json": "तैनाती JSON",
     "secret_usages.connected_system_name": "जुड़ा सिस्टम {name}",
-    "programs.secret-usages.description": "उन जुड़े सिस्टम की सूची दिखाएँ जिनके पासवर्ड दिए गए सीक्रेट का उपयोग करते हैं"
+    "programs.secret-usages.description": "उन जुड़े सिस्टम की सूची दिखाएँ जिनके पासवर्ड दिए गए सीक्रेट का उपयोग करते हैं",
+    "versions.development_source_required": "पैकेज स्रोत विकास प्रणालियाँ होनी चाहिए।",
+    "screens.choose_development_source": "विकास स्रोत चुनें।",
+    "programs.recommended-sources.description": "अनुशंसित पैकेजों के स्रोत चुनें"
   }
 }

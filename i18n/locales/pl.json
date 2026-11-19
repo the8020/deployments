@@ -104,6 +104,9 @@
     "ui.deploy_package": "Wdróż {package}",
     "ui.deployment_json": "JSON wdrożenia",
     "secret_usages.connected_system_name": "Połączony system {name}",
-    "programs.secret-usages.description": "Wyświetla połączone systemy, których hasła używają podanych sekretów"
+    "programs.secret-usages.description": "Wyświetla połączone systemy, których hasła używają podanych sekretów",
+    "versions.development_source_required": "Źródła pakietów muszą być systemami deweloperskimi.",
+    "screens.choose_development_source": "Wybierz źródło deweloperskie.",
+    "programs.recommended-sources.description": "Wybierz źródła zalecanych pakietów"
   }
 }

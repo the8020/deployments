@@ -104,6 +104,9 @@
     "ui.deploy_package": "Déployer {package}",
     "ui.deployment_json": "JSON du déploiement",
     "secret_usages.connected_system_name": "Système connecté {name}",
-    "programs.secret-usages.description": "Lister les systèmes connectés dont les mots de passe utilisent les secrets indiqués"
+    "programs.secret-usages.description": "Lister les systèmes connectés dont les mots de passe utilisent les secrets indiqués",
+    "versions.development_source_required": "Les sources des paquets doivent être des systèmes de développement.",
+    "screens.choose_development_source": "Choisissez une source de développement.",
+    "programs.recommended-sources.description": "Sélectionner les sources des paquets recommandés"
   }
 }

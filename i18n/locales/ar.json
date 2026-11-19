@@ -104,6 +104,9 @@
     "ui.deploy_package": "نشر {package}",
     "ui.deployment_json": "JSON للنشر",
     "secret_usages.connected_system_name": "النظام المتصل {name}",
-    "programs.secret-usages.description": "عرض الأنظمة المتصلة التي تستخدم كلمات مرورها الأسرار المحددة"
+    "programs.secret-usages.description": "عرض الأنظمة المتصلة التي تستخدم كلمات مرورها الأسرار المحددة",
+    "versions.development_source_required": "يجب أن تكون مصادر الحزم أنظمة تطوير.",
+    "screens.choose_development_source": "اختر مصدر تطوير.",
+    "programs.recommended-sources.description": "اختيار مصادر الحزم الموصى بها"
   }
 }

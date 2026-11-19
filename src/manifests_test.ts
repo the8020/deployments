@@ -15,6 +15,7 @@ Deno.test("every program manifest passes the platform manifest contract", async 
     "connect",
     "continue",
     "deployments",
+    "recommended-sources",
     "secret-usages",
   ]);
 });

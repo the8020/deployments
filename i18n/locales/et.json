@@ -104,6 +104,9 @@
     "ui.deploy_package": "Juuruta {package}",
     "ui.deployment_json": "Juurutuse JSON",
     "secret_usages.connected_system_name": "Ühendatud süsteem {name}",
-    "programs.secret-usages.description": "Loetle ühendatud süsteemid, mille paroolid kasutavad antud saladusi"
+    "programs.secret-usages.description": "Loetle ühendatud süsteemid, mille paroolid kasutavad antud saladusi",
+    "versions.development_source_required": "Pakettide allikad peavad olema arendussüsteemid.",
+    "screens.choose_development_source": "Valige arendusallikas.",
+    "programs.recommended-sources.description": "Soovitatud pakettide allikate valimine"
   }
 }

@@ -1,3 +1,5 @@
+import { text as formatMessage } from "/p/the8020/i18n/mod.ts";
+import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import type {
   DeploymentList,
   PackageState,
@@ -88,7 +90,12 @@ export function checkBaseline(list: DeploymentList, current: PackageState[]) {
         !(actual.state === "absent" && actual.commit === null)
     ) {
       throw new Error(
-        `${item.packageId} changed since review. Compare and create a new deployment list.`,
+        formatMessage(
+          messageSymbol(
+            "errors.changed_since_review_compare_and_create_a_new_deployment_list",
+            { value1: String(item.packageId) },
+          ),
+        ),
       );
     }
   }
@@ -101,7 +108,11 @@ export function rollbackList(
   const changed = items.filter((item) =>
     item.processed && item.before !== item.after
   );
-  if (!changed.length) throw new Error("This run changed no packages.");
+  if (!changed.length) {
+    throw new Error(
+      formatMessage(messageSymbol("errors.this_run_changed_no_packages")),
+    );
+  }
   return {
     ...input,
     id: crypto.randomUUID(),

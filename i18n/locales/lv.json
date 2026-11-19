@@ -104,6 +104,9 @@
     "ui.deploy_package": "Izvietot {package}",
     "ui.deployment_json": "Izvietojuma JSON",
     "secret_usages.connected_system_name": "Savienotā sistēma {name}",
-    "programs.secret-usages.description": "Uzskaitīt savienotās sistēmas, kuru paroles izmanto norādītos noslēpumus"
+    "programs.secret-usages.description": "Uzskaitīt savienotās sistēmas, kuru paroles izmanto norādītos noslēpumus",
+    "versions.development_source_required": "Pakotņu avotiem jābūt izstrādes sistēmām.",
+    "screens.choose_development_source": "Izvēlieties izstrādes avotu.",
+    "programs.recommended-sources.description": "Atlasīt ieteicamo pakotņu avotus"
   }
 }

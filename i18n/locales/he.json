@@ -104,6 +104,9 @@
     "ui.deploy_package": "פריסת {package}",
     "ui.deployment_json": "JSON של פריסה",
     "secret_usages.connected_system_name": "מערכת מחוברת {name}",
-    "programs.secret-usages.description": "הצגת מערכות מחוברות שהסיסמאות שלהן משתמשות בסודות שצוינו"
+    "programs.secret-usages.description": "הצגת מערכות מחוברות שהסיסמאות שלהן משתמשות בסודות שצוינו",
+    "versions.development_source_required": "מקורות החבילות חייבים להיות מערכות פיתוח.",
+    "screens.choose_development_source": "יש לבחור מקור פיתוח.",
+    "programs.recommended-sources.description": "בחירת מקורות לחבילות מומלצות"
   }
 }

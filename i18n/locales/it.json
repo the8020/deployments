@@ -104,6 +104,9 @@
     "ui.deploy_package": "Distribuisci {package}",
     "ui.deployment_json": "JSON di distribuzione",
     "secret_usages.connected_system_name": "Sistema collegato {name}",
-    "programs.secret-usages.description": "Elenca i sistemi collegati le cui password usano i segreti indicati"
+    "programs.secret-usages.description": "Elenca i sistemi collegati le cui password usano i segreti indicati",
+    "versions.development_source_required": "Le origini dei pacchetti devono essere sistemi di sviluppo.",
+    "screens.choose_development_source": "Scegli un'origine di sviluppo.",
+    "programs.recommended-sources.description": "Seleziona le fonti dei pacchetti consigliati"
   }
 }

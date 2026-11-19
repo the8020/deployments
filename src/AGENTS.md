@@ -11,6 +11,14 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 # Local Contracts
 
+- `recommendations.ts` validates the bounded kernel list and selects transport
+  only. Development returns the shipped sources. Other roles preserve
+  local/custom packages, prefer an installed package's connected development
+  source, and otherwise require exactly one development connection. Disconnected
+  adapter sources fail. The existing version API verifies live peer
+  identity/role and refreshes refs on development. Results contain Git URLs,
+  usernames and secret names, never passwords. Native recommendation activation
+  retains version, dirty-work and source-conflict checks.
 - Collection creation/import, comparison/review operations, version selection,
   disconnect, refresh, and backend paging belong in the relevant list toolbar.
   System settings, form saves, related-page navigation, and run-level rollback
@@ -95,6 +103,9 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 # Verification
 
+- `recommendations_test.ts` covers all three roles,
+  missing/ambiguous/disconnected sources, authenticated version refresh, peer
+  failures and local/custom preservation.
 - From the repository root, run `deno task check` and `deno task test`.
 - `deno task test:browser` exercises the real screens and shared browser/session
   stack: differences/all, retained selection, package/version detail, JSON

@@ -138,6 +138,13 @@ relevant child AGENTS.md
 
 # Local Contracts
 
+- `recommended-sources` resolves the kernel's recommendation transports.
+  Development retains upstream sources; test and production use the
+  authenticated development Git adapter without upstream fallback. Existing
+  development sources take priority; a sole development connection supplies
+  missing/upstream packages. Multiple choices require deploying the package from
+  the selected source first. This program must be installed before upgrading to
+  a kernel that requires source selection.
 - Chains have any length; each target has its own database and shared code tree.
   Lists identify their development Git source separately from their target so
   promotion through test/preproduction never needs upstream credentials.

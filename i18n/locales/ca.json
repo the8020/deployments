@@ -104,6 +104,9 @@
     "ui.deploy_package": "Desplega {package}",
     "ui.deployment_json": "JSON de desplegament",
     "secret_usages.connected_system_name": "Sistema connectat {name}",
-    "programs.secret-usages.description": "Llista els sistemes connectats les contrasenyes dels quals utilitzen els secrets indicats"
+    "programs.secret-usages.description": "Llista els sistemes connectats les contrasenyes dels quals utilitzen els secrets indicats",
+    "versions.development_source_required": "Les fonts dels paquets han de ser sistemes de desenvolupament.",
+    "screens.choose_development_source": "Trieu una font de desenvolupament.",
+    "programs.recommended-sources.description": "Selecciona les fonts dels paquets recomanats"
   }
 }
