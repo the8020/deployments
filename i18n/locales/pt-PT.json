@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repositório {value2}. Inspecte e repare a sua fonte antes de tentar novamente.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Uma ativação nativa não concluída {value1} (fase: {value2}) bloqueia esta verificação. A sua propriedade não é estabelecida aqui; um operador de sistema deve inspeccionar a sua recuperação antes de retomar a tentativa. Se estiver disponível, o número kernel.packages.activation.inspect {value3} apresenta os candidatos e os ganchos registados.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "A ativação do esquema nativo está pendente ou desconhecida. Inspectar a recuperação de base de dados nativa/ativação antes de verificar novamente esta implantação.",
+    "errors.peer_timeout": "O tempo de espera da ligação a {url} foi excedido.",
     "errors.connected_system_returned_http": "Sistema conectado devolveu HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "O sistema conectado devolveu uma resposta vazia.",
     "errors.connected_system_response_is_too_large": "A resposta do sistema ligado é muito grande.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "As listas de implantação não devem ser maiores do que 512 KiB.",
     "errors.invalid_list": "Lista inválida",
     "errors.git_is_available_only_on_development_systems": "O Git está disponível apenas em sistemas de desenvolvimento.",
-    "programs.recommended-sources.description": "Selecionar as origens dos pacotes recomendados"
+    "programs.recommended-sources.description": "Selecionar as origens dos pacotes recomendados",
+    "errors.choose_development_connection": "Escolha uma ligação de desenvolvimento para {value1}.",
+    "errors.reconnect_source": "Volte a ligar a origem de desenvolvimento de {value1}.",
+    "errors.use_node": "Execute esta ação no nó {node}."
   }
 }

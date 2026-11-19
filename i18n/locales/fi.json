@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: varasto {value2}. Tarkista ja korjaa sen lähde ennen kuin yrität uudelleen.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Tämä tarkistus estetään lopettamattomalla alkuperäisellä aktivoinnilla {value1} (vaihe: {value2}). Sen omistus ei ole tässä vahvistettu; verkonhaltijan on tarkastettava sen palauttaminen ennen kuin se tehdään uudelleen. Jos se on käytettävissä, kernel.packages.activation.inspect {value3} osoittaa rekisteröityjä hakijoita ja haukut.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema aktivointi on odottamassa tai tuntematon. Tarkista alkuperäinen tietokanta/aktivointipalautus ennen tämän käyttöönoton uudelleen tarkistamista.",
+    "errors.peer_timeout": "Yhteys osoitteeseen {url} aikakatkaistiin.",
     "errors.connected_system_returned_http": "Liittynyt järjestelmä palautti HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Liittynyt järjestelmä palautti tyhjän vastauksen.",
     "errors.connected_system_response_is_too_large": "Liittynyt järjestelmä on liian suuri.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Työluetteloiden määrä ei saa olla suurempi kuin 512 KiB.",
     "errors.invalid_list": "Epävirallinen luettelo",
     "errors.git_is_available_only_on_development_systems": "Git on käytettävissä vain kehittämisjärjestelmissä.",
-    "programs.recommended-sources.description": "Valitse suositeltujen pakettien lähteet"
+    "programs.recommended-sources.description": "Valitse suositeltujen pakettien lähteet",
+    "errors.choose_development_connection": "Valitse yksi kehitysyhteys paketille {value1}.",
+    "errors.reconnect_source": "Yhdistä paketin {value1} kehityslähde uudelleen.",
+    "errors.use_node": "Suorita tämä toiminto solmussa {node}."
   }
 }

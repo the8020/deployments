@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: сховище {value2}. Перед тим, як спробувати знову, перевіряйте і ремонтуйте його джерело.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Незавершена активування {value1} (фаза: {value2}) блокує цей перевірка. Тут не встановлено його власність; оператор системи повинен перевірити його відновлення перед повторним спробою. Якщо є, kernel.packages.activation.inspect {value3} показує свої зареєстровані кандидати і вічки.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Активація нативного схеми чекає або невідома. Перевірте місцевий відновлення бази даних/активації перед тим, як перевірити цей розгортання знову.",
+    "errors.peer_timeout": "Минув час очікування з’єднання з {url}.",
     "errors.connected_system_returned_http": "З'єднана система повернула HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "З'єднана система повернула порожній відповідь.",
     "errors.connected_system_response_is_too_large": "Відповідь підключеного системи занадто велика.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Переліки розподілу не повинні бути більше 512 KiB.",
     "errors.invalid_list": "Недійний перелік",
     "errors.git_is_available_only_on_development_systems": "Git доступний тільки для систем розробки.",
-    "programs.recommended-sources.description": "Вибрати джерела рекомендованих пакетів"
+    "programs.recommended-sources.description": "Вибрати джерела рекомендованих пакетів",
+    "errors.choose_development_connection": "Виберіть одне підключення до системи розробки для {value1}.",
+    "errors.reconnect_source": "Повторно підключіть джерело розробки для {value1}.",
+    "errors.use_node": "Виконайте цю дію на вузлі {node}."
   }
 }

@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}：儲存庫 {value2}。請先檢查並修復其來源，再重試。",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "未完成的原生啟用作業 {value1}（階段：{value2}）阻止了此檢查。此處無法確認其歸屬；系統管理員必須先檢查復原狀態，再重試。如果可用，kernel.packages.activation.inspect {value3} 可顯示其記錄的候選項與掛鉤。",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "該系統的原始啟動還是未知. 在再次檢查這個部署之前, 檢查本地數據庫/啟動恢復.",
+    "errors.peer_timeout": "連線至 {url} 逾時。",
     "errors.connected_system_returned_http": "聯繫系統返回HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "接觸系統回應了空白的訊息.",
     "errors.connected_system_response_is_too_large": "接觸系統的反應太大了.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "部署名單不得超過 512 KiB.",
     "errors.invalid_list": "沒有有效清單",
     "errors.git_is_available_only_on_development_systems": "只有在開發系統上使用 Git.",
-    "programs.recommended-sources.description": "選擇建議套件的來源"
+    "programs.recommended-sources.description": "選擇建議套件的來源",
+    "errors.choose_development_connection": "請為 {value1} 選取一個開發系統連線。",
+    "errors.reconnect_source": "請重新連接 {value1} 的開發來源。",
+    "errors.use_node": "請在節點 {node} 上執行此操作。"
   }
 }

@@ -33,14 +33,18 @@ import {
   remotePassword,
   remoteUsername,
   runState,
+  type Snapshot,
 } from "../types.ts";
 import Connections from "../tables/connections.ts";
 import Lists from "../tables/lists.ts";
 import Runs from "../tables/runs.ts";
-import { compareSystems, comparisonChange } from "./comparison.ts";
+import {
+  compareSystems,
+  comparisonChange,
+  versionLabel,
+} from "./comparison.ts";
 import {
   deleteList,
-  getConnection,
   remoteSnapshot,
   removeConnection,
   saveConnection,
@@ -307,14 +311,24 @@ async function newDeployment(packageId = "") {
     if (event.action === BACK_EVENT) return;
     if (event.action === "compare") {
       try {
-        const source = await remoteSnapshot(model.data.source),
-          target = await remoteSnapshot(model.data.target);
+        const source = await remoteSnapshot(
+          model.data.source,
+          model.data.source === model.data.from ||
+            model.data.source === model.data.target,
+        );
+        const target = model.data.target === model.data.source
+          ? source
+          : await remoteSnapshot(model.data.target, true);
         if (source.system.role !== "development") {
           throw new Error(
             localizedText(msg("screens.choose_development_source")),
           );
         }
-        await getConnection(source.system.id);
+        const compared = model.data.from === source.system.id
+          ? source
+          : model.data.from === target.system.id
+          ? target
+          : await remoteSnapshot(model.data.from, true);
         await presentPage(() =>
           selectPackages(
             {
@@ -326,7 +340,8 @@ async function newDeployment(packageId = "") {
               packages: [],
             },
             packageId,
-            model.data.from,
+            compared,
+            target,
           )
         );
       } catch (cause) {
@@ -338,15 +353,23 @@ async function newDeployment(packageId = "") {
 
 async function selectPackages(
   draft: DeploymentList,
-  single = "",
-  from = draft.sourceSystemId,
+  single: string,
+  source: Snapshot,
+  target: Snapshot,
 ) {
-  const source = await remoteSnapshot(from),
-    target = await remoteSnapshot(draft.targetSystemId);
+  const canApply = target.system.id === (await getSystemProfile()).id;
   const Row = z.object({
     packageId: read(deploymentPackageId),
     before: field(versionText, {
       label: msg("screens.installed"),
+      readOnly: true,
+    }),
+    installedLabel: field(versionText, {
+      label: msg("screens.installed"),
+      readOnly: true,
+    }),
+    targetLabel: field(versionText, {
+      label: msg("screens.target"),
       readOnly: true,
     }),
     after: field(versionText, { label: msg("screens.target"), readOnly: true }),
@@ -370,6 +393,8 @@ async function selectPackages(
       change: "added",
       selected: true,
       available: true,
+      installedLabel: "—",
+      targetLabel: "—",
     }];
   }
   let all = Boolean(single);
@@ -393,14 +418,20 @@ async function selectPackages(
           bind: "rows",
           key: "packageId",
           selection: "selected",
-          display: ["packageId", "before", "after", "change"],
+          display: ["packageId", "installedLabel", "targetLabel", "change"],
           toolbar: [
+            ...(canApply
+              ? [{
+                id: "apply",
+                label: msg("screens.apply_deployment"),
+                kind: "primary" as const,
+              }]
+              : []),
             {
               id: "review",
               label: single
-                ? localizedText(msg("screens.review_update"))
-                : localizedText(msg("screens.create_deployment_list")),
-              kind: "primary",
+                ? msg("screens.review_update")
+                : msg("screens.create_deployment_list"),
             },
             { type: "separator" },
             {
@@ -429,16 +460,17 @@ async function selectPackages(
             editPackage(draft.sourceSystemId, row.packageId, row.after)
           );
           if (selected !== undefined) {
-            row.after = selected;
+            row.after = selected.commit;
+            row.targetLabel = versionLabel(selected.commit, selected.label);
             row.selected = true;
             row.change = comparisonChange(
               target.packages.find((item) => item.packageId === row.packageId),
-              selected || null,
+              selected.commit || null,
             );
           }
         }
       }
-      if (event.action === "review") {
+      if (event.action === "review" || (canApply && event.action === "apply")) {
         const input = parseList({
           ...draft,
           packages: rows.filter((row) => row.selected).map((row) => ({
@@ -447,7 +479,26 @@ async function selectPackages(
             target: row.after ? { commit: row.after, tag: null } : null,
           })),
         });
-        if (single) await presentPage(() => reviewList(input, null));
+        if (event.action === "apply") {
+          if (
+            await confirm(
+              localizedText(
+                msg("screens.apply_value1_to_value2", {
+                  value1: input.name,
+                  value2: target.system.name,
+                }),
+              ),
+              localizedText(msg("ui.apply")),
+            )
+          ) {
+            const saved = input.packages.length > 1
+              ? (await saveList(input)).id
+              : null;
+            const run = await applyList(input, saved);
+            await presentPage(() => runDetail(run.id));
+            return;
+          }
+        } else if (single) await presentPage(() => reviewList(input, null));
         else {
           await saveList(input);
           await presentPage(() => reviewList(input, input.id));
@@ -533,7 +584,7 @@ async function editPackage(
       },
     });
     if (event.action === BACK_EVENT) return undefined;
-    if (event.action === "remove") return "";
+    if (event.action === "remove") return { commit: "", label: "" };
     if (event.action === "select") {
       model.data.selection = String(event.value);
     }
@@ -553,7 +604,12 @@ async function editPackage(
         );
         continue;
       }
-      return version.commit;
+      return {
+        commit: version.commit,
+        label: [version.tags.join(", "), version.subject].filter(Boolean).join(
+          " · ",
+        ),
+      };
     }
   }
 }
@@ -568,7 +624,7 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
   });
   const model = new Model({ rows: [] as z.infer<typeof Row>[] });
   while (true) {
-    const target = await remoteSnapshot(input.targetSystemId),
+    const target = await remoteSnapshot(input.targetSystemId, true),
       local = await getSystemProfile();
     model.data.rows = input.packages.map((item) => {
       const current = target.packages.find((row) =>
@@ -576,10 +632,11 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
       );
       return {
         packageId: item.packageId,
-        reviewed: item.before ?? "",
-        current: current?.commit ?? "",
-        target: item.target?.commit ?? item.target?.tag ??
-          localizedText(msg("screens.remove")),
+        reviewed: versionLabel(item.before),
+        current: versionLabel(current?.commit, current?.subject),
+        target: item.target?.commit
+          ? versionLabel(item.target.commit)
+          : item.target?.tag ?? localizedText(msg("screens.remove")),
         change: comparisonChange(current, item.target?.commit ?? null),
       };
     });
@@ -663,7 +720,9 @@ export async function reviewList(input: DeploymentList, listId: string | null) {
             const copy = structuredClone(input);
             copy.id = crypto.randomUUID();
             copy.packages.find((row) => row.packageId === item.packageId)!
-              .target = selected ? { commit: selected, tag: null } : null;
+              .target = selected.commit
+                ? { commit: selected.commit, tag: null }
+                : null;
             if (listId) await saveList(copy);
             await reviewList(copy, listId ? copy.id : null);
           });
@@ -810,8 +869,8 @@ export async function runDetail(id: string) {
       error: run.error,
       rows: run.packages.map((item) => ({
         ...item,
-        before: item.before ?? "",
-        after: item.after ?? "",
+        before: versionLabel(item.before),
+        after: versionLabel(item.after),
         change: item.change,
       })),
     };

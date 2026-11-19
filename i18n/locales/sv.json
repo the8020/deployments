@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: förråd {value2}. Kontrollera och reparera källan innan du försöker igen.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "En oavslutad aktivering {value1} (fas: {value2}) blockerar denna kontroll. Dess ägande är inte fastställd här; en systemoperatör måste kontrollera dess återhämtning innan den återförsökas. I förekommande fall visar kernel.packages.activation.inspect {value3} sina registrerade kandidater och häckar.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema aktiveringen är pågående eller okänd. Kontrollera nativ databas/aktiveringsåterställning innan du kontrollerar denna implementering igen.",
+    "errors.peer_timeout": "Anslutningen till {url} överskred tidsgränsen.",
     "errors.connected_system_returned_http": "Anslutet system returnerade HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Anslutet system returnerade ett tomt svar.",
     "errors.connected_system_response_is_too_large": "Anslutna systemresponserna är för stora.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Uppdragslistor får inte vara större än 512 KiB.",
     "errors.invalid_list": "Invalida förteckningar",
     "errors.git_is_available_only_on_development_systems": "Git är endast tillgängligt på utvecklingssystem.",
-    "programs.recommended-sources.description": "Välj källor för rekommenderade paket"
+    "programs.recommended-sources.description": "Välj källor för rekommenderade paket",
+    "errors.choose_development_connection": "Välj en anslutning till utvecklingssystemet för {value1}.",
+    "errors.reconnect_source": "Anslut utvecklingskällan för {value1} igen.",
+    "errors.use_node": "Kör den här åtgärden på noden {node}."
   }
 }

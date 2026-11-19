@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: भंडार {value2}. पुनः प्रयास करने से पहले इसके स्रोत का निरीक्षण करें और उसकी मरम्मत करें।",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "एक अधूरा मूल सक्रियण {value1} (चरणः {value2}) इस जांच को अवरुद्ध करता है। इसका स्वामित्व यहां स्थापित नहीं किया गया है; एक सिस्टम ऑपरेटर को पुनः प्रयास करने से पहले इसकी वसूली का निरीक्षण करना होगा। यदि उपलब्ध हो, तो kernel.packages.activation.inspect {value3} में इसके पंजीकृत उम्मीदवार और हुक दिखाई देते हैं।",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "मूल योजना सक्रियण लंबित है या अज्ञात है। इस तैनाती को फिर से जांचने से पहले मूल डेटाबेस/सक्रियता पुनर्प्राप्ति की जांच करें।",
+    "errors.peer_timeout": "{url} से कनेक्ट करने का समय समाप्त हो गया।",
     "errors.connected_system_returned_http": "कनेक्टेड सिस्टम HTTP {value1} लौटाया।",
     "errors.connected_system_returned_an_empty_response": "कनेक्टेड सिस्टम ने एक खाली प्रतिक्रिया लौटा दी।",
     "errors.connected_system_response_is_too_large": "कनेक्टेड-सिस्टम प्रतिक्रिया बहुत बड़ी है।",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "तैनाती सूची 512 KiB से अधिक नहीं होनी चाहिए।",
     "errors.invalid_list": "अवैध सूची",
     "errors.git_is_available_only_on_development_systems": "Git केवल विकास प्रणालियों पर उपलब्ध है।",
-    "programs.recommended-sources.description": "अनुशंसित पैकेजों के स्रोत चुनें"
+    "programs.recommended-sources.description": "अनुशंसित पैकेजों के स्रोत चुनें",
+    "errors.choose_development_connection": "{value1} के लिए एक डेवलपमेंट कनेक्शन चुनें।",
+    "errors.reconnect_source": "{value1} का डेवलपमेंट स्रोत फिर से कनेक्ट करें।",
+    "errors.use_node": "यह कार्रवाई नोड {node} पर चलाएँ।"
   }
 }

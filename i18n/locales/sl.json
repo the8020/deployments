@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: skladišče {value2}. Pred ponovnim poskusom preverite in popravite vir.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Nekončana aktiviranje {value1} (faza: {value2}) blokira to preverjanje. Njena lastništvo ni ugotovljeno tukaj; upravljavec sistema mora pred ponovnim poskusom preveriti njegovo izterjavo. Če je na voljo, se v številki kernel.packages.activation.inspect {value3} prikažejo zapisani kandidati in kroge.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Aktiviranje domače sheme je v teku ali neznano. Preverite domorodno obnovitev podatkovne baze/aktiviranja, preden ponovno preverite ta razporeditev.",
+    "errors.peer_timeout": "Čas za povezavo z {url} je potekel.",
     "errors.connected_system_returned_http": "Povezan sistem je vrnil HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Povezani sistem je vrnil prazen odgovor.",
     "errors.connected_system_response_is_too_large": "Odziv priključnega sistema je prevelik.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Seznam razporejenih oseb ne sme biti večji od 512 KiB.",
     "errors.invalid_list": "Neveljavni seznam",
     "errors.git_is_available_only_on_development_systems": "Git je na voljo samo na razvojnih sistemih.",
-    "programs.recommended-sources.description": "Izberite vire priporočenih paketov"
+    "programs.recommended-sources.description": "Izberite vire priporočenih paketov",
+    "errors.choose_development_connection": "Izberite eno povezavo z razvojnim sistemom za {value1}.",
+    "errors.reconnect_source": "Znova povežite razvojni vir za {value1}.",
+    "errors.use_node": "Izvedite to dejanje na vozlišču {node}."
   }
 }

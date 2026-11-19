@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: depot {value2}. Undersøg og reparer kilden, før du prøver igen.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "En ufuldstændig aktivering {value1} (fase: {value2}) blokerer denne kontrol. Dens ejerskab er her ikke fastlagt, og en systemoperatør skal kontrollere, at den genvinder sig, før den genforsøger den. kernel.packages.activation.inspect {value3} viser, om det er tilgængeligt, de registrerede kandidater og hæk.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema aktivering er ventende eller ukendt. Kontroller den oprindelige database/aktiveringsopdatering, før du kontrollerer denne implementering igen.",
+    "errors.peer_timeout": "Forbindelsen til {url} fik timeout.",
     "errors.connected_system_returned_http": "Det tilkoblede system returnerede HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Det tilkoblede system returnerede et tomt svar.",
     "errors.connected_system_response_is_too_large": "Det tilkoblede system er for stort.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Udstationeringslister må ikke være større end 512 KiB.",
     "errors.invalid_list": "Ugyldig liste",
     "errors.git_is_available_only_on_development_systems": "Git er kun tilgængelig på udviklingssystemer.",
-    "programs.recommended-sources.description": "Vælg kilder til anbefalede pakker"
+    "programs.recommended-sources.description": "Vælg kilder til anbefalede pakker",
+    "errors.choose_development_connection": "Vælg én udviklingsforbindelse til {value1}.",
+    "errors.reconnect_source": "Forbind udviklingskilden til {value1} igen.",
+    "errors.use_node": "Kør denne handling på noden {node}."
   }
 }

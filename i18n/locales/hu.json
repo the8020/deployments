@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: adatbázis {value2}. Ellenőrizze és javítsa meg a forrást, mielőtt újra megpróbálja.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "A {value1} (fázis: {value2}) nem befejezett aktiválása blokkolja ezt a ellenőrzést. A rendszerüzemeltetőnek meg kell vizsgálnia a visszafizetését, mielőtt újra megpróbálja. Ha rendelkezésre áll, a kernel.packages.activation.inspect {value3} jelölte a bejegyzett jelölteket és a foglyokat.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Az eredeti skéma aktiválása várakozó vagy ismeretlen. Ellenőrizze a helyi adatbázis/aktivációs helyreállítást, mielőtt újra ellenőrizné ezt a telepítést.",
+    "errors.peer_timeout": "Időtúllépés a következő címhez való kapcsolódáskor: {url}.",
     "errors.connected_system_returned_http": "A csatlakoztatott rendszer vissza HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "A csatlakoztatott rendszer üres választ adott.",
     "errors.connected_system_response_is_too_large": "A csatlakoztatott rendszer túl nagy.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "A beosztási listák nem lehetnek nagyobbak, mint 512 KiB.",
     "errors.invalid_list": "Hivatalos listák",
     "errors.git_is_available_only_on_development_systems": "A Git csak fejlesztési rendszereken elérhető.",
-    "programs.recommended-sources.description": "Ajánlott csomagok forrásainak kiválasztása"
+    "programs.recommended-sources.description": "Ajánlott csomagok forrásainak kiválasztása",
+    "errors.choose_development_connection": "Válasszon egy fejlesztői kapcsolatot ehhez: {value1}.",
+    "errors.reconnect_source": "Csatlakoztassa újra a fejlesztői forrást ehhez: {value1}.",
+    "errors.use_node": "Futtassa ezt a műveletet a(z) {node} csomóponton."
   }
 }

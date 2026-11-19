@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: hoiukogus {value2}. Kontrollige ja parandage selle allikad enne uuesti proovimist.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "See kontroll blokeeritakse lõpetamata native aktivatsiooniga {value1} (faas: {value2}). Selle omanik ei ole siin kindlaks määratud; enne taaskatsemist peab süsteemimeetja selle taastamist kontrollima. Kui see on kättesaadav, näitab kernel.packages.activation.inspect {value3} oma registreeritud kandidaate ja haagid.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema aktiveerimine ootab või on teadmata. Kontrollige esialgne andmebaasi/aktiivitusrespordimine enne selle kasutuselevõtu uuesti kontrollimist.",
+    "errors.peer_timeout": "Ühendus aadressiga {url} aegus.",
     "errors.connected_system_returned_http": "Seotud süsteem tagasi HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Sisse ühendatud süsteem vastas tühja.",
     "errors.connected_system_response_is_too_large": "Sisse ühendatud süsteemi reaktsioon on liiga suur.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Asendusnimekirjad ei tohi olla suuremad kui 512 KiB.",
     "errors.invalid_list": "Vaevased loetelu",
     "errors.git_is_available_only_on_development_systems": "Git on saadaval ainult arendus süsteemidel.",
-    "programs.recommended-sources.description": "Soovitatud pakettide allikate valimine"
+    "programs.recommended-sources.description": "Soovitatud pakettide allikate valimine",
+    "errors.choose_development_connection": "Vali paketile {value1} üks arendusühendus.",
+    "errors.reconnect_source": "Ühenda paketi {value1} arendusallikas uuesti.",
+    "errors.use_node": "Tehke see toiming sõlmes {node}."
   }
 }

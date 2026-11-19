@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: รหัส {value2} ตรวจสอบและซ่อมแซมแหล่งของมัน ก่อนที่จะลองอีกครั้ง",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "การเปิดตัวพื้นที่ที่ยังไม่จบ {value1} (ช่วง: {value2}) ปิดการตรวจสอบนี้ เจ้าของของของมันไม่ได้ยืนยันที่นี่ ผู้ประกอบการระบบต้องตรวจสอบการฟื้นฟูมัน ก่อนที่จะพยายามอีกครั้ง หากมี kernel.packages.activation.inspect {value3} แสดงผู้สมัครที่บันทึกไว้และการจับ",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "การใช้งานในแผนที่พื้นเมืองยังรออยู่ หรือไม่ทราบ ตรวจสอบฐานข้อมูลพื้นเมือง / การฟื้นคืนการใช้งานก่อนตรวจสอบการใช้งานครั้งนี้อีกครั้ง",
+    "errors.peer_timeout": "หมดเวลารอการเชื่อมต่อกับ {url}",
     "errors.connected_system_returned_http": "ระบบเชื่อมกลับ HTTP {value1}",
     "errors.connected_system_returned_an_empty_response": "ระบบที่เชื่อมต่อกลับตอบกลับเปล่า",
     "errors.connected_system_response_is_too_large": "การตอบสนองของระบบเชื่อมต่อใหญ่เกินไป",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "รายชื่อการจัดตั้งไม่ควรเกิน 512 KiB.",
     "errors.invalid_list": "รายการไม่ถูกต้อง",
     "errors.git_is_available_only_on_development_systems": "Git มีเพียงระบบพัฒนาเท่านั้น",
-    "programs.recommended-sources.description": "เลือกแหล่งที่มาของแพ็กเกจที่แนะนำ"
+    "programs.recommended-sources.description": "เลือกแหล่งที่มาของแพ็กเกจที่แนะนำ",
+    "errors.choose_development_connection": "เลือกการเชื่อมต่อระบบพัฒนาหนึ่งรายการสำหรับ {value1}",
+    "errors.reconnect_source": "เชื่อมต่อแหล่งพัฒนาของ {value1} อีกครั้ง",
+    "errors.use_node": "ดำเนินการนี้บนโหนด {node}"
   }
 }

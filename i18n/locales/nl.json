@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: opslagplaats {value2}. Controleer en herstel de bron voordat u opnieuw probeert.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Een onvoltooide native activatie {value1} (fase: {value2}) blokkeert deze controle. Het eigendom ervan is hier niet vastgesteld; een systeembeheerder moet het herstel ervan inspecteren voordat hij opnieuw probeert. Indien beschikbaar, laat kernel.packages.activation.inspect {value3} zijn geregistreerde kandidaten en haakjes zien.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema-activatie is aan de gang of onbekend. Controleer het herstel van de native database/activatie voordat u deze implementatie opnieuw controleert.",
+    "errors.peer_timeout": "De verbinding met {url} heeft de tijdslimiet overschreden.",
     "errors.connected_system_returned_http": "Geconnecteerd systeem is teruggekeerd HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Het aangesloten systeem reageerde leeg.",
     "errors.connected_system_response_is_too_large": "De reactie van het aangesloten systeem is te groot.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "De lijst van uitplaatsingen mag niet groter zijn dan 512 KiB.",
     "errors.invalid_list": "Niet geldige lijst",
     "errors.git_is_available_only_on_development_systems": "Git is alleen beschikbaar op ontwikkelingssystemen.",
-    "programs.recommended-sources.description": "Bronnen voor aanbevolen pakketten selecteren"
+    "programs.recommended-sources.description": "Bronnen voor aanbevolen pakketten selecteren",
+    "errors.choose_development_connection": "Kies één verbinding met het ontwikkelsysteem voor {value1}.",
+    "errors.reconnect_source": "Verbind de ontwikkelbron voor {value1} opnieuw.",
+    "errors.use_node": "Voer deze actie uit op knooppunt {node}."
   }
 }

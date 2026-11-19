@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repozitář {value2}. Před dalším pokusem zkontrolujte a opravte jeho zdroj.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Nedokončená nativní aktivace {value1} (fáze: {value2}) blokuje tuto kontrolu. Její vlastník zde není určen; správce systému musí před dalším pokusem zkontrolovat možnosti obnovy. Je-li dostupný, příkaz kernel.packages.activation.inspect {value3} zobrazí zaznamenané kandidáty a hooky.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Nativní aktivace schématu čeká na dokončení nebo je její stav neznámý. Před další kontrolou nasazení prohlédněte možnosti obnovy databáze a aktivace.",
+    "errors.peer_timeout": "Vypršel časový limit pro spojení s {url}.",
     "errors.connected_system_returned_http": "Připojený systém vrátil HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Připojený systém vrátil prázdnou odpověď.",
     "errors.connected_system_response_is_too_large": "Odpověď připojeného systému je příliš velká.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Seznamy nasazení nesmí být větší než 512 KiB.",
     "errors.invalid_list": "Neplatný seznam",
     "errors.git_is_available_only_on_development_systems": "Git je dostupný pouze na vývojových systémech.",
-    "programs.recommended-sources.description": "Vybrat zdroje doporučených balíčků"
+    "programs.recommended-sources.description": "Vybrat zdroje doporučených balíčků",
+    "errors.choose_development_connection": "Vyberte jedno připojení k vývojovému systému pro {value1}.",
+    "errors.reconnect_source": "Znovu připojte vývojový zdroj pro {value1}.",
+    "errors.use_node": "Proveďte tuto akci na uzlu {node}."
   }
 }

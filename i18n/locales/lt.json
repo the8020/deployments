@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: saugykla {value2}. Prieš bandydami iš naujo, patikrinkite ir ištaisykite jo šaltinį.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Šis patikrinimas blokuojamas nepabaigtas nativasis aktyvavimas {value1} (fazė: {value2}). Šioje vietoje nėra nustatyta, kad jis yra jos savininkas; sistemos operatorius prieš dar kartą bandydamas ją turi patikrinti, ar ji yra išgauta. Jei yra, kernel.packages.activation.inspect {value3} rodo užregistruotus kandidatus ir rankas.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema aktyvavimas laukia arba nežinomas. Prieš peržiūrint šį panaudojimą, patikrinkite vietinę duomenų bazės/aktyvacijos atkūrimą.",
+    "errors.peer_timeout": "Baigėsi prisijungimo prie {url} laikas.",
     "errors.connected_system_returned_http": "Prisijungtas sistema grąžino HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Prisijungta sistema atdavė tuščią atsaką.",
     "errors.connected_system_response_is_too_large": "Prijungtos sistemos atsakymas per didelis.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Įdomuosius sąrašus turi būti ne didesni kaip 512 KiB.",
     "errors.invalid_list": "Negalima sąrašas",
     "errors.git_is_available_only_on_development_systems": "Git yra prieinama tik plėtojimo sistemose.",
-    "programs.recommended-sources.description": "Pasirinkti rekomenduojamų paketų šaltinius"
+    "programs.recommended-sources.description": "Pasirinkti rekomenduojamų paketų šaltinius",
+    "errors.choose_development_connection": "Pasirinkite vieną kūrimo sistemos ryšį paketui {value1}.",
+    "errors.reconnect_source": "Iš naujo prijunkite paketo {value1} kūrimo šaltinį.",
+    "errors.use_node": "Atlikite šį veiksmą mazge {node}."
   }
 }

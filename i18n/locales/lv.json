@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: noliktavā {value2}. Pirms atkārtošanas pārbaudi un remontu.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Neapbeidīts natives aktivizācija {value1} (faza: {value2}) bloķē šo pārbaudi. Šajā gadījumā tās īpašumtiesība nav noteikta; sistēmas operatori pirms atkārtošanās pārbauda to atgūšanu. Ja ir pieejams, kernel.packages.activation.inspect {value3} norāda to reģistrētos kandidātus un krukas.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema aktivizācija ir gaidāma vai nav zināma. Pārbaudiet vietējo datu bāzes/aktivizācijas atgūšanu, pirms atkārtoti pārbaudīt šo ieviešanu.",
+    "errors.peer_timeout": "Beidzās savienojuma gaidīšanas laiks ar {url}.",
     "errors.connected_system_returned_http": "Savienota sistēma atgriežas HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Savienota sistēma atdeva tuvu atbildi.",
     "errors.connected_system_response_is_too_large": "Savienota sistēmas reakcija ir pārāk liela.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Izvietotās saraksts nedrīkst būt lielāks par 512 KiB.",
     "errors.invalid_list": "Neatbilstoša saraksta",
     "errors.git_is_available_only_on_development_systems": "Git ir pieejams tikai attīstības sistēmām.",
-    "programs.recommended-sources.description": "Atlasīt ieteicamo pakotņu avotus"
+    "programs.recommended-sources.description": "Atlasīt ieteicamo pakotņu avotus",
+    "errors.choose_development_connection": "Izvēlieties vienu izstrādes savienojumu pakotnei {value1}.",
+    "errors.reconnect_source": "Atkārtoti pievienojiet pakotnes {value1} izstrādes avotu.",
+    "errors.use_node": "Veiciet šo darbību mezglā {node}."
   }
 }

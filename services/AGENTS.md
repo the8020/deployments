@@ -15,6 +15,8 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   service-local password check or token exchange is needed. Git and version
   routes additionally require the development system role.
 
+- A snapshot requested with `subjects=1` includes available installed commit
+  subjects for comparison. Ordinary snapshots retain the original wire format.
 - Read-only Git serves only confined Git objects and references. Incoming lists
   are untrusted proposals and never activate automatically.
 

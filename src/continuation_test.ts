@@ -32,8 +32,14 @@ Deno.test("bounded package steps survive lost dispatch, exclude concurrent admis
       username: "admin",
     }).execute();
     await setSecret({ name: `deployments.peer.${source.id}`, value: "test" });
-    globalThis.fetch = () =>
-      Promise.resolve(Response.json({ system: source, packages: [] }));
+    globalThis.fetch = (url) =>
+      Promise.resolve(
+        Response.json(
+          String(url).endsWith("/identity")
+            ? source
+            : { system: source, packages: [] },
+        ),
+      );
     fixture.operation = async (name, input) => {
       if (name === "admin.execute") return { protocol: 1, maximum: 256 };
       if (name === "event.emit") {

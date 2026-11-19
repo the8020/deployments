@@ -2,7 +2,7 @@
 
 python3 native_e2e.py --runtime-root /root/8020/test13
 Requires a built sibling kernel, Git and a qualified rootless image.
-CPU affinity, aggregate proportional memory, and runtime limits include spawned kernels.
+CPU affinity, memory, and runtime limits include spawned kernels.
 """
 import argparse
 import base64
@@ -74,29 +74,39 @@ def bounded_wait(fn, seconds=90):
             time.sleep(1)
 
 
-def monitor(start, memory_mib, seconds):
+def descendant_memory_kib():
+    parents, memory = {}, {}
+    for entry in Path("/proc").iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            status = (entry / "status").read_text()
+            parents[int(entry.name)] = int(re.search(r"^PPid:\s+(\d+)", status, re.M)[1])
+            match = re.search(r"^Pss:\s+(\d+)", (entry / "smaps_rollup").read_text(), re.M)
+            memory[int(entry.name)] = int(match[1]) if match else 0
+        except (OSError, TypeError):
+            pass
+    descendants = {os.getpid()}
     while True:
-        parents, memory = {}, {}
-        for entry in Path("/proc").iterdir():
-            if not entry.name.isdigit():
-                continue
-            try:
-                status = (entry / "status").read_text()
-                parents[int(entry.name)] = int(re.search(r"^PPid:\s+(\d+)", status, re.M)[1])
-                match = re.search(r"^Pss:\s+(\d+)", (entry / "smaps_rollup").read_text(), re.M)
-                memory[int(entry.name)] = int(match[1]) if match else 0
-            except (OSError, TypeError):
-                pass
-        descendants = {os.getpid()}
-        while True:
-            expanded = descendants | {pid for pid, parent in parents.items() if parent in descendants}
-            if expanded == descendants:
-                break
-            descendants = expanded
-        total = sum(memory.get(pid, 0) for pid in descendants)
+        expanded = descendants | {pid for pid, parent in parents.items() if parent in descendants}
+        if expanded == descendants:
+            return sum(memory.get(pid, 0) for pid in descendants)
+        descendants = expanded
+
+
+def monitor(start, memory_mib, seconds):
+    cgroup = Path("/sys/fs/cgroup")
+    try:
+        hard_limit = int((cgroup / "memory.max").read_text())
+    except (OSError, ValueError):
+        hard_limit = 0
+    # A tighter container cap also accounts for detached processes. gVisor mappings inflate summed PSS.
+    capped = 0 < hard_limit <= memory_mib * 1024 * 1024
+    while True:
+        used = int((cgroup / "memory.current").read_text()) // 1024 if capped else descendant_memory_kib()
         available = int(re.search(r"^MemAvailable:\s+(\d+)", Path("/proc/meminfo").read_text(), re.M)[1])
-        if total > memory_mib * 1024 or available < 750 * 1024 or time.monotonic() - start > seconds:
-            print(f"Native smoke stopped at {total // 1024} MiB proportional memory, {available // 1024} MiB available.", flush=True)
+        if used > memory_mib * 1024 or available < 750 * 1024 or time.monotonic() - start > seconds:
+            print(f"Native smoke stopped at {used // 1024} MiB, {available // 1024} MiB available.", flush=True)
             os.kill(os.getpid(), signal.SIGTERM)
             return
         time.sleep(1)
@@ -172,6 +182,52 @@ def seed_cycle(root):
     return versions
 
 
+def start_node(root, database, backend):
+    log = open(root / "native-smoke.log", "w")
+    child = subprocess.Popen([str(KERNEL), "--root", str(root), "--set", f"network.main_port={backend}",
+        "--set", f"network.ssh_port={port()}", "--set", f"network.https_port={port()}",
+        "--set", f"database.location={database}",
+        "--set", "sandbox.runtime.mode=rootless", "--set", "sandbox.warm_pool.size=0",
+        "--set", "runtime.sandbox.keep_alive=0", "--set", "runtime.sandbox.stop_grace_period=1000",
+        "--set", "job.default.idle_runtime_timeout=1000"],
+        env={**os.environ, "GOMAXPROCS": "2"}, stdout=log, stderr=log)
+    processes.append((root, child, log))
+    def ready():
+        state = admin(root, "kernel.status")
+        assert state.get("runtime_ready") and state.get("database_initialized") and not state.get("runtime_application_failure"), state
+    bounded_wait(ready, seconds=180)
+    print("Kernel ready:", root, flush=True)
+
+
+def rolling_sync(old, new, versions):
+    command([KERNEL, "--root", new, "--init-defaults", "--init-only"])
+    for folder in ["bin", "runtime/images", "runtime/definitions"]:
+        shutil.copytree(old / "node/kernel" / folder, new / "node/kernel" / folder,
+                        copy_function=os.link, symlinks=True, dirs_exist_ok=True)
+    command(["bash", SOURCE / "kernel/install-development-assets.sh", new])
+    shutil.copytree(old / "node/kernel/keys", new / "node/kernel/keys", dirs_exist_ok=True)
+    shutil.copytree(old / "packages", new / "packages", symlinks=True, dirs_exist_ok=True)
+    node = re.search(r"nod-[a-z0-9]{10}", (new / "kernel.toml").read_text()).group()
+    backend = port()
+    config = dict(node_id=node, url=f"http://127.0.0.1:{backend}", recipient_address="127.0.0.1", recipient_port=port(), enabled=True)
+    evaluate(old, 'const {kernel}=await import("@the8020/kernel"); return await kernel.nodes.set('+json.dumps(config)+');')
+    start_node(new, old / "database/system.db", backend)
+    expression = ('const {packages}=await import("/p/the8020/packages/src/admin.ts");'
+                  'const index=await packages.index.inspect("acme/release");'
+                  'await packages.index.set({author:index.author,repository:index.repository,source:index.source,commit:'+json.dumps(versions[1])+'});'
+                  'const {packageDifferences,synchronizeNode}=await import("/p/the8020/packages/src/node-sync.ts");'
+                  'const rows=(await packageDifferences()).filter(r=>r.packageId==="acme/release");'
+                  'if(rows.length!==2)throw Error(JSON.stringify(rows));'
+                  'await synchronizeNode(rows.find(r=>r.node==='+json.dumps(node)+')); return rows;')
+    evaluate(old, expression)
+    for root, wanted in [(old, 1), (new, 2)]:
+        result=evaluate(root,'const {kernel}=await import("@the8020/kernel"); return await kernel.programs.run({programId:"acme/release/version"});')
+        assert result["result"] == wanted, result
+    print("Shared DB rolling sync served v1 on the old node and v2 on the selected new node", flush=True)
+    admin(new, "kernel.shutdown")
+    processes[-1][1].wait(timeout=25)
+
+
 def main():
     global peer_host
     args = argparse.ArgumentParser(description=__doc__)
@@ -198,20 +254,7 @@ def main():
                 cycle_versions = seed_cycle(root)
             backend = port()
             urls.append(f"http://{host}:{backend}")
-            log = open(root / "native-smoke.log", "w")
-            child = subprocess.Popen([str(KERNEL), "--root", str(root), "--set", f"network.main_port={backend}",
-                "--set", f"network.ssh_port={port()}", "--set", f"network.https_port={port()}",
-                "--set", f"database.location={root}/database/system.db",
-                "--set", "sandbox.runtime.mode=rootless", "--set", "sandbox.warm_pool.size=0",
-                "--set", "runtime.sandbox.keep_alive=0", "--set", "runtime.sandbox.stop_grace_period=1000",
-                "--set", "job.default.idle_runtime_timeout=1000"],
-                env={**os.environ, "GOMAXPROCS": "2"}, stdout=log, stderr=log)
-            processes.append((root, child, log))
-            def ready():
-                state = admin(root, "kernel.status")
-                assert state.get("runtime_ready") and state.get("database_initialized") and not state.get("runtime_application_failure"), state
-            bounded_wait(ready)
-            print("Kernel ready:", root, flush=True)
+            start_node(root, root / "database/system.db", backend)
         profiles = []
         for root, role in zip(roots, ["development", "production"]):
             profiles.append(bounded_wait(lambda: evaluate(root,
@@ -223,11 +266,11 @@ def main():
         print("Independent short system IDs and master keys verified", flush=True)
         passwords = ["native-password", "native-password"]
         for root, password in zip(roots, passwords):
-            # Bound retained service Workers in this two-system fixture.
+            # Release UI Workers promptly and keep the peer's normal Git service lifetime.
             evaluate(root, 'const {updateDesired}=await import("/p/the8020/services/src/admin.ts");'
-                'for (const id of ["the8020/uui/login","the8020/uui/shell","the8020/deployments/peer"]) '
-                'await updateDesired(id,{overrides:{workerKeepAliveMs:1000}});'
-                'const {kernel}=await import("@the8020/kernel"); await kernel.admin.execute("kernel.reindex",{packages:"the8020/uui,the8020/deployments"}); return true;')
+                'for (const id of ["the8020/uui/login","the8020/uui/shell"]) '
+                'await updateDesired(id,{overrides:{minimumWorkers:0,workerKeepAliveMs:1000}});'
+                'const {kernel}=await import("@the8020/kernel"); await kernel.admin.execute("kernel.reindex",{packages:"the8020/uui"}); return true;')
             admin(root, "users.add", "deployer", "--password-stdin", input=password + "\n")
         for url in urls:
             for path in ["/identity", "/snapshot", "/git/acme/release.git/info/refs"]:
@@ -248,6 +291,8 @@ def main():
                 values = database.execute("SELECT value FROM the8020__secrets__secrets").fetchall()
                 assert len(values) == 2 and all(value.startswith("v1:") and passwords[0] not in value for (value,) in values)
         print("Connection command authenticated both directions over loopback; database credentials are encrypted", flush=True)
+        detected = admin(roots[1], "packages.source.inspect", "acme/release")["source"]
+        assert detected["package_id"] == "acme/release" and detected["default_commit"] == versions[1], detected
         jar = http.cookiejar.CookieJar()
         client = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(jar))
         for url, password in zip(urls, passwords):
@@ -265,6 +310,10 @@ def main():
         with client.open(urls[1] + "/the8020/deployments/peer/identity", timeout=90) as response:
             assert response.status == 200
         print("Same-hostname login and logout cookies stay isolated across ports", flush=True)
+        for root in roots:
+            evaluate(root, 'const {updateDesired}=await import("/p/the8020/services/src/admin.ts");'
+                'for(const id of ["the8020/uui/login","the8020/uui/shell"]) await updateDesired(id,{enabled:false});'
+                'const {kernel}=await import("@the8020/kernel"); await kernel.admin.execute("kernel.reindex",{packages:"the8020/uui"}); return true;')
         for version, order in [(0, ["alpha", "beta"]), (1, ["beta", "alpha"])]:
             payload = dict(schema=1, id=str(uuid.uuid4()), name="Cyclic selected set", sourceSystemId=profiles[0]["id"],
                            targetSystemId=profiles[1]["id"], packages=[dict(packageId=f"acme/{name}",
@@ -334,6 +383,13 @@ def main():
         restored = evaluate(roots[1], 'const {rollbackRun}=await import("/p/the8020/deployments/src/runs.ts");'
             f'return await rollbackRun({json.dumps(removed["id"])});')
         applied(restored, versions[0])
+        rolling_sync(roots[1], base / f"test{number + 2}", versions)
+        checked = evaluate(roots[1], 'const {packages}=await import("/p/the8020/packages/src/admin.ts"); return await packages.versions.list("acme/release",1);')
+        assert checked["current_commit"] == versions[0] and checked["update_commit"] == versions[1], checked
+        upstream = roots[0] / "repair/acme/release.git"
+        upstream.parent.mkdir(parents=True)
+        git(roots[0], "clone", "--bare", str(roots[0] / "packages/acme/release"), str(upstream))
+        git(upstream, "update-server-info")
         evaluate(roots[0], 'const {kernel}=await import("@the8020/kernel"); await kernel.packages.delete("acme/release",true); return true;')
         authorization = "Basic " + base64.b64encode(f"deployer:{passwords[0]}".encode()).decode()
         missing = evaluate(roots[1], f'const response=await fetch({json.dumps(urls[0] + "/the8020/deployments/peer/git/acme/release.git/info/refs")},{{headers:{{Authorization:{json.dumps(authorization)}}}}}); await response.body?.cancel(); return response.status;')
@@ -343,9 +399,25 @@ def main():
                 f'await setSystemProfile({json.dumps({"name": "Native " + role,"role": role})});'
                 'const {packages}=await import("/p/the8020/packages/src/admin.ts");'
                 'const {development}=await import("/p/the8020/dev-core/src/development.ts");'
-                'for (const action of [()=>packages.delete("acme/release",true),()=>packages.versions.list("acme/release"),()=>development.activate.run({user_id:"unused"}),()=>development.sandbox.run("create","unused")]) {'
-                'try {await action();return false;}catch(error){if(!String(error).includes("Deployments")) throw error;}} return true;')
+                'for (const [action,reason] of [[()=>packages.delete("acme/release",true),"Deployments"],'
+                '[()=>development.activate.run({user_id:"unused"}),"development.activation_allowed"]]) {'
+                'try {await action();return false;}catch(error){if(!String(error).includes(reason)) throw error;}} return true;')
             assert result is True, result
+        admin(roots[0], "kernel.shutdown")
+        processes[0][1].wait(timeout=25)
+        from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+        from functools import partial
+        server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, directory=upstream.parents[1]))
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            source=f"http://127.0.0.1:{server.server_port}/acme/release.git"
+            admin(roots[1], "packages.repair", "acme/release", "--source", source, "--confirm")
+            admin(roots[1], "packages.repair", "acme/release", "--source", source, "--commit", versions[1], "--confirm")
+            assert git(roots[1] / "packages/acme/release", "rev-parse", "HEAD")==versions[1]
+        finally:
+            server.shutdown()
+            server.server_close()
+        print("Confirmed upstream repair fetched and applied with development stopped",flush=True)
         print("Native deployment smoke passed: independent profiles, HTTP peers, queued lists, tags, update, ad hoc update, rollback, removal, restore from Git, deleted source returns 404, role gates.", flush=True)
     finally:
         for root, child, log in reversed(processes):

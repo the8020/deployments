@@ -28,8 +28,14 @@ Deno.test("one durable staged set retains exact input, exclusion and uncertain r
       name: `deployments.peer.${source.id}`,
       value: "private-password",
     });
-    globalThis.fetch = () =>
-      Promise.resolve(Response.json({ system: source, packages: [] }));
+    globalThis.fetch = (url) =>
+      Promise.resolve(
+        Response.json(
+          String(url).endsWith("/identity")
+            ? source
+            : { system: source, packages: [] },
+        ),
+      );
     fixture.operation = async (name, input) => {
       if (name === "event.emit") {
         events.push({ name: input.name, data: input.data });

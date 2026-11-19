@@ -10,6 +10,10 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 # Local Contracts
 
+- Runs record the originating node, a separate sync recipient for selected-node
+  operations, and the explicit upstream URL for repairs. Credential values never
+  enter the run or its input.
+
 - Connections store remote usernames, never passwords. Passwords belong to the
   existing secrets table and are removed with their connection.
 

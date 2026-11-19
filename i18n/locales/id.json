@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repositori {value2}. Periksa dan perbaiki sumbernya sebelum mencoba lagi.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Aktivasi asli {value1} yang belum selesai (fase: {value2}) memblokir cek ini. Pemiliknya tidak ditetapkan di sini; operator sistem harus memeriksa pemulihan sebelum mencoba lagi. Jika tersedia, kernel.packages.activation.inspect {value3} menunjukkan kandidat dan kait yang terdaftar.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Aktifasi skema asli sedang menunggu atau tidak diketahui. Periksa database asli / pemulihan aktivasi sebelum memeriksa penyebaran ini lagi.",
+    "errors.peer_timeout": "Waktu koneksi ke {url} habis.",
     "errors.connected_system_returned_http": "Sistem yang terhubung kembali HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Sistem yang terhubung kembali dengan jawaban kosong.",
     "errors.connected_system_response_is_too_large": "Respon sistem yang terhubung terlalu besar.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Daftar penyebaran tidak boleh lebih besar dari 512 KiB.",
     "errors.invalid_list": "Daftar tidak valid",
     "errors.git_is_available_only_on_development_systems": "Git hanya tersedia pada sistem pengembangan.",
-    "programs.recommended-sources.description": "Pilih sumber paket yang direkomendasikan"
+    "programs.recommended-sources.description": "Pilih sumber paket yang direkomendasikan",
+    "errors.choose_development_connection": "Pilih satu koneksi pengembangan untuk {value1}.",
+    "errors.reconnect_source": "Hubungkan kembali sumber pengembangan untuk {value1}.",
+    "errors.use_node": "Jalankan tindakan ini di simpul {node}."
   }
 }

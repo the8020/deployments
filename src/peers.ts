@@ -4,7 +4,7 @@ import { getSecret, setSecret } from "/p/the8020/secrets/mod.ts";
 import Secrets from "/p/the8020/secrets/tables/secrets.ts";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
 import { getSystemProfile, systemProfile } from "/p/the8020/system/profile.ts";
-import Packages from "/p/the8020/packages/tables/packages.ts";
+import { kernel } from "@the8020/kernel";
 import Connections from "../tables/connections.ts";
 import Lists from "../tables/lists.ts";
 import { observedVersion } from "./observation.ts";
@@ -98,33 +98,52 @@ export async function request(
   );
   const headers = new Headers({ Authorization: `Basic ${bytes.toBase64()}` });
   if (body !== undefined) headers.set("Content-Type", "application/json");
-  return await readJSON(
-    await fetch(new URL(servicePath + path, systemUrl.parse(peer.url)), {
-      method: body === undefined ? "GET" : "POST",
-      headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
-      redirect: "error",
-      signal: AbortSignal.timeout(30_000),
-    }),
-  );
+  const url = new URL(servicePath + path, systemUrl.parse(peer.url));
+  const signal = AbortSignal.timeout(30_000);
+  try {
+    return await readJSON(
+      await fetch(url, {
+        method: body === undefined ? "GET" : "POST",
+        headers,
+        body: body === undefined ? undefined : JSON.stringify(body),
+        redirect: "error",
+        signal,
+      }),
+    );
+  } catch (error) {
+    if (!signal.aborted) throw error;
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.peer_timeout", { url: url.origin }),
+      ),
+    );
+  }
 }
 
-export async function localSnapshot(packageIds?: string[]): Promise<Snapshot> {
-  let query = Packages.select([
-    Packages.packageId,
-    Packages.activeCommit,
-    Packages.state,
-  ])
-    .where(Packages.state, "!=", "retired").orderBy(Packages.packageId).limit(
-      10001,
-    );
-  if (packageIds) query = query.where(Packages.packageId, "in", packageIds);
-  const packages = await query.execute();
+export async function localSnapshot(
+  packageIds?: string[],
+  withSubjects = false,
+): Promise<Snapshot> {
+  const indexed = await kernel.packages.index.list();
+  const selected = packageIds && new Set(packageIds);
   const observed = [];
-  for (const row of packages) {
+  for (const row of indexed) {
+    if (selected && !selected.has(row.package_id)) continue;
+    const version = selected
+      ? await observedVersion(row.package_id, row)
+      : { commit: row.active_commit || null, state: row.state ?? "desired" };
+    // Comparison is an explicit read. Ordinary snapshots and deployment baselines stay compact.
+    const subject =
+      withSubjects && version.commit && kernel.packages.versions.subject
+        ? (await kernel.packages.versions.subject(
+          row.package_id,
+          version.commit,
+        ).catch(() => "")).slice(0, 160)
+        : "";
     observed.push({
-      packageId: row.packageId,
-      ...await observedVersion(row.packageId),
+      packageId: row.package_id,
+      ...version,
+      ...(subject ? { subject } : {}),
     });
   }
   return snapshot.parse({
@@ -140,11 +159,19 @@ export async function getConnection(id: string) {
   );
 }
 
-export async function remoteSnapshot(id: string): Promise<Snapshot> {
-  if ((await getSystemProfile()).id === id) return await localSnapshot();
+export async function remoteSnapshot(
+  id: string,
+  withSubjects = false,
+): Promise<Snapshot> {
+  if ((await getSystemProfile()).id === id) {
+    return await localSnapshot(undefined, withSubjects);
+  }
   const peer = await getConnection(id);
   const result = snapshot.parse(
-    await request(await credentials(peer), "/snapshot"),
+    await request(
+      await credentials(peer),
+      withSubjects ? "/snapshot?subjects=1" : "/snapshot",
+    ),
   );
   if (result.system.id !== id) {
     throw new Error(

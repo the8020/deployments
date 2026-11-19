@@ -13,7 +13,10 @@ const tableModules = await Promise.all([
   import("../tables/connections.ts"),
   import("/p/the8020/secrets/tables/secrets.ts"),
   import("../tables/lists.ts"),
+  import("/p/the8020/uui/tables/list_layouts.ts"),
   import("../tables/runs.ts"),
+  import("/p/the8020/packages/tables/node_packages.ts"),
+  import("/p/the8020/system/tables/nodes.ts"),
   import("/p/the8020/system/tables/settings.ts"),
   import("/p/the8020/packages/tables/packages.ts"),
   import("/p/the8020/packages/tables/activations.ts"),
@@ -140,6 +143,21 @@ export class DatabaseFixture {
         ),
       );
       return { success: true, result: { data: data.toBase64() } };
+    }
+    if (
+      args.operation === "package.index.inspect" ||
+      args.operation === "package.index.list"
+    ) {
+      const rows = this.database.prepare(
+        "SELECT packageId AS package_id, state, activeCommit AS active_commit FROM the8020__packages__packages WHERE state != ?",
+      ).all("retired");
+      const id = (args.input as Record<string, unknown>).package_id;
+      return {
+        success: true,
+        result: args.operation === "package.index.list"
+          ? { packages: rows }
+          : { package: rows.find((row) => row.package_id === id) },
+      };
     }
     return {
       success: true,

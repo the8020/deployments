@@ -4,6 +4,7 @@ import { newId } from "@the8020/kernel";
 import { setSystemProfile } from "/p/the8020/system/profile.ts";
 import { setSecret } from "/p/the8020/secrets/mod.ts";
 import Packages from "/p/the8020/packages/tables/packages.ts";
+import { packages } from "/p/the8020/packages/src/admin.ts";
 import Connections from "../tables/connections.ts";
 import { passwordName } from "./peers.ts";
 import { gitURL } from "./versions.ts";
@@ -15,7 +16,7 @@ const item = {
   version: "0.10.1",
 };
 
-Deno.test("recommendations use upstream only in development and authenticated development Git otherwise", async () => {
+Deno.test("recommendations and package lookups use the connected development Git on non-development systems", async () => {
   const fixture = new DatabaseFixture(), originalFetch = globalThis.fetch;
   const peer = {
     id: newId("sys"),
@@ -40,8 +41,9 @@ Deno.test("recommendations use upstream only in development and authenticated de
           String(url).includes("/versions/")
             ? { package_id: item.id, versions: [] }
             : {
-              system: { id: peer.id, name: peer.name, role: remoteRole },
-              packages: [],
+              id: peer.id,
+              name: peer.name,
+              role: remoteRole,
             },
         ),
       );
@@ -65,16 +67,36 @@ Deno.test("recommendations use upstream only in development and authenticated de
       secret: passwordName(peer.id),
       username: peer.username,
     }];
+    fixture.operation = (name, input) => {
+      assertEquals(name, "package.transport.inspect");
+      assertEquals(input.source, gitURL(peer.url, item.id));
+      assertEquals(input.transport_secret, passwordName(peer.id));
+      return Promise.resolve({
+        source: { package_id: item.id, source: input.source, references: [] },
+      });
+    };
     for (const role of ["test", "production"] as const) {
       await setSystemProfile({ name: role, role });
       assertEquals(await recommendedSources([item]), expected);
+      assertEquals(
+        (await packages.source.inspect(item.id)).source,
+        expected[0]!.source,
+      );
+      assertEquals(
+        (await packages.source.inspect(item.source)).source,
+        item.source,
+      );
     }
     await Connections.insert({
       ...peer,
       id: newId("sys"),
       url: "http://another.invalid",
     }).execute();
-    await assertRejects(() => recommendedSources([item]), Error, "unambiguous");
+    await assertRejects(
+      () => recommendedSources([item]),
+      Error,
+      "one development connection",
+    );
     await Packages.insert({
       packageId: item.id,
       author: "acme",

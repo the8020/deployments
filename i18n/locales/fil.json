@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repository {value2}. Suriin at ayusin ang pinagmulan nito bago muling subukan.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Ang hindi natapos na native activation {value1} (phase: {value2}) ay nag-block sa check na ito. Ang pagmamay-ari nito ay hindi itinatag dito; ang isang operator ng sistema ay dapat suriin ang pag-aari nito bago muling subukan. Kung magagamit, ang kernel.packages.activation.inspect {value3} ay nagpapakita ng mga naka-record na kandidato at mga hook nito.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Ang native schema activation ay naghihintay o hindi kilala. Suriin ang native database/activation recovery bago suriin muli ang paglalapat na ito.",
+    "errors.peer_timeout": "Lumampas sa itinakdang oras ang koneksyon sa {url}.",
     "errors.connected_system_returned_http": "Nagbalik ang konektado na sistema HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Nagbalik ang konektado na sistema ng walang sagot.",
     "errors.connected_system_response_is_too_large": "Ang pagtugon ng konektado na sistema ay masyadong malaki.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Ang mga listahan ng mga naka-deploy ay hindi maaaring maging mas malaki kaysa sa 512 KiB.",
     "errors.invalid_list": "Invalid na listahan",
     "errors.git_is_available_only_on_development_systems": "Ang Git ay magagamit lamang sa mga sistema ng pagbuo.",
-    "programs.recommended-sources.description": "Piliin ang mga pinagmulan ng mga inirerekomendang pakete"
+    "programs.recommended-sources.description": "Piliin ang mga pinagmulan ng mga inirerekomendang pakete",
+    "errors.choose_development_connection": "Pumili ng isang koneksyon sa development para sa {value1}.",
+    "errors.reconnect_source": "Ikonekta muli ang development source para sa {value1}.",
+    "errors.use_node": "Patakbuhin ang pagkilos na ito sa node na {node}."
   }
 }

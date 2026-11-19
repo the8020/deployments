@@ -18,7 +18,17 @@ service.get(
   {},
   async () => Response.json(await getSystemProfile()),
 );
-service.get("/snapshot", {}, async () => Response.json(await localSnapshot()));
+service.get(
+  "/snapshot",
+  {},
+  async ({ request }) =>
+    Response.json(
+      await localSnapshot(
+        undefined,
+        new URL(request.url).searchParams.get("subjects") === "1",
+      ),
+    ),
+);
 service.get(
   "/versions/:author/:repository",
   packageParams,

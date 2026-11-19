@@ -1,11 +1,13 @@
 import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
 import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
-import { kernel } from "@the8020/kernel";
-import Packages from "/p/the8020/packages/tables/packages.ts";
+import { AdminCommandError, kernel, type PackageIndex } from "@the8020/kernel";
 import Activations from "/p/the8020/packages/tables/activations.ts";
 import { commit } from "../types.ts";
 
-export async function observedVersion(packageId: string) {
+export async function observedVersion(
+  packageId: string,
+  indexed?: PackageIndex,
+) {
   const repository = await kernel.packages.repository.inspect(packageId);
   if (repository.status === "absent" || repository.status === "empty") {
     return { commit: null, state: "absent" };
@@ -21,12 +23,20 @@ export async function observedVersion(packageId: string) {
     );
   }
   const head = commit.parse(repository.head);
-  const row = await Packages.select([Packages.state, Packages.activeCommit])
-    .where(Packages.packageId, "=", packageId).executeTakeFirst();
+  let row = indexed;
+  if (!row) {
+    try {
+      row = await kernel.packages.index.inspect(packageId);
+    } catch (error) {
+      if (!(error instanceof AdminCommandError) || error.code !== "not_found") {
+        throw error;
+      }
+    }
+  }
   return {
     commit: head,
     state: repository.status === "ready" && row?.state === "ready" &&
-        row.activeCommit === head
+        row.active_commit === head
       ? "ready"
       : "incomplete",
   };

@@ -118,6 +118,7 @@ export type DeploymentItem = z.infer<typeof deploymentItem>;
 export const packageState = z.object({
   packageId: deploymentPackageId,
   commit: commit.nullable(),
+  subject: z.string().max(160).optional(),
   state: z.string(),
 }).strict();
 export type PackageState = z.infer<typeof packageState>;

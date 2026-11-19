@@ -138,6 +138,11 @@ relevant child AGENTS.md
 
 # Local Contracts
 
+- Any system may compare, create, export or send a list. The target applies it
+  on its selected node. Connected development Git supplies ordinary package
+  bytes, including ad hoc updates. Confirmed upstream repair records its source
+  and the before/after commits. Node sync records the recipient on the run.
+
 - `recommended-sources` resolves the kernel's recommendation transports.
   Development retains upstream sources; test and production use the
   authenticated development Git adapter without upstream fallback. Existing
@@ -145,9 +150,10 @@ relevant child AGENTS.md
   missing/upstream packages. Multiple choices require deploying the package from
   the selected source first. This program must be installed before upgrading to
   a kernel that requires source selection.
-- Chains have any length; each target has its own database and shared code tree.
-  Lists identify their development Git source separately from their target so
-  promotion through test/preproduction never needs upstream credentials.
+- Chains have any length; each target has its own database and a checkout per
+  app server. Lists identify their development Git source separately from their
+  target so promotion through test/preproduction never needs upstream
+  credentials.
 - Only development systems serve Git. The entire peer service is authenticated;
   ordinary HTTP Basic headers work with Git clients and peer requests. Each
   connection configures an enabled remote account's username and password over
@@ -218,13 +224,35 @@ relevant child AGENTS.md
 - `python3 native_e2e.py --runtime-root /root/8020/test<N>` uses an existing
   qualified rootless OS/toolchain image, stages the current generic runtime
   sources, and creates freshly numbered independent test instances. It limits
-  descendants to two CPUs, 3,584 MiB aggregate proportional memory, and 900
-  seconds, and stops below 750 MiB available host memory. Empty sandboxes are
-  not retained; fixture job and service Workers retain only one second of idle
-  time, with one-second sandbox stop grace. It verifies independent short
-  IDs/master keys, private-service challenges, secure connection commands in
-  both directions over loopback, encrypted secret rows, same-hostname
-  login/logout isolation, real HTTP Git activation, two cyclic packages in both
-  selected orders through staged pre-hooks and switched post-hooks, ad hoc
-  updates, removal, rollback, and roles. Setup waits for full application
-  readiness before changing fixture services.
+  descendants to two CPUs, 3,584 MiB and 900 seconds, and stops below 750 MiB
+  available host memory. Both native suites use an enforced cgroup v2 memory cap
+  when it is at least as restrictive as the test limit. Otherwise they measure
+  aggregate descendant proportional memory. For repeated runs in one Docker
+  fixture, use `docker run --init` to reap orphaned processes. The fixture uses
+  zero keep-alive for empty sandboxes, one second of idle time for jobs and
+  login/shell Workers, and one second of sandbox stop grace. Peer Git uses its
+  normal Worker lifetime. The fixture verifies independent short IDs/master
+  keys, private-service challenges, secure connection commands in both
+  directions over loopback, encrypted secret rows, same-hostname login/logout
+  isolation, real HTTP Git activation, two cyclic packages in both selected
+  orders through staged pre-hooks and switched post-hooks, ad hoc updates,
+  removal, rollback, and roles. After the cookie assertions the fixture disables
+  its login and shell services to free capacity for activation. It checks
+  replacement-node sync against the same database and confirmed CBus repair
+  after development stops.
+- `python3 native_packaging_e2e.py --runtime-root /root/8020/test<N>` runs real
+  development and test kernels, a loopback smart HTTP Git remote, and a
+  replacement node. Use a disposable environment with the built kernel, admin,
+  logd, and qualified service and development images. The suite defaults to two
+  CPUs, 3,584 MiB and 1,800 seconds. Append test method names for focused runs.
+- This suite exercises sandbox creation and activation, transfer and execution
+  of deployment lists, package-ID installation, untagged updates, version
+  selection, node receipts, and offline repair on both non-development roles.
+  Separate clients submit two lists concurrently. A fixture activation hook
+  holds the admitted release while the other client observes its lock. The suite
+  checks disjoint retry, stale-baseline refusal, malformed hook recovery, and
+  the return to development Git after an upstream hotfix. The final case stops
+  the idle test kernel and runs competing activations from two developer
+  sandboxes. A held hook forces one of two selected packages to be busy. The
+  suite checks that the losing developer stays idle, can retry directly, and can
+  publish both the resolved conflict and the independent edit.

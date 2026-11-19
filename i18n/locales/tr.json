@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: deposu {value2}. Yeniden denemeden önce kaynağını kontrol et ve onar.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Tamamlanmamış bir yerel aktivasyon {value1} (faz: {value2}) bu kontrolü engeller. Burada sahipliği belirlenmiyor; bir sistem operatörü yeniden denemeden önce kurtarılmasını kontrol etmelidir. Eğer mevcutsa, kernel.packages.activation.inspect {value3} kayıtlı adaylarını ve kaçağını gösterir.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Doğal şema aktivasyonu bekleniyor veya bilinmiyor. Bu uygulamayı tekrar kontrol etmeden önce yerel veritabanı/aktivasyon kurtarmasını kontrol edin.",
+    "errors.peer_timeout": "{url} bağlantısı zaman aşımına uğradı.",
     "errors.connected_system_returned_http": "Bağlı sistem geri döndü HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Bağlı sistem boş bir cevap verdi.",
     "errors.connected_system_response_is_too_large": "Bağlı sistem tepkisi çok büyük.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Gösterme listeleri 512 KiB'den fazla olmamalıdır.",
     "errors.invalid_list": "Geçersiz liste",
     "errors.git_is_available_only_on_development_systems": "Git yalnızca geliştirme sistemlerinde kullanılabilir.",
-    "programs.recommended-sources.description": "Önerilen paket kaynaklarını seçin"
+    "programs.recommended-sources.description": "Önerilen paket kaynaklarını seçin",
+    "errors.choose_development_connection": "{value1} için bir geliştirme bağlantısı seçin.",
+    "errors.reconnect_source": "{value1} için geliştirme kaynağını yeniden bağlayın.",
+    "errors.use_node": "Bu işlemi {node} düğümünde çalıştırın."
   }
 }

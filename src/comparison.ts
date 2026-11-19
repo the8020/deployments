@@ -28,11 +28,21 @@ export function compareSystems(
         packageId,
         before,
         after,
+        installedLabel: versionLabel(before, to?.subject),
+        targetLabel: versionLabel(after, from?.subject),
         selected: false,
         change,
         available: !from || from.state === "ready",
       }];
     });
+}
+
+export function versionLabel(
+  commit: string | null | undefined,
+  subject?: string,
+) {
+  if (!commit) return "—";
+  return subject ? `${subject} · ${commit.slice(0, 10)}` : commit.slice(0, 10);
 }
 
 export function comparisonChange(

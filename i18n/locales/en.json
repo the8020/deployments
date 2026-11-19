@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repository {value2}. Inspect and repair its source before retrying.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "An unfinished native activation {value1} (phase: {value2}) blocks this check. Its ownership is not established here; a system operator must inspect its recovery before retrying. If available, kernel.packages.activation.inspect {value3} shows its recorded candidates and hooks.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native schema activation is pending or unknown. Inspect native database/activation recovery before checking this deployment again.",
+    "errors.peer_timeout": "Connection to {url} timed out.",
     "errors.connected_system_returned_http": "Connected system returned HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Connected system returned an empty response.",
     "errors.connected_system_response_is_too_large": "Connected-system response is too large.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Deployment lists must be no larger than 512 KiB.",
     "errors.invalid_list": "Invalid list",
     "errors.git_is_available_only_on_development_systems": "Git is available only on development systems.",
-    "programs.recommended-sources.description": "Select recommended package sources"
+    "programs.recommended-sources.description": "Select recommended package sources",
+    "errors.choose_development_connection": "Choose one development connection for {value1}.",
+    "errors.reconnect_source": "Reconnect the development source for {value1}.",
+    "errors.use_node": "Run this action on node {node}."
   }
 }

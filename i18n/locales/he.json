@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: מאגר מסמכים {value2}. בדוק ותתקן את מקורו לפני שתנסה שוב.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "פעולת ילידית לא הושלמה {value1} (שלב: {value2}) מונעת את הבדיקת זו. בעלותו לא נקבע כאן; מפעיל מערכת חייב לבדוק את התאוששות שלו לפני ניסיון נוסף. אם זמין, kernel.packages.activation.inspect {value3} מראה את המועמדים והכוכבים המוקדמים שלו.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "פעילת הסקמה המקומית ממתינה או לא ידועה. בדוק את התאוששות הנתונים המקומיים/הפעילויות לפני שתבדוק שוב את הפעלת זה.",
+    "errors.peer_timeout": "תם הזמן הקצוב לחיבור אל {url}.",
     "errors.connected_system_returned_http": "מערכת מחוברת חזרה HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "מערכת מחוברת החזרת תגובה ריקה.",
     "errors.connected_system_response_is_too_large": "התגובה של מערכת מחוברת גדולה מדי.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "רשימות ההפצה לא יכולות להיות גדולות יותר מ-512 KiB.",
     "errors.invalid_list": "רשימת לא חוקית",
     "errors.git_is_available_only_on_development_systems": "גיט זמין רק במערכות פיתוח.",
-    "programs.recommended-sources.description": "בחירת מקורות לחבילות מומלצות"
+    "programs.recommended-sources.description": "בחירת מקורות לחבילות מומלצות",
+    "errors.choose_development_connection": "יש לבחור חיבור פיתוח אחד עבור {value1}.",
+    "errors.reconnect_source": "יש לחבר מחדש את מקור הפיתוח של {value1}.",
+    "errors.use_node": "יש לבצע פעולה זו בצומת {node}."
   }
 }

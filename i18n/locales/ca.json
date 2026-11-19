@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repositori {value2}. Inspectar i reparar la font abans de tornar a intentar.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Una activació nativa incompleta {value1} (fase: {value2}) bloqueja aquesta verificació. La seva titularitat no s'estableix aquí; un operador del sistema ha d'inspectar la seva recuperació abans de tornar a intentar-ho. Si està disponible, kernel.packages.activation.inspect {value3} mostra els seus candidats registrats i ganxes.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "L'activació de l'esquema natiu està pendent o desconeguda. Inspectar la recuperació nativa de base de dades/activació abans de verificar aquesta implementació de nou.",
+    "errors.peer_timeout": "S’ha esgotat el temps d’espera de la connexió amb {url}.",
     "errors.connected_system_returned_http": "El sistema connectat va tornar HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "El sistema connectat va retornar una resposta vaga.",
     "errors.connected_system_response_is_too_large": "La resposta del sistema connectat és massa gran.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Les llistes de desplegament no poden ser més grans que 512 KiB.",
     "errors.invalid_list": "Llista invalida",
     "errors.git_is_available_only_on_development_systems": "Git està disponible només en sistemes de desenvolupament.",
-    "programs.recommended-sources.description": "Selecciona les fonts dels paquets recomanats"
+    "programs.recommended-sources.description": "Selecciona les fonts dels paquets recomanats",
+    "errors.choose_development_connection": "Trieu una connexió de desenvolupament per a {value1}.",
+    "errors.reconnect_source": "Torneu a connectar l’origen de desenvolupament de {value1}.",
+    "errors.use_node": "Executeu aquesta acció al node {node}."
   }
 }

@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: kho lưu trữ {value2}. Kiểm tra và sửa chữa nguồn của nó trước khi thử lại.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Một kích hoạt bản địa chưa hoàn thành {value1} (phase: {value2}) chặn kiểm tra này. Chủ sở hữu của nó không được xác định ở đây; một nhà khai thác hệ thống phải kiểm tra việc thu hồi của nó trước khi thử lại. Nếu có sẵn, kernel.packages.activation.inspect {value3} cho thấy các ứng cử viên và các cái móc được ghi nhận của nó.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Việc kích hoạt sơ đồ bản địa đang chờ hoặc không rõ. Kiểm tra dữ liệu cơ sở dữ liệu bản địa / phục hồi kích hoạt trước khi kiểm tra việc triển khai này một lần nữa.",
+    "errors.peer_timeout": "Đã hết thời gian chờ kết nối đến {url}.",
     "errors.connected_system_returned_http": "Hệ thống kết nối trả về HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Hệ thống kết nối trả lời không có gì.",
     "errors.connected_system_response_is_too_large": "Phản ứng hệ thống kết nối quá lớn.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Danh sách triển khai không được lớn hơn 512 KiB.",
     "errors.invalid_list": "Danh sách không hợp lệ",
     "errors.git_is_available_only_on_development_systems": "Git chỉ có sẵn trên các hệ thống phát triển.",
-    "programs.recommended-sources.description": "Chọn nguồn cho các gói được đề xuất"
+    "programs.recommended-sources.description": "Chọn nguồn cho các gói được đề xuất",
+    "errors.choose_development_connection": "Chọn một kết nối đến hệ thống phát triển cho {value1}.",
+    "errors.reconnect_source": "Kết nối lại nguồn phát triển cho {value1}.",
+    "errors.use_node": "Thực hiện thao tác này trên nút {node}."
   }
 }

@@ -62,11 +62,21 @@ export default async function fixture() {
     if (url.hostname !== "development.example.invalid") {
       return originalFetch(input, init);
     }
+    if (url.pathname.endsWith("/identity")) {
+      return Promise.resolve(Response.json(source));
+    }
     if (url.pathname.endsWith("/snapshot")) {
       return Promise.resolve(Response.json({
         system: source,
         packages: [
-          { packageId: "acme/app", commit: second, state: "ready" },
+          {
+            packageId: "acme/app",
+            commit: second,
+            state: "ready",
+            ...(url.searchParams.has("subjects")
+              ? { subject: "Second release" }
+              : {}),
+          },
           { packageId: "acme/unchanged", commit: first, state: "ready" },
         ],
       }));
@@ -236,6 +246,11 @@ export default async function fixture() {
           `Array.from(document.querySelectorAll('tbody tr[data-row-index]')).filter(${visible}).length`,
         );
       assertEquals(await rowCount(), 1);
+      assert(
+        await page.evaluate<boolean>(
+          `Array.from(document.querySelectorAll("tbody tr")).some(e=>(${visible})(e) && e.textContent.includes("Second release"))`,
+        ),
+      );
       await clickElement("tbody .data-list-selection input");
       await wait(
         `Array.from(document.querySelectorAll('.data-list-page-summary')).some(e=>(${visible})(e)&&e.textContent.includes('1 of 1 selected'))`,
@@ -292,8 +307,6 @@ export default async function fixture() {
       }
       await click("compare");
       await screen("deployment-compare");
-      await click("review");
-      await screen("deployment-review");
       await clickElement("tbody tr[data-row-index]");
       await screen("deployment-package");
       await wait(
@@ -303,7 +316,7 @@ export default async function fixture() {
       assertEquals(await rowCount(), 2);
       await clickElement("tbody tr[data-row-index]");
       await click("choose");
-      await screen("deployment-review");
+      await screen("deployment-compare");
       await click("apply");
       await screen("deployment-confirm");
       await click("confirm");

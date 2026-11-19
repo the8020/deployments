@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repozytorium {value2}. Sprawdź i napraw jego źródło, zanim spróbujesz ponownie.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Nieukończone aktywacje {value1} (faza: {value2}) blokują tę kontrolę. Nie ustalono tutaj jego własności; operator systemu musi przejrzeć jego odzyskanie przed ponownym próbą. Jeżeli jest dostępny, w numerze kernel.packages.activation.inspect {value3} znajdują się zarejestrowane kandydaty i haczyki.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Aktywacja schematu native jest w toku lub nieznana. Przed ponownym sprawdzeniem tego rozmieszczenia sprawdź natywne odzyskiwanie bazy danych/aktywacji.",
+    "errors.peer_timeout": "Upłynął limit czasu połączenia z {url}.",
     "errors.connected_system_returned_http": "System podłączony zwrócił HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "System podłączony zwrócił puste odpowiedzi.",
     "errors.connected_system_response_is_too_large": "Odpowiedź systemu podłączonego jest zbyt duża.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Wykazy rozmieszczenia nie mogą być większe niż 512 KiB.",
     "errors.invalid_list": "Lista nieważna",
     "errors.git_is_available_only_on_development_systems": "Git jest dostępny tylko w systemach rozwojowych.",
-    "programs.recommended-sources.description": "Wybierz źródła zalecanych pakietów"
+    "programs.recommended-sources.description": "Wybierz źródła zalecanych pakietów",
+    "errors.choose_development_connection": "Wybierz jedno połączenie z systemem deweloperskim dla {value1}.",
+    "errors.reconnect_source": "Połącz ponownie źródło deweloperskie dla {value1}.",
+    "errors.use_node": "Wykonaj tę operację na węźle {node}."
   }
 }

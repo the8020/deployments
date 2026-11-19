@@ -49,7 +49,7 @@ Deno.test("comparison observes absent and empty source instead of catalog versio
     ).execute();
     for (const status of ["absent", "empty"]) {
       repository = { status };
-      const incomplete = await localSnapshot();
+      const incomplete = await localSnapshot(["acme/app"]);
       assertEquals(incomplete.packages[0]?.commit, null);
       assertEquals(compareSystems(healthy, incomplete)[0]?.change, "added");
     }
@@ -61,10 +61,14 @@ Deno.test("comparison observes absent and empty source instead of catalog versio
       ]
     ) {
       repository = { status };
-      await assertRejects(localSnapshot, Error, status);
+      await assertRejects(() => localSnapshot(["acme/app"]), Error, status);
     }
     fixture.operation = () => Promise.reject(new Error("permission denied"));
-    await assertRejects(localSnapshot, Error, "permission denied");
+    await assertRejects(
+      () => localSnapshot(["acme/app"]),
+      Error,
+      "permission denied",
+    );
   } finally {
     fixture.close();
   }

@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: geymsla {value2}. Skoðaðu og lagaðu uppspretta hennar áður en þú reynir aftur.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Uncompleted native activation {value1} (phase: {value2}) blokkar þessari athugun. Eignarrétt hennar er ekki staðfest hér; kerfisstjóri þarf að skoða endurheimtu hennar áður en hún reynir aftur. Ef hægt er að nota kernel.packages.activation.inspect {value3} sýnir skráðar umsækjendur og hák.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native skéma virkni er á eftir eða óþekkt. Skoðaðu staðbundna gagnagrunna/virkni endurheimtu áður en þú endurtekur þetta útbyggingu.",
+    "errors.peer_timeout": "Tenging við {url} rann út á tíma.",
     "errors.connected_system_returned_http": "Tengd kerfi skilaði HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Tengd kerfi skilaði tóm svari.",
     "errors.connected_system_response_is_too_large": "Viðbrögð tengdu kerfisins er of mikil.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Tilboðslista skal ekki vera stærri en 512 KiB.",
     "errors.invalid_list": "Ógildi listi",
     "errors.git_is_available_only_on_development_systems": "Git er aðeins í boði á þróunarkerfum.",
-    "programs.recommended-sources.description": "Velja uppruna ráðlagðra pakka"
+    "programs.recommended-sources.description": "Velja uppruna ráðlagðra pakka",
+    "errors.choose_development_connection": "Veldu eina tengingu við þróunarkerfi fyrir {value1}.",
+    "errors.reconnect_source": "Tengdu þróunaruppsprettu fyrir {value1} aftur.",
+    "errors.use_node": "Keyrðu þessa aðgerð á hnútnum {node}."
   }
 }

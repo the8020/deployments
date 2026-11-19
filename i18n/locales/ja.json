@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: レポジトリ {value2}. また試す前に源を検査して修理する.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "未完成のネイティブアクティベーション {value1} (段階: {value2}) がこのチェックをブロックします. システム運営者は再試する前にその回収を検査しなければならない. 入手可能な場合は,kernel.packages.activation.inspect {value3} に登録された候補者とハックが表示されます.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "ネイティブ・スケーマのアクティベーションは待機か未知です このデプロイメントを再確認する前に,ネイティブデータベース/アクティベーション復元をチェックします.",
+    "errors.peer_timeout": "{url} への接続がタイムアウトしました。",
     "errors.connected_system_returned_http": "接続されたシステムはHTTP {value1}を返しました",
     "errors.connected_system_returned_an_empty_response": "接続されたシステムは空の応答を返しました",
     "errors.connected_system_response_is_too_large": "接続されたシステムの反応は大きすぎます",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "配備リストは 512 KiB 以上のものであってはならない.",
     "errors.invalid_list": "有効でないリスト",
     "errors.git_is_available_only_on_development_systems": "Gitは開発システムのみで利用できます.",
-    "programs.recommended-sources.description": "推奨パッケージの取得元を選択"
+    "programs.recommended-sources.description": "推奨パッケージの取得元を選択",
+    "errors.choose_development_connection": "{value1} の開発システムへの接続を1つ選択してください。",
+    "errors.reconnect_source": "{value1} の開発元に再接続してください。",
+    "errors.use_node": "この操作はノード {node} で実行してください。"
   }
 }

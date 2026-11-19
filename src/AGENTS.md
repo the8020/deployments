@@ -11,14 +11,20 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 
 # Local Contracts
 
+- Compare shows installed and target commits together and can apply the selected
+  rows directly on the target. Continuations stay on the admitting node. Sync
+  checks remote reachability before admitting a run. Once dispatched it retains
+  the shared run lock when the recipient outcome is unknown. Reconciliation
+  checks the recipient before releasing it.
+
 - `recommendations.ts` validates the bounded kernel list and selects transport
   only. Development returns the shipped sources. Other roles preserve
   local/custom packages, prefer an installed package's connected development
   source, and otherwise require exactly one development connection. Disconnected
   adapter sources fail. The existing version API verifies live peer
-  identity/role and refreshes refs on development. Results contain Git URLs,
-  usernames and secret names, never passwords. Native recommendation activation
-  retains version, dirty-work and source-conflict checks.
+  identity/role and reads refs already held on development. Results contain Git
+  URLs, usernames and secret names, never passwords. Native recommendation
+  activation retains version, dirty-work and source-conflict checks.
 - Collection creation/import, comparison/review operations, version selection,
   disconnect, refresh, and backend paging belong in the relevant list toolbar.
   System settings, form saves, related-page navigation, and run-level rollback
@@ -27,10 +33,11 @@ Parent DOX: [deployments DOX](../AGENTS.md).
 - Peer requests authenticate with the configured remote account using standard
   HTTP Basic over the owner-selected HTTP or HTTPS connection. Resolve passwords
   only for outbound requests/native Git synchronization, never into connection
-  models, URLs, lists, or runs. Saving a connection verifies the remote identity
-  and credentials before storing them. Systems shows a masked password entry,
-  clears it after each save attempt, and lets selection populate public
-  connection fields for credential replacement. Reads and writes use
+  models, URLs, lists, or runs. A 30-second request timeout identifies the peer
+  by its origin. Saving a connection verifies the remote identity and
+  credentials before storing them. Systems shows a masked password entry, clears
+  it after each save attempt, and lets selection populate public connection
+  fields for credential replacement. Reads and writes use
   `the8020/secrets/mod.ts`, which encrypts credentials in the database.
 
 - Validate peer data before use. Require local permissions for edits and apply.
@@ -58,6 +65,9 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   pre-write local/custom/unindexed-source guards. Single removal keeps its
   existing path. Imported tags resolve in the native set and history records
   exact resolved commits; input remains immutable.
+- Comparison snapshots can request local Git commit subjects. Display the
+  subject and short hash, retaining the complete commit in selection and
+  history.
 - Comparisons select any pipeline stage independently of the development Git
   source. Preserve selection through the differences/all toggle and detail
   editing. Ad hoc review/edit/rebase retains a null deployment-list reference.
@@ -75,6 +85,10 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   silently split. Minute events query only the unique active run and resume only
   unstarted steps. Authorization and immutable inputs are accepted at admission;
   minute continuations execute that accepted work as system.
+- A rollout and its ordinary rollback apply on the original execution node.
+  Node-sync rollback addresses the original recipient and restores only its
+  checkout. Confirmed upstream repairs record their source; a normal rollback
+  resolves its version through development Git.
 - Apply and continuation programs export `deployments.run.active`. Check
   execution redispatches queued work; an in-flight step requires explicit
   inactive/`target_not_found` evidence, no unfinished native activation, settled

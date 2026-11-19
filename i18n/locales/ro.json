@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: depozitul {value2}. Inspectă şi repara izvorul înainte de a încerca din nou.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "O activare nativă nerezolvată {value1} (faza: {value2}) blochează această verificare. Proprietatea acesteia nu este stabilită aici; un operator de sistem trebuie să inspecteze recuperarea acesteia înainte de a încerca din nou. În cazul în care este disponibil, kernel.packages.activation.inspect {value3} indică candidatele și cârligurile înregistrate.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Activarea schemelor native este pendantă sau necunoscută. Verificați recuperarea de bază de date/activare nativă înainte de a verifica din nou această implementare.",
+    "errors.peer_timeout": "Timpul de așteptare pentru conexiunea la {url} a expirat.",
     "errors.connected_system_returned_http": "Sistemul conectat a returnat HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Sistemul conectat a răspuns gol.",
     "errors.connected_system_response_is_too_large": "Răspunsul sistemului conectat este prea mare.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Listele de desfășurare nu trebuie să fie mai mari de 512 KiB.",
     "errors.invalid_list": "Lista nu valabilă",
     "errors.git_is_available_only_on_development_systems": "Git este disponibil numai pe sisteme de dezvoltare.",
-    "programs.recommended-sources.description": "Selectați sursele pachetelor recomandate"
+    "programs.recommended-sources.description": "Selectați sursele pachetelor recomandate",
+    "errors.choose_development_connection": "Alegeți o conexiune de dezvoltare pentru {value1}.",
+    "errors.reconnect_source": "Reconectați sursa de dezvoltare pentru {value1}.",
+    "errors.use_node": "Executați această acțiune pe nodul {node}."
   }
 }

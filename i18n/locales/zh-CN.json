@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}:存储库 {value2}. 在再试之前检查和修复其源头.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "未完成的原生激活 {value1}（阶段：{value2}）阻止了此检查。这里无法确认其归属；系统管理员必须先检查恢复状态，再重试。如果可用，kernel.packages.activation.inspect {value3} 可显示其记录的候选项和钩子。",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "原始方案的激活正在等待或未知. 在再次检查此部署之前,检查本地数据库/激活恢复.",
+    "errors.peer_timeout": "连接 {url} 超时。",
     "errors.connected_system_returned_http": "连接系统返回HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "连接系统回复了一个空白的响应.",
     "errors.connected_system_response_is_too_large": "连接系统的响应太大了.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "部署列表不得超过512KiB.",
     "errors.invalid_list": "无效列表",
     "errors.git_is_available_only_on_development_systems": "在开发系统中,Git仅可使用.",
-    "programs.recommended-sources.description": "选择推荐软件包的来源"
+    "programs.recommended-sources.description": "选择推荐软件包的来源",
+    "errors.choose_development_connection": "请为 {value1} 选择一个开发系统连接。",
+    "errors.reconnect_source": "请重新连接 {value1} 的开发源。",
+    "errors.use_node": "请在节点 {node} 上执行此操作。"
   }
 }

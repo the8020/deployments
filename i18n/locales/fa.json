@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: مخزن {value2}. قبل از دوباره امتحان کردن منبعش رو بررسی کن و تعمیر کن",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "یک فعال سازی بومی نامکمل {value1} (فاز: {value2}) این چک را مسدود می کند. مالکیت آن در اینجا ثابت نشده است؛ یک اپراتور سیستم باید قبل از تلاش مجدد بازیافت آن را بررسی کند. اگر در دسترس باشد، kernel.packages.activation.inspect {value3} نامزدهای ثبت شده و هک های خود را نشان می دهد.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "فعال کردن اسکیما بومی منتظر است یا ناشناخته. بازیافت پایگاه داده بومی / فعال سازی را قبل از بررسی مجدد این پیاده سازی بررسی کنید.",
+    "errors.peer_timeout": "مهلت اتصال به {url} به پایان رسید.",
     "errors.connected_system_returned_http": "سیستم متصل به HTTP {value1} برگشت",
     "errors.connected_system_returned_an_empty_response": "سیستم متصل جواب خالی رو داد.",
     "errors.connected_system_response_is_too_large": "واکنش سیستم متصل خیلی بزرگه",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "لیست های تعینات نباید بیشتر از 512 KiB باشند.",
     "errors.invalid_list": "لیست غیرفعال",
     "errors.git_is_available_only_on_development_systems": "Git فقط در سیستم های توسعه در دسترس است.",
-    "programs.recommended-sources.description": "انتخاب منابع بسته‌های پیشنهادی"
+    "programs.recommended-sources.description": "انتخاب منابع بسته‌های پیشنهادی",
+    "errors.choose_development_connection": "برای {value1} یک اتصال به سامانهٔ توسعه انتخاب کنید.",
+    "errors.reconnect_source": "منبع توسعهٔ {value1} را دوباره وصل کنید.",
+    "errors.use_node": "این عملیات را روی گره {node} اجرا کنید."
   }
 }

@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: Repository {value2}. Inspektieren und reparieren Sie die Quelle, bevor Sie es erneut versuchen.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Eine unvollendete native Aktivierung {value1} (Phase: {value2}) blockiert diese Prüfung. Hier wird nicht festgestellt, dass der Betriebsinhaber das Eigentum besitzt; ein Systembetreiber muss seine Wiederherstellung vor erneuter Versuche überprüfen. Wenn verfügbar, zeigt kernel.packages.activation.inspect {value3} seine registrierten Kandidaten und Haken an.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Native Schema-Aktivierung ist noch unbekannt. Überprüfen Sie die natürliche Datenbank-/Aktivierungswiederherstellung, bevor Sie diese Bereitstellung erneut überprüfen.",
+    "errors.peer_timeout": "Zeitüberschreitung bei der Verbindung mit {url}.",
     "errors.connected_system_returned_http": "Das angeschlossene System hat HTTP {value1} zurückgegeben.",
     "errors.connected_system_returned_an_empty_response": "Das angeschlossene System gab eine leere Antwort.",
     "errors.connected_system_response_is_too_large": "Die Reaktion des vernetzten Systems ist zu groß.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Die Auflistungen für die Bereitstellung dürfen nicht größer als 512 KiB sein.",
     "errors.invalid_list": "Ungültige Liste",
     "errors.git_is_available_only_on_development_systems": "Git ist nur für Entwicklungssysteme verfügbar.",
-    "programs.recommended-sources.description": "Quellen für empfohlene Pakete auswählen"
+    "programs.recommended-sources.description": "Quellen für empfohlene Pakete auswählen",
+    "errors.choose_development_connection": "Eine Verbindung zum Entwicklungssystem für {value1} auswählen.",
+    "errors.reconnect_source": "Die Entwicklungsquelle für {value1} erneut verbinden.",
+    "errors.use_node": "Führen Sie diese Aktion auf dem Knoten {node} aus."
   }
 }

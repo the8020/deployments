@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: repositori {value2}. Periksa dan perbaiki sumbernya sebelum cuba lagi.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Aktivasi asli {value1} yang belum selesai (fase: {value2}) menghalang pemeriksaan ini. Pemilikannya tidak ditetapkan di sini; pengendali sistem mesti memeriksa pemulihan sebelum mencuba semula. Jika tersedia, kernel.packages.activation.inspect {value3} menunjukkan calon dan kait yang direkodkan.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Aktivasi skim asli sedang menunggu atau tidak diketahui. Periksa pemulihan pangkalan data asli / pengaktifan sebelum memeriksa penyebaran ini lagi.",
+    "errors.peer_timeout": "Sambungan ke {url} tamat masa.",
     "errors.connected_system_returned_http": "Sistem yang disambungkan kembali HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Sistem yang disambungkan kembali jawapan kosong.",
     "errors.connected_system_response_is_too_large": "Tanggapan sistem yang disambungkan terlalu besar.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Senarai penyebaran tidak boleh lebih besar daripada 512 KiB.",
     "errors.invalid_list": "Senarai yang tidak sah",
     "errors.git_is_available_only_on_development_systems": "Git hanya tersedia pada sistem pembangunan.",
-    "programs.recommended-sources.description": "Pilih sumber pakej yang disyorkan"
+    "programs.recommended-sources.description": "Pilih sumber pakej yang disyorkan",
+    "errors.choose_development_connection": "Pilih satu sambungan pembangunan untuk {value1}.",
+    "errors.reconnect_source": "Sambungkan semula sumber pembangunan untuk {value1}.",
+    "errors.use_node": "Jalankan tindakan ini pada nod {node}."
   }
 }

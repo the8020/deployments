@@ -7,6 +7,8 @@ import { context } from "@the8020/context";
 import { kernel, newId, WorkerInvokeError } from "@the8020/kernel";
 import { requirePermission } from "/p/the8020/auth/mod.ts";
 import { getSystemProfile } from "/p/the8020/system/profile.ts";
+import { getSecret } from "/p/the8020/secrets/mod.ts";
+import NodePackages from "/p/the8020/packages/tables/node_packages.ts";
 import Runs from "../tables/runs.ts";
 import Lists from "../tables/lists.ts";
 import Packages from "/p/the8020/packages/tables/packages.ts";
@@ -21,7 +23,12 @@ import {
 } from "../types.ts";
 import { changeKind, checkBaseline, rollbackList } from "./comparison.ts";
 import { credentials, localSnapshot } from "./peers.ts";
-import { developmentSource, gitURL, remoteVersions } from "./versions.ts";
+import {
+  developmentSource,
+  gitURL,
+  packageDevelopmentPeer,
+  remoteVersions,
+} from "./versions.ts";
 
 const activeRuns = new Map<string, number>();
 
@@ -49,9 +56,32 @@ export async function executeRun(
   rollbackOf: string | null = null,
   forceColumns: string[] = [],
   approvedPlan?: string,
+  direct?: {
+    repair?: { source: string; secret?: string };
+    node?: string;
+    synchronize?: () => Promise<unknown>;
+  },
 ) {
-  await requirePermission("the8020.deployments.apply", "");
   const input = parseList(value);
+  if (direct) {
+    if (input.packages.length !== 1) {
+      throw new Error(
+        await resolveMessage(
+          messageSymbol("types.ad_hoc_deployments_contain_one_package"),
+        ),
+      );
+    }
+    await requirePermission(
+      "the8020.packages.package.synchronize",
+      input.packages[0]!.packageId,
+    );
+    if (direct.repair) {
+      await requirePermission(
+        "the8020.packages.package.edit",
+        input.packages[0]!.packageId,
+      );
+    }
+  } else await requirePermission("the8020.deployments.apply", "");
   if (input.packages.length > 256) {
     throw new Error(
       await resolveMessage(
@@ -89,11 +119,13 @@ export async function executeRun(
       ),
     );
   }
-  const activationId = input.packages[0]!.target === null ? null : newId("act");
-  if (activationId) {
-    await requireSetProtocol();
+  const activationId = direct?.node || input.packages[0]!.target === null
+    ? null
+    : newId("act");
+  if (activationId && !direct?.repair) {
+    const keepUpstream = await requireSetProtocol();
     const source = await developmentSource(input.sourceSystemId);
-    setInput(activationId, input, source.url);
+    setInput(activationId, input, source.url, keepUpstream);
   }
   if (listId) {
     const list = await Lists.selectAll().where(Lists.id, "=", listId)
@@ -109,6 +141,7 @@ export async function executeRun(
     }
   }
   if (rollbackOf) {
+    await requirePermission("the8020.deployments.apply", "");
     const original = await inspectRun(rollbackOf);
     if (original.state === "running") {
       throw new Error(
@@ -117,7 +150,14 @@ export async function executeRun(
         ),
       );
     }
-    const expected = rollbackList(original.input, original.packages);
+    if (original.syncNodeId && original.syncNodeId !== direct?.node) {
+      throw new Error(
+        await resolveMessage(
+          messageSymbol("errors.use_node", { node: original.syncNodeId }),
+        ),
+      );
+    }
+    const expected = await rollbackInput(original);
     if (
       JSON.stringify(expected.packages) !== JSON.stringify(input.packages) ||
       expected.sourceSystemId !== input.sourceSystemId ||
@@ -157,7 +197,9 @@ export async function executeRun(
     state: "running",
     error: "",
     lockKey: "apply",
-    nextStep: 0,
+    nextStep: direct ? null : 0,
+    ...(direct?.node ? { syncNodeId: direct.node } : {}),
+    ...(direct?.repair ? { repairSource: direct.repair.source } : {}),
     activationId,
     username: context.username,
     nodeId: context.nodeId,
@@ -190,7 +232,55 @@ export async function executeRun(
         ),
     );
   }
-  await dispatchStep(id, 0);
+  if (direct) {
+    activeRuns.set(id, 1);
+    try {
+      const read = () =>
+        Runs.selectAll().where(Runs.id, "=", id).executeTakeFirstOrThrow();
+      if (direct.node && direct.synchronize) {
+        const item = items[0]!;
+        let failure = "";
+        try {
+          item.processed = true;
+          await direct.synchronize();
+        } catch (error) {
+          failure = message(error);
+          // A dropped reply can precede completion on the recipient.
+          await kernel.packages.waitForNodePackage(direct.node, item.packageId);
+          await requireSettledActivation();
+        }
+        item.after = await installedCommit(direct.node, item.packageId);
+        if (!failure && item.after !== item.requested) {
+          failure = await resolveMessage(
+            messageSymbol(
+              "errors.activated_package_does_not_match_the_requested_version",
+            ),
+          );
+        }
+        item.state = failure ? "failed" : "succeeded";
+        item.error = failure;
+        item.change = changeKind(item.before, item.after);
+        await Runs.update({
+          packages: items,
+          state: item.state,
+          error: failure,
+          lockKey: null,
+          finishedAt: new Date(),
+        }).where(Runs.id, "=", id).execute();
+      } else await continueSet(await read(), direct.repair);
+      const finished = await read();
+      if (finished.state !== "succeeded") {
+        throw new Error(
+          finished.error ||
+            await resolveMessage(
+              messageSymbol("errors.package_activation_failed"),
+            ),
+        );
+      }
+    } finally {
+      activeRuns.delete(id);
+    }
+  } else await dispatchStep(id, 0);
   return id;
 }
 
@@ -250,7 +340,8 @@ export async function continueRun(value: unknown) {
       workerId: context.workerId,
       executionId: context.jobRunId ?? context.id,
     }).where(Runs.id, "=", id).where(Runs.state, "=", "running")
-      .where(Runs.nextStep, "=", step).returningAll().executeTakeFirst();
+      .where(Runs.nextStep, "=", step).where(Runs.nodeId, "=", context.nodeId)
+      .returningAll().executeTakeFirst();
     if (!run) return;
     if (run.activationId) {
       await continueSet(run);
@@ -295,7 +386,9 @@ export async function continueRun(value: unknown) {
           ),
         );
       }
-      const source = await developmentSource(input.sourceSystemId);
+      const source = item.requested || item.requestedTag
+        ? await developmentSource(input.sourceSystemId)
+        : undefined;
       if (item.requested !== null || item.requestedTag !== null) {
         const configured = await Packages.select([
           Packages.source,
@@ -305,7 +398,7 @@ export async function continueRun(value: unknown) {
         if (
           configured && (configured.local || configured.secretName ||
             configured.source &&
-              configured.source !== gitURL(source.url, item.packageId))
+              configured.source !== gitURL(source!.url, item.packageId))
         ) {
           throw new Error(
             await resolveMessage(
@@ -335,13 +428,13 @@ export async function continueRun(value: unknown) {
         await kernel.packages.index.set({
           author,
           repository,
-          source: gitURL(source.url, item.packageId),
+          source: gitURL(source!.url, item.packageId),
           commit: item.requested ?? "",
           secret: "",
           tag: item.requestedTag ?? "",
           local: false,
         });
-        const access = await credentials(source);
+        const access = await credentials(source!);
         const results = await kernel.packages.synchronize(
           [item.packageId],
           access.password,
@@ -427,6 +520,7 @@ async function requireSetProtocol() {
     if (capability.protocol !== 1 || capability.maximum !== 256) {
       throw new Error("Unsupported staged-set protocol.");
     }
+    return capability.node_installations === true;
   } catch (error) {
     throw new Error(
       await resolveMessage(
@@ -439,12 +533,23 @@ async function requireSetProtocol() {
   }
 }
 
-function setInput(id: string, input: DeploymentList, url: string) {
+function setInput(
+  id: string,
+  input: DeploymentList,
+  url: string,
+  keepUpstream: boolean,
+  repairSource?: string,
+  allowLocal = false,
+) {
   const encoded = JSON.stringify({
     activation_id: id,
     packages: input.packages.map((item) => ({
       package_id: item.packageId,
-      source: gitURL(url, item.packageId),
+      source: repairSource ?? gitURL(url, item.packageId),
+      ...(repairSource ? { temporary_source: true } : {}),
+      ...(keepUpstream
+        ? { keep_upstream: true, ...(allowLocal ? { allow_local: true } : {}) }
+        : {}),
       commit: item.target?.commit ?? "",
       tag: item.target?.tag ?? "",
       before: item.before ?? "",
@@ -460,7 +565,10 @@ function setInput(id: string, input: DeploymentList, url: string) {
   return encoded;
 }
 
-async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
+async function continueSet(
+  run: Awaited<ReturnType<typeof inspectRun>>,
+  repair?: { source: string; secret?: string },
+) {
   const input = parseList(run.input), items = run.packages;
   const histories = new Map<
     string,
@@ -475,7 +583,7 @@ async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
         ),
       );
     }
-    await requireSetProtocol();
+    const keepUpstream = await requireSetProtocol();
     await requireSettledActivation();
     const before = (await localSnapshot(items.map((item) => item.packageId)))
       .packages;
@@ -487,17 +595,39 @@ async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
     await Runs.update({ packages: items }).where(Runs.id, "=", run.id)
       .execute();
     checkBaseline(input, before);
-    const source = await developmentSource(input.sourceSystemId);
+    const source = repair
+      ? undefined
+      : await developmentSource(input.sourceSystemId);
     for (const item of items) {
-      if (item.before) {
+      if (!repair && item.before) {
         histories.set(
           item.packageId,
           (await remoteVersions(input.sourceSystemId, item.packageId)).versions,
         );
       }
     }
-    const payload = setInput(run.activationId, input, source.url);
-    const access = await credentials(source);
+    if (repair && !keepUpstream) {
+      throw new Error(
+        await resolveMessage(
+          messageSymbol(
+            "errors.deployment_requires_native_staged_set_support_and_the_updated_packages",
+            { value1: "node_installations" },
+          ),
+        ),
+      );
+    }
+    const payload = setInput(
+      run.activationId,
+      input,
+      source?.url ?? "",
+      keepUpstream,
+      repair?.source,
+      (await getSystemProfile()).role !== "development",
+    );
+    const access = source ? await credentials(source) : {
+      username: "",
+      password: repair?.secret ? (await getSecret(repair.secret)).value : "",
+    };
     for (const item of items) item.processed = true;
     await Runs.update({ packages: items }).where(Runs.id, "=", run.id)
       .execute();
@@ -582,11 +712,27 @@ async function continueSet(run: Awaited<ReturnType<typeof inspectRun>>) {
   }).where(Runs.id, "=", run.id).execute();
 }
 
+async function installedCommit(node: string, packageId: string) {
+  return (await NodePackages.select([NodePackages.activeCommit]).where(
+    NodePackages.nodeId,
+    "=",
+    node,
+  ).where(NodePackages.packageId, "=", packageId).executeTakeFirst())
+    ?.activeCommit ?? null;
+}
+
 /** Only explicit inspection of the original Worker can release an abandoned run. */
 export async function reconcileRun(id: string) {
   await requirePermission("the8020.deployments.apply", "");
   const run = await inspectRun(id);
   if (run.state !== "running") return run;
+  if (context.nodeId !== run.nodeId) {
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.use_node", { node: run.nodeId }),
+      ),
+    );
+  }
   if (run.nextStep !== null) {
     await dispatchStep(id, run.nextStep);
     return await inspectRun(id);
@@ -614,7 +760,15 @@ export async function reconcileRun(id: string) {
   await requireSettledActivation();
   const packages = [];
   for (const item of run.packages) {
-    const actual = await observedVersion(item.packageId);
+    if (run.syncNodeId) {
+      await kernel.packages.waitForNodePackage(run.syncNodeId, item.packageId);
+    }
+    const actual = run.syncNodeId
+      ? {
+        commit: await installedCommit(run.syncNodeId, item.packageId),
+        state: "ready",
+      }
+      : await observedVersion(item.packageId);
     const after = actual.commit;
     packages.push({
       ...item,
@@ -651,6 +805,23 @@ export async function reconcileRun(id: string) {
   return await inspectRun(id);
 }
 
+async function rollbackInput(run: Awaited<ReturnType<typeof inspectRun>>) {
+  if (!run.syncNodeId && run.nodeId !== context.nodeId) {
+    throw new Error(
+      await resolveMessage(
+        messageSymbol("errors.use_node", { node: run.nodeId }),
+      ),
+    );
+  }
+  const input = rollbackList(run.input, run.packages);
+  if (run.repairSource && input.packages[0]?.target) {
+    const id = input.packages[0].packageId;
+    const index = await kernel.packages.index.inspect(id);
+    input.sourceSystemId = (await packageDevelopmentPeer(id, index.source)).id;
+  }
+  return input;
+}
+
 export async function executeRequest(value: unknown) {
   const request = deploymentRequest.parse(value);
   if ("listId" in request) {
@@ -660,11 +831,18 @@ export async function executeRequest(value: unknown) {
   }
   if ("rollbackOf" in request) {
     const run = await inspectRun(request.rollbackOf);
-    return await executeRun(
-      rollbackList(run.input, run.packages),
-      null,
-      run.id,
-    );
+    const input = await rollbackInput(run);
+    if (run.syncNodeId) {
+      const item = input.packages[0]!;
+      const { syncPackageOnNode } = await import("./package-change.ts");
+      return await syncPackageOnNode({
+        node: run.syncNodeId,
+        packageId: item.packageId,
+        before: item.before ?? "",
+        desired: item.target?.commit ?? "",
+      }, { id: run.id, input });
+    }
+    return await executeRun(input, null, run.id);
   }
   return await executeRun(
     request.input,

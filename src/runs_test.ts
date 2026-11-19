@@ -439,8 +439,14 @@ Deno.test("profiles and legacy run continuation preserve history, source protect
     assertEquals(failed.packages[0]?.after, second);
     assertEquals(failed.packages[0]?.change, "upgraded");
     // The physical source changed even though the catalog hook did not finish.
-    assertEquals((await localSnapshot()).packages[0]?.commit, second);
-    assertEquals((await localSnapshot()).packages[0]?.state, "incomplete");
+    assertEquals(
+      (await localSnapshot(["acme/app"])).packages[0]?.commit,
+      second,
+    );
+    assertEquals(
+      (await localSnapshot(["acme/app"])).packages[0]?.state,
+      "incomplete",
+    );
     await Packages.update({ activeCommit: second }).where(
       Packages.packageId,
       "=",

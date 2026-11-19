@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: skladište {value2}. Inspirirajte i popravite izvor prije ponovnog pokušaja.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Nedovršena izvorna aktivacija {value1} (faza: {value2}) blokira ovu provjeru. Ovdje nije utvrđeno tko njome upravlja; administrator sustava mora provjeriti mogućnosti oporavka prije ponovnog pokušaja. Ako je dostupna, naredba kernel.packages.activation.inspect {value3} prikazuje zabilježene kandidate i programske kuke.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Aktiviranje izvornog skema je u trajanju ili je nepoznato. Prepoznajte izvornu bazu podataka/aktiviranje pre nego što ponovno provjerite ovaj raspored.",
+    "errors.peer_timeout": "Isteklo je vrijeme za povezivanje s {url}.",
     "errors.connected_system_returned_http": "Povezan sustav vratio HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Povezan sustav je vratio prazan odgovor.",
     "errors.connected_system_response_is_too_large": "Reakcija povezanog sustava je prevelika.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Popisi za implementaciju ne smiju biti veći od 512 KiB.",
     "errors.invalid_list": "Nevaljan popis",
     "errors.git_is_available_only_on_development_systems": "Git je dostupan samo na razvojnim sustavima.",
-    "programs.recommended-sources.description": "Odaberite izvore preporučenih paketa"
+    "programs.recommended-sources.description": "Odaberite izvore preporučenih paketa",
+    "errors.choose_development_connection": "Odaberite jednu vezu s razvojnim sustavom za {value1}.",
+    "errors.reconnect_source": "Ponovno povežite razvojni izvor za {value1}.",
+    "errors.use_node": "Pokrenite ovu radnju na čvoru {node}."
   }
 }

@@ -139,6 +139,7 @@
     "errors.repository_inspect_and_repair_its_source_before_retrying": "{packageId}: αποθήκη {value2}. Ελέγξτε και επισκευάστε την πηγή πριν ξαναπροσπαθήσετε.",
     "errors.an_unfinished_native_activation_phase_blocks_this_check_its_ownership": "Μια ατελείωτη εγγενής ενεργοποίηση {value1} (πεδίος: {value2}) αποκλείει αυτό το έλεγχο. Η ιδιοκτησία του δεν καθορίζεται εδώ· ο διαχειριστής συστήματος πρέπει να ελέγχει την ανάκτηση του πριν από την επανεξέταση. Εάν είναι διαθέσιμο, το kernel.packages.activation.inspect {value3} εμφανίζει τους καταγεγραμμένους υποψηφίους και τα χάνια του.",
     "errors.native_schema_activation_is_pending_or_unknown_inspect_native_database": "Η ενεργοποίηση του εγγενούς σχήματος είναι αναμενόμενη ή άγνωστη. Ελέγξτε την εγγενή αποκατάσταση βάσης δεδομένων/ενεργοποίησης πριν ελέγξετε ξανά αυτή την ανάπτυξη.",
+    "errors.peer_timeout": "Το χρονικό όριο σύνδεσης με το {url} έληξε.",
     "errors.connected_system_returned_http": "Συνδεδεμένο σύστημα επιστρέφει HTTP {value1}.",
     "errors.connected_system_returned_an_empty_response": "Το συνδεδεμένο σύστημα επέστρεψε μια κενή απάντηση.",
     "errors.connected_system_response_is_too_large": "Η απάντηση του συνδεδεμένου συστήματος είναι πολύ μεγάλη.",
@@ -152,6 +153,9 @@
     "errors.deployment_lists_must_be_no_larger_than_512_kib": "Οι λίστες αναπτύξεως δεν πρέπει να είναι μεγαλύτερες από 512 KiB.",
     "errors.invalid_list": "Άκυρος κατάλογος",
     "errors.git_is_available_only_on_development_systems": "Το Git είναι διαθέσιμο μόνο σε συστήματα ανάπτυξης.",
-    "programs.recommended-sources.description": "Επιλογή πηγών προτεινόμενων πακέτων"
+    "programs.recommended-sources.description": "Επιλογή πηγών προτεινόμενων πακέτων",
+    "errors.choose_development_connection": "Επιλέξτε μία σύνδεση ανάπτυξης για το {value1}.",
+    "errors.reconnect_source": "Επανασυνδέστε την πηγή ανάπτυξης για το {value1}.",
+    "errors.use_node": "Εκτελέστε αυτή την ενέργεια στον κόμβο {node}."
   }
 }
