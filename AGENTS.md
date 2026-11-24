@@ -256,3 +256,42 @@ relevant child AGENTS.md
   sandboxes. A held hook forces one of two selected packages to be busy. The
   suite checks that the losing developer stays idle, can retry directly, and can
   publish both the resolved conflict and the independent edit.
+- `python3 native_baseline_e2e.py --self-check` checks the private smart HTTP
+  fixture with real authenticated clone/fetch/push and missing/invalid
+  rejection.
+  `python3 native_baseline_e2e.py --runtime-root <installed-seed> --backend
+  <sqlite|postgresql> --output <private-evidence>/<unique-run>.json`
+  reuses the native helpers for fresh numbered profiles, first
+  admin/login/package/apply, selected-set hooks/schema/roles, rollback/removal,
+  private work, malformed input, live jobs/API bindings and ten matched
+  ordinary/no-op samples. Run sequentially in one disposable container with an
+  aggregate two-CPU/3,584-MiB cgroup and finite outer deadline. The seed
+  contains installed kernel, admin, logd and runsc and qualified
+  service/development images. PostgreSQL additionally needs a live server with a
+  local Unix-peer `root` role and `createdb` on PATH. Inputs use exact bootstrap
+  tags; every invocation needs a unique output stem and records failed
+  assertions without product repair. Synthetic passwords are generated in
+  memory, sent through stdin or transient Git/HTTP environment, and never
+  written to source or printed. Keep JSON, samples and logs outside source;
+  collect redacted evidence and remove the task container afterward. Append
+  `--set-only` for the focused first-use/selected-set/rollback checks, or
+  `--promotion-only` for first-use and production-profile promotion after a
+  deadline prevents the full collection from reaching that row. Ordinary fixture
+  seeding installs the provider first for comparable BASE measurements, then
+  challenges consumer-first recipient deployment list/apply. `--batch-only`
+  checks ordinary development batch publication, cyclic pre/post-hook imports in
+  both selected orders, bounded no-ops, and recovery of displaced attached and
+  detached work. `--recovery-only` tests explicit sync with tracked/untracked
+  edits and unpublished history, failure before publication, actual restoration,
+  unselected and upstream fingerprints, fresh Worker and repeat. The focused
+  case also checks conservative import/install and restores an index-hidden edit
+  when the selected commit is already ready. Missing or incompatible sets
+  refuse; ordinary retry does not replay a failed post-hook. A fresh node on the
+  development database rejects a missing event-handler provider before
+  installing either checkout, then catches up to the published pair without
+  repeating the system activation or its effects. `--batch-samples` collects ten
+  compatible ordinary batch updates on independent fresh roots; it does not
+  recover an earlier failed activation. Empty hook phases succeed with zero
+  attempts; only the declared consumer post-hook has one attempt. FD samples
+  explicitly report a lower bound and unreadable process count for non-dumpable
+  sandbox processes.

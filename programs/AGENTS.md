@@ -17,11 +17,12 @@ Parent DOX: [deployments DOX](../AGENTS.md).
   background apply uses the generic program runtime.
 - Apply requests carry an immutable saved-list or original-run ID, or a single
   ad hoc package input. Resolve larger inputs in the Worker to respect the
-  native command size limit. Apply admits and returns a run ID; `continue`
-  executes one atomically claimed package per detached event with the native
-  ten-minute maximum. Browser navigation and initiating-program completion do
-  not own continuation lifetime. Existing minute events recover only unstarted
-  checkpoints after lost delivery or restart.
+  native command size limit. Apply admits and returns a run ID. Each detached
+  `continue` event atomically claims one queued checkpoint: with a persisted
+  activation ID it submits the whole staged set together; without one it handles
+  one package. The native ten-minute limit covers the whole event, independent
+  of browser navigation or initiating-program completion. Minute events recover
+  only queued, unstarted checkpoints; they do not replay claimed work.
 - `connect` invokes the shared `saveConnection` implementation with URL and
   username arguments and execution-scoped password input. Bootstrap and
   interactive connections use the same identity verification and encrypted
