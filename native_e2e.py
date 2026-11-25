@@ -272,6 +272,7 @@ def main():
                 'await updateDesired(id,{overrides:{minimumWorkers:0,workerKeepAliveMs:1000}});'
                 'const {kernel}=await import("@the8020/kernel"); await kernel.admin.execute("kernel.reindex",{packages:"the8020/uui"}); return true;')
             admin(root, "users.add", "deployer", "--password-stdin", input=password + "\n")
+            admin(root, "auth.users.assign", "deployer", "the8020.deployments.peer")
         for url in urls:
             for path in ["/identity", "/snapshot", "/git/acme/release.git/info/refs"]:
                 for header in [None, "Basic " + base64.b64encode(b"deployer:wrong").decode()]:
@@ -293,6 +294,13 @@ def main():
         print("Connection command authenticated both directions over loopback; database credentials are encrypted", flush=True)
         detected = admin(roots[1], "packages.source.inspect", "acme/release")["source"]
         assert detected["package_id"] == "acme/release" and detected["default_commit"] == versions[1], detected
+        observed = evaluate(roots[1], 'const {remoteVersions}=await import("/p/the8020/deployments/src/versions.ts");'
+            'const {remoteSnapshot,localSnapshot}=await import("/p/the8020/deployments/src/peers.ts");'
+            'const {compareSystems}=await import("/p/the8020/deployments/src/comparison.ts");'
+            f'const source={json.dumps(profiles[0]["id"])}; const versions=await remoteVersions(source,"acme/release");'
+            'const rows=compareSystems(await remoteSnapshot(source,true),await localSnapshot());'
+            'return {commits:versions.versions.map(version=>version.commit),release:rows.find(row=>row.packageId==="acme/release")};')
+        assert versions[1] in observed["commits"] and observed["release"]["after"] == versions[1], observed
         jar = http.cookiejar.CookieJar()
         client = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(jar))
         for url, password in zip(urls, passwords):

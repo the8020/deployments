@@ -1,0 +1,3 @@
+["the8020.deployments.peer"]
+description = "Connect to this system as a deployment peer."
+permissions = { "the8020.deployments.peer.access" = "*" }

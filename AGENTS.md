@@ -154,13 +154,14 @@ relevant child AGENTS.md
   app server. Lists identify their development Git source separately from their
   target so promotion through test/preproduction never needs upstream
   credentials.
-- Only development systems serve Git. The entire peer service is authenticated;
-  ordinary HTTP Basic headers work with Git clients and peer requests. Each
-  connection configures an enabled remote account's username and password over
-  HTTP or HTTPS. The system owner chooses the transport and manages network
-  security; do not require HTTPS or add a separate opt-in for HTTP. Upstream
-  repository credentials stay on their owning development system. Incoming
-  requests never execute or activate deployment instructions.
+- Only development systems serve Git. The peer service requires authenticated
+  callers with `the8020.deployments.peer.access`; ordinary HTTP Basic headers
+  work with Git clients and peer requests. Each connection configures an enabled
+  remote account's username and password over HTTP or HTTPS. The system owner
+  chooses the transport and manages network security; do not require HTTPS or
+  add a separate opt-in for HTTP. Upstream repository credentials stay on their
+  owning development system. Incoming requests never execute or activate
+  deployment instructions.
 - Runs record version identifiers, not copies of the underlying content.
   Restoring a version requires it to remain available from its source; missing
   sources or versions fail normally.

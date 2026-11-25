@@ -20,11 +20,19 @@ const tableModules = await Promise.all([
   import("/p/the8020/system/tables/settings.ts"),
   import("/p/the8020/packages/tables/packages.ts"),
   import("/p/the8020/packages/tables/activations.ts"),
+  import("/p/the8020/users/tables/users.ts"),
+  import("/p/the8020/i18n/tables/translations.ts"),
+  import("/p/the8020/auth/tables/roles.ts"),
+  import("/p/the8020/auth/tables/user_roles.ts"),
+  import("/p/the8020/auth/tables/role_includes.ts"),
+  import("/p/the8020/auth/tables/audit_flags.ts"),
+  import("/p/the8020/auth/tables/failures.ts"),
 ]);
 
 export class DatabaseFixture {
   readonly database = new DatabaseSync(":memory:");
   readonly restore: () => void;
+  username = "system";
   operation: (
     name: string,
     input: Record<string, unknown>,
@@ -42,8 +50,8 @@ export class DatabaseFixture {
     this.restore = installContextProvider(() => ({
       type: "program",
       id: "the8020/deployments/apply",
-      username: "system",
-      userId: "user:system",
+      username: this.username,
+      userId: `user:${this.username}`,
       authenticated: true,
       nodeId: "node-a",
       sandboxId: "sbx-0123456789",

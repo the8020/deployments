@@ -1,3 +1,5 @@
+import { context } from "@the8020/context";
+import { check } from "/p/the8020/auth/mod.ts";
 import { localizedText as resolveMessage } from "/p/the8020/i18n/mod.ts";
 import { msg as messageSymbol } from "/p/the8020/deployments/i18n/messages.ts";
 import { defineService, HTTPError, z } from "/p/the8020/services/http.ts";
@@ -10,6 +12,14 @@ import { gitRoot, serveGit } from "../../src/git.ts";
 import { localVersions } from "../../src/versions.ts";
 
 const service = defineService();
+service.use(async ({ meta }, next) => {
+  if (!meta.auth.authenticated) return new Response(null, { status: 401 });
+  if (
+    context.username === "system" ||
+    !await check("the8020.deployments.peer.access", "")
+  ) return new Response(null, { status: 403 });
+  return await next();
+});
 const packageParams = {
   params: z.object({ author: z.string(), repository: z.string() }),
 };

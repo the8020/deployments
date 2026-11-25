@@ -521,6 +521,7 @@ def main():
                        'for(const id of ["the8020/uui/login","the8020/uui/shell"]) await updateDesired(id,{enabled:false});'
                        'const {kernel}=await import("@the8020/kernel");await kernel.admin.execute("kernel.reindex",{packages:"the8020/uui"});return true;')
             h.admin(root, "users.add", "deployer", "--password-stdin", input="fixture-password\n")
+            h.admin(root, "auth.users.assign", "deployer", "the8020.deployments.peer")
         for root, peer in ((test, urls[0]), (dev, urls[1])):
             h.admin(root, "deployments.connect", peer, "deployer", "--password-stdin", input="fixture-password\n")
         suite = (unittest.TestSuite(Packaging(case) for case in sorted(args.cases)) if args.cases else
